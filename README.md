@@ -1,7 +1,7 @@
 # Documentação do Persona Bot
 
 <p align="center">
-  <img img width="200" height="200" src="https://github.com/ViniciusHora1009/persona-bot/blob/main/imagens/persona-bot-circle.png">
+  <img img src="https://github.com/ViniciusHora1009/persona-bot/blob/main/imagens/persona-bot-circle.png">
 </p>
 
 ### Sobre o Persona Bot
