@@ -11,7 +11,7 @@ O Persona Bot é um bot de Discord criado para auxiliar a execução do meu sist
 | Execução de drop de itens                       | Não iniciado |
 | Cálculo de dano                                 | Não iniciado |
 
-[Convidar o detetive Bot ao meu servidor]()<br>
+[Convidar o detetive Bot ao meu servidor](https://discord.com/api/oauth2/authorize?client_id=788843258306101279&permissions=0&scope=bot)<br>
 
 ### Sobre o Sistema de combate
 O sistema de combate está sendo criado do zero por mim e se encontra hospedado no meu Google Drive.<br>
