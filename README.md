@@ -1,5 +1,9 @@
 # Documentação do Persona Bot
 
+<p align="center">
+  <img img width="200" height="200" src="https://github.com/ViniciusHora1009/persona-bot/blob/main/imagens/persona-bot-circle.png">
+</p>
+
 ### Sobre o Persona Bot
 O Persona Bot é um bot de Discord criado para auxiliar a execução do meu sistema de combate de RPG baseado na série de jogos "Persona". O Bot conta com:<br>
 
