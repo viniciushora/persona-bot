@@ -15,4 +15,4 @@ Das Personas: Nome, árvore de crescimento de atributos, árvore de habilidades,
 Dos itens: Nome<br>
 Dos atributos: Intensidade do multiplicador<br>
 
-![Alt text]( "Modelo conceitual")
+![Alt text](https://github.com/ViniciusHora1009/persona-bot/blob/main/imagens/PersonaBot.png "Modelo conceitual")
