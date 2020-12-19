@@ -20,14 +20,17 @@ Dos atributos: Intensidade do multiplicador<br>
 #### Inserindo informações nas colunas primárias
 São as colunas que dependem apenas de si para existir, sem chaves estrangeiras.
 
-##### Tabela arcana
+#### Tabela arcana
 ![Alt text](https://github.com/ViniciusHora1009/persona-bot/blob/main/imagens/insert1.PNG "Arcana")
 
-##### Tabela atributo
+#### Tabela atributo
 ![Alt text](https://github.com/ViniciusHora1009/persona-bot/blob/main/imagens/insert2.PNG "Atributo")
 
-##### Tabela interacao_atributo
+### Tabela elemento
+![Alt text](https://github.com/ViniciusHora1009/persona-bot/blob/main/imagens/insert5.PNG "Interação Atributo")
+
+#### Tabela interacao_elemento
 ![Alt text](https://github.com/ViniciusHora1009/persona-bot/blob/main/imagens/insert4.PNG "Interação Atributo")
 
-##### Tabela intensidade
+#### Tabela intensidade
 ![Alt text](https://github.com/ViniciusHora1009/persona-bot/blob/main/imagens/insert3.PNG "Intensidade")
