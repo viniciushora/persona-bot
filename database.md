@@ -16,3 +16,18 @@ Dos itens: Nome<br>
 Dos atributos: Intensidade do multiplicador<br>
 
 ![Alt text](https://github.com/ViniciusHora1009/persona-bot/blob/main/imagens/PersonaBot.png "Modelo conceitual")
+
+#### Inserindo informações nas colunas primárias
+São as colunas que dependem apenas de si para existir, sem chaves estrangeiras.
+
+##### Tabela arcana
+![Alt text](https://github.com/ViniciusHora1009/persona-bot/blob/main/imagens/insert1.PNG "Arcana")
+
+##### Tabela atributo
+![Alt text](https://github.com/ViniciusHora1009/persona-bot/blob/main/imagens/insert2.PNG "Atributo")
+
+##### Tabela interacao_atributo
+![Alt text](https://github.com/ViniciusHora1009/persona-bot/blob/main/imagens/insert4.PNG "Interação Atributo")
+
+##### Tabela intensidade
+![Alt text](https://github.com/ViniciusHora1009/persona-bot/blob/main/imagens/insert3.PNG "Intensidade")
