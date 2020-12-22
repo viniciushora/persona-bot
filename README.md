@@ -43,8 +43,8 @@ A rolagem pronta é muito importante para cálculo de dano, pois retorna a funç
 #### p!mostrar_ficha <nome da persona>
 Mostra a ficha com Atributos e Afinidades Elementais da um Persona. Para poder mostrar essa ficha completa é necessário saber o nome da Persona, que é revelado após se obter o poder dela.
   
-![Alt text](https://github.com/ViniciusHora1009/persona-bot/blob/main/imagens/print3.PNG "Ficha Persona")
-![Alt text](https://github.com/ViniciusHora1009/persona-bot/blob/main/imagens/print3.5.PNG "Ficha Persona2")
+![Alt text](https://github.com/ViniciusHora1009/persona-bot/blob/main/imagens/print3.PNG "Ficha Persona")<br>
+![Alt text](https://github.com/ViniciusHora1009/persona-bot/blob/main/imagens/print3.5.PNG "Ficha Persona2")<br>
 
 #### p!info_shadow <nome da shadow>
 Mostra as Afinidades Elementais conhecidas de uma Shadow inimiga, o parâmetro é o seu codinome, mostrado em batalha.
@@ -54,16 +54,16 @@ Mostra as Afinidades Elementais conhecidas de uma Shadow inimiga, o parâmetro �
 #### p!revelar_afinidade <nome da shadow>
 Cria um embed sobre a Shadow, o jogador precisará reagir com o emote do elemento que deseja ser revelado. Utilizado depois de scans ou descobrir forçadamente a afinidade (através de habilidades do respectivo elemento).
   
-![Alt text](https://github.com/ViniciusHora1009/persona-bot/blob/main/imagens/print5.PNG "Revelar Afinidade da Shadow")
-![Alt text](https://github.com/ViniciusHora1009/persona-bot/blob/main/imagens/print6.PNG "Revelar Afinidade da Shadow2")
-![Alt text](https://github.com/ViniciusHora1009/persona-bot/blob/main/imagens/print7.PNG "Revelar Afinidade da Shadow3")
+![Alt text](https://github.com/ViniciusHora1009/persona-bot/blob/main/imagens/print5.PNG "Revelar Afinidade da Shadow")<br>
+![Alt text](https://github.com/ViniciusHora1009/persona-bot/blob/main/imagens/print6.PNG "Revelar Afinidade da Shadow2")<br>
+![Alt text](https://github.com/ViniciusHora1009/persona-bot/blob/main/imagens/print7.PNG "Revelar Afinidade da Shadow3")<br>
   
 #### p!esconder_afinidade <nome da shadow>
 Cria um embed sobre a Shadow, o jogador precisará reagir com o emote do elemento que deseja ser escondida. Utilizado quando uma afinidade é revelada acidentamente.
   
-![Alt text](https://github.com/ViniciusHora1009/persona-bot/blob/main/imagens/print8.PNG "Esconder Afinidade da Shadow")
-![Alt text](https://github.com/ViniciusHora1009/persona-bot/blob/main/imagens/print9.PNG "Esconder Afinidade da Shadow2")
-![Alt text](https://github.com/ViniciusHora1009/persona-bot/blob/main/imagens/print10.PNG "Esconder Afinidade da Shadow3")
+![Alt text](https://github.com/ViniciusHora1009/persona-bot/blob/main/imagens/print8.PNG "Esconder Afinidade da Shadow")<br>
+![Alt text](https://github.com/ViniciusHora1009/persona-bot/blob/main/imagens/print9.PNG "Esconder Afinidade da Shadow2")<br>
+![Alt text](https://github.com/ViniciusHora1009/persona-bot/blob/main/imagens/print10.PNG "Esconder Afinidade da Shadow3")<br>
 
 ### Sistema de inventário inteligente
 
