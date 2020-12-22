@@ -38,6 +38,9 @@ A versão mais dinâmica e simples da rolagem de dados, para rolagens rápidas s
 A rolagem criada pelo bot diretamente ao jogador para que o valor da rolagem seja usado diretamente no cálculo de alguma ação ou mecânica, a rolagem pronta é definida pelo próprio bot e para executá-la o jogador necessita somente clicar na reação com emoji de dado. 
 A rolagem pronta é muito importante para cálculo de dano, pois retorna a função de cálculo o valor exato do dado para que se dê procedência ao jogo.
 
+![Alt text](https://github.com/ViniciusHora1009/persona-bot/blob/main/imagens/print0.PNG "Rolagem Pronta")<br>
+![Alt text](https://github.com/ViniciusHora1009/persona-bot/blob/main/imagens/print0.5.PNG "Rolagem Pronta2")<br>
+
 ### Visualização de ficha do jogador e dos inimigos
 
 #### p!mostrar_ficha <nome da persona>
