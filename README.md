@@ -27,8 +27,12 @@ Para que os jogadores possam executar suas ações será necessário rodar um da
 #### p!rolldice
 A versão mais intuitiva da rolagem de dados, perguntando diretamente ao jogador qual a quantia de dados e lados dos dados que deseja rolar. Adequada a jogadores iniciantes.
 
+![Alt text](https://github.com/ViniciusHora1009/persona-bot/blob/main/imagens/print1.png "Rolldice")
+
 #### p!roll xdy ou p!r xdy (onde "x" é um número inteiro maior que 0, que representa a quantidade de dados; e "y" é um número inteiro maior que 0 que representa a quantidade de lados do(s) dado(s))
 A versão mais dinâmica e simples da rolagem de dados, para rolagens rápidas sem atrapalhar a sessão.
+
+![Alt text](https://github.com/ViniciusHora1009/persona-bot/blob/main/imagens/print2.png "Roll")
 
 #### Rolagem pronta
 A rolagem criada pelo bot diretamente ao jogador para que o valor da rolagem seja usado diretamente no cálculo de alguma ação ou mecânica, a rolagem pronta é definida pelo próprio bot e para executá-la o jogador necessita somente clicar na reação com emoji de dado. 
@@ -36,34 +40,57 @@ A rolagem pronta é muito importante para cálculo de dano, pois retorna a funç
 
 ### Visualização de ficha do jogador e dos inimigos
 
-#### p!mostra_ficha <nome da persona>
+#### p!mostrar_ficha <nome da persona>
 Mostra a ficha com Atributos e Afinidades Elementais da um Persona. Para poder mostrar essa ficha completa é necessário saber o nome da Persona, que é revelado após se obter o poder dela.
+  
+![Alt text](https://github.com/ViniciusHora1009/persona-bot/blob/main/imagens/print3.png "Ficha Persona")
+![Alt text](https://github.com/ViniciusHora1009/persona-bot/blob/main/imagens/print3.5.png "Ficha Persona2")
 
 #### p!info_shadow <nome da shadow>
 Mostra as Afinidades Elementais conhecidas de uma Shadow inimiga, o parâmetro é o seu codinome, mostrado em batalha.
+
+![Alt text](https://github.com/ViniciusHora1009/persona-bot/blob/main/imagens/print4.png "Info Shadow")
   
 #### p!revelar_afinidade <nome da shadow>
 Cria um embed sobre a Shadow, o jogador precisará reagir com o emote do elemento que deseja ser revelado. Utilizado depois de scans ou descobrir forçadamente a afinidade (através de habilidades do respectivo elemento).
   
+![Alt text](https://github.com/ViniciusHora1009/persona-bot/blob/main/imagens/print5.png "Revelar Afinidade da Shadow")
+![Alt text](https://github.com/ViniciusHora1009/persona-bot/blob/main/imagens/print6.png "Revelar Afinidade da Shadow2")
+![Alt text](https://github.com/ViniciusHora1009/persona-bot/blob/main/imagens/print7.png "Revelar Afinidade da Shadow3")
+  
 #### p!esconder_afinidade <nome da shadow>
 Cria um embed sobre a Shadow, o jogador precisará reagir com o emote do elemento que deseja ser escondida. Utilizado quando uma afinidade é revelada acidentamente.
+  
+![Alt text](https://github.com/ViniciusHora1009/persona-bot/blob/main/imagens/print8.png "Esconder Afinidade da Shadow")
+![Alt text](https://github.com/ViniciusHora1009/persona-bot/blob/main/imagens/print9.png "Esconder Afinidade da Shadow2")
+![Alt text](https://github.com/ViniciusHora1009/persona-bot/blob/main/imagens/print10.png "Esconder Afinidade da Shadow3")
 
 ### Sistema de inventário inteligente
 
 #### p!add_item <quantidade> <nome do item>
 Adiciona ou soma do inventário do grupo um determinado item.
+
+![Alt text](https://github.com/ViniciusHora1009/persona-bot/blob/main/imagens/print11.png "Adicionar Item")
   
 #### p!del_item <quantidade> <nome do item>
 Deleta ou subtrai do inventário do grupo um determinado item.
   
+![Alt text](https://github.com/ViniciusHora1009/persona-bot/blob/main/imagens/print12.png "Remover item")
+  
 #### p!inventario
 Mostra organizadamente o inventário e dinheiro do grupo, com itens separados por categoria.
+
+![Alt text](https://github.com/ViniciusHora1009/persona-bot/blob/main/imagens/print13.png "Inventário")
 
 #### p!setar_dinheiro <quantia>
 Altera a quantia de dinheiro do grupo para a definida pelo jogador.
 
+![Alt text](https://github.com/ViniciusHora1009/persona-bot/blob/main/imagens/print14.png "Setar dinheiro")
+
 #### p!modificar_dinheiro <quantia (positiva ou negativa)>
 Soma ou subtrai uma quantia à quantia de dinheiro do grupo.
+
+![Alt text](https://github.com/ViniciusHora1009/persona-bot/blob/main/imagens/print15.png "Soma ou Subtração do dinheiro")
 
 ### Execução do drop de itens
 
