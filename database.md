@@ -34,3 +34,6 @@ São as colunas que dependem apenas de si para existir, sem chaves estrangeiras.
 
 ### Tabela intensidade
 ![Alt text](https://github.com/ViniciusHora1009/persona-bot/blob/main/imagens/insert3.PNG "Intensidade")
+
+### Tabela Tipo_item
+![Alt text](https://github.com/ViniciusHora1009/persona-bot/blob/main/imagens/insert6.PNG "Tipo Item")
