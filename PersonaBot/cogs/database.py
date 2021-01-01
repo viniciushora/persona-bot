@@ -261,13 +261,68 @@ where shadow.fk_persona_persona_id = %s
         
         @staticmethod
         def nome_item(item_id):
-                select_item = """
+                try:
+                        select_item = """
 select item.nome from item where item.item_id =%s
 """
-                cur.execute(select_item,(item_id,))
-                item = cur.fetchone()
-                item = item[0]
-                if item != None:
+                        cur.execute(select_item,(item_id,))
+                        item = cur.fetchone()
+                        item = item[0]
                         return item
+                except:
+                        return False
+
+        @staticmethod
+        def personagem_id(personagem):
+                try:
+                        select_personagem = """
+select personagem.personagem_id from personagem where personagem.nome =%s
+"""
+                        cur.execute(select_personagem,(personagem,))
+                        personagem_id = cur.fetchone()
+                        personagem_id = personagem_id[0]
+                        return personagem_id
+                except:
+                        return False
+        
+        @staticmethod
+        def tipo_item_id(item_id):
+                select_tipo_item = """
+select tipo_item.tipo_id from tipo_item inner join item on
+tipo_item.tipo_id = item.fk_tipo_item_tipo_id
+where item.item_id = %s
+"""
+                cur.execute(select_tipo_item,(item_id,))
+                tipo_item_id = cur.fetchone()
+                tipo_item_id = tipo_item_id[0]
+                if tipo_item_id != None:
+                        return tipo_item_id
                 else:
                         return False
+        
+        @staticmethod
+        def equipar_item(personagem_id, item_id, tipo_item_id):
+                update_personagem = ""
+                if tipo_item_id == 7:
+                        update_personagem = """
+update personagem set meelee = %s where personagem.personagem_id = %s;
+"""
+                elif tipo_item_id == 8:
+                        update_personagem = """
+update personagem set ranged = %s where personagem.personagem_id = %s;
+"""
+                elif tipo_item_id == 9:
+                        update_personagem = """
+update personagem set armadura = %s where personagem.personagem_id = %s;
+"""
+                elif tipo_item_id == 10:
+                        update_personagem = """
+update personagem set acessorio = %s where personagem.personagem_id = %s;
+"""
+                else:
+                        return False
+
+                cur.execute(update_personagem,(item_id, personagem_id,))
+                conn.commit()
+                return True
+       

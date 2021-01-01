@@ -390,8 +390,6 @@ async def del_item(ctx, quant, *item):
         nome+=palavra + " "
     nome = nome[:-1]
     item_id = Database.item_id(nome)
-    print(quant)
-    print(item_id)
     if item_id != False:
         contem_item = Database.item_no_inventario(nome)
         if contem_item != False:
@@ -592,6 +590,36 @@ def add_item(quant, item_id):
     else:
         add_item = Database.add_item_database(item_id, quant)
 
+@bot.command()
+async def equipar(ctx, personagem, *item):
+    nome = ""
+    for palavra in item:
+        nome+=palavra + " "
+    nome = nome[:-1]
+    personagem_id = Database.personagem_id(personagem)
+    if personagem_id != False:
+        item_id = Database.item_id(nome)
+        if item_id != False:
+            contem_item = Database.item_no_inventario(nome)
+            if contem_item != False:
+                tipo_item_id = Database.tipo_item_id(item_id)
+                equip = Database.equipar_item(personagem_id, item_id, tipo_item_id)
+                if equip == False:
+                    await ctx.send("Este item não é equipável")
+                elif tipo_item_id == 7:
+                    await ctx.send(f"""**{nome}** agora é a arma corpo-a-corpo equipada de **{personagem}**""")
+                elif tipo_item_id == 8:
+                    await ctx.send(f"""**{nome}** agora é a arma à distância equipada de **{personagem}**""")
+                elif tipo_item_id == 9:
+                    await ctx.send(f"""**{nome}** agora é a armadura equipada de **{personagem}**""")
+                else:
+                    await ctx.send(f"""**{nome}** agora é o acessório equipado de **{personagem}**""")
+            else:
+                await ctx.send("Este item não está no inventário do grupo.")
+        else:
+            await ctx.send("Este item não existe.")
+    else:
+        await ctx.send("Este personagem não existe.")
 
 bot.load_extension("cogs.dado")
 bot.run(data['token'])
