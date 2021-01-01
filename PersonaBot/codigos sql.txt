@@ -1,0 +1,5 @@
+Retornar atributos específicos de uma Persona:
+select atributo.nome, persona_atributo.valor from persona inner join persona_atributo on persona.persona_id = persona_atributo.fk_persona_persona_id inner join atributo on persona_atributo.fk_atributo_atributo_id = atributo.atributo_id where persona.nome='Arsène' order by atributo.atributo_id;
+
+Retornar fraquezas de uma Persona:
+select elemento.nome, interacao_elemento.nome_interacao from persona inner join reacao_elemental on persona.persona_id = reacao_elemental.fk_persona_persona_id inner join elemento on reacao_elemental.fk_elemento_elemento_id = elemento_id inner join interacao_elemento on reacao_elemental.fk_interacao_elemento_interacao_id = interacao_elemento.interacao_id where persona.nome='Arsène' order by elemento.elemento_id
