@@ -325,4 +325,63 @@ update personagem set acessorio = %s where personagem.personagem_id = %s;
                 cur.execute(update_personagem,(item_id, personagem_id,))
                 conn.commit()
                 return True
-       
+        
+        @staticmethod
+        def desequipar_item(personagem_id, tipo_item_id):
+                update_personagem = ""
+                if tipo_item_id == 7:
+                        update_personagem = """
+update personagem set meelee = null where personagem.personagem_id = %s;
+"""
+                elif tipo_item_id == 8:
+                        update_personagem = """
+update personagem set ranged = null where personagem.personagem_id = %s;
+"""
+                elif tipo_item_id == 9:
+                        update_personagem = """
+update personagem set armadura = null where personagem.personagem_id = %s;
+"""
+                elif tipo_item_id == 10:
+                        update_personagem = """
+update personagem set acessorio = null where personagem.personagem_id = %s;
+"""
+                else:
+                        return False
+                cur.execute(update_personagem,(item_id, personagem_id,))
+                conn.commit()
+                return True
+        
+        @staticmethod
+        def item_equipado(personagem_id, item_id, tipo_item_id):
+                try:
+                        select = ""
+                        if tipo_item_id == 7:
+                                select = """
+select personagem.meelee from personagem
+where personagem.personagem_id = %s
+"""
+                        elif tipo_item_id == 8:
+                                select = """
+select personagem.ranged from personagem
+where personagem.personagem_id = %s
+"""     
+                        elif tipo_item_id == 9:
+                                select = """
+select personagem.armadura from personagem
+where personagem.personagem_id = %s
+"""     
+                        else:
+                                select = """
+select personagem.acessorio from personagem
+where personagem.personagem_id = %s
+"""    
+                        cur.execute(select,(item_id,))
+                        equip_item_id = cur.fetchone()
+                        equip_item_id = equip_item_id[0]
+                        if equip_item_id == item_id:
+                                return True
+                        else:
+                                return False
+                except:
+                        return False
+

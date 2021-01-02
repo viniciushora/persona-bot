@@ -611,7 +611,7 @@ async def equipar(ctx, personagem, *item):
                 elif tipo_item_id == 8:
                     await ctx.send(f"""**{nome}** agora é a arma à distância equipada de **{personagem}**""")
                 elif tipo_item_id == 9:
-                    await ctx.send(f"""**{nome}** agora é a armadura equipada de **{personagem}**""")
+                    await ctx.send(f"""**{nome}** agora é a armadura equipado de **{personagem}**""")
                 else:
                     await ctx.send(f"""**{nome}** agora é o acessório equipado de **{personagem}**""")
             else:
@@ -620,6 +620,52 @@ async def equipar(ctx, personagem, *item):
             await ctx.send("Este item não existe.")
     else:
         await ctx.send("Este personagem não existe.")
+    
+@bot.command()
+async def desequipar(ctx, personagem, *item):
+    nome = ""
+    for palavra in item:
+        nome+=palavra + " "
+    nome = nome[:-1]
+    personagem_id = Database.personagem_id(personagem)
+    if personagem_id != False:
+        item_id = Database.item_id(nome)
+        if item_id != False:
+            contem_item = Database.item_no_inventario(nome)
+            if contem_item != False:
+                tipo_item_id = Database.tipo_item_id(item_id)
+                item_equipado = Database.item_equipado(personagem_id, item_id, tipo_item_id)
+                if item_equipado:
+                    desequip = Database.desequipar_item(personagem_id, tipo_item_id)
+                    if equip == False:
+                        await ctx.send("Este item não é equipável")
+                    elif tipo_item_id == 7:
+                        await ctx.send(f"""**{nome}** não está mais equipado(a) como arma corpo-a-corpo de **{personagem}**""")
+                    elif tipo_item_id == 8:
+                        await ctx.send(f"""**{nome}** não está mais equipado(a) como arma à distância equipada de **{personagem}**""")
+                    elif tipo_item_id == 9:
+                        await ctx.send(f"""**{nome}** não está mais equipado(a) como armadura equipada de **{personagem}**""")
+                    else:
+                        await ctx.send(f"""**{nome}** não está mais equipado(a) como acessório equipado de **{personagem}**""")
+            else:
+                await ctx.send("Este item não está no inventário do grupo.")
+        else:
+            await ctx.send("Este item não existe.")
+    else:
+        await ctx.send("Este personagem não existe.")
+
+@bot.command()
+async def ficha(ctx, personagem):
+    personagem_id = Database.personagem_id(personagem)
+    if personagem_id != False:
+        ficha = discord.Embed(
+            title=f"""**Ficha de personagem**""",
+            description=F"""Atributos, equipamentos e Persona de **{personagem}**""",
+            colour=discord.Colour.green()
+        )
+        
+    else:
+        await ctx.send("Personagem não encontrado.")
 
 bot.load_extension("cogs.dado")
 bot.run(data['token'])
