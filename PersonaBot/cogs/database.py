@@ -42,7 +42,6 @@ where persona.nome = %s
         
         @staticmethod
         def ficha_shadow(nome):
-                print(nome)
                 select_fraquezas = """
 select elemento.nome, interacao_elemento.nome_interacao
 from persona inner join reacao_elemental on
@@ -346,7 +345,7 @@ update personagem set acessorio = null where personagem.personagem_id = %s;
 """
                 else:
                         return False
-                cur.execute(update_personagem,(item_id, personagem_id,))
+                cur.execute(update_personagem,(personagem_id,))
                 conn.commit()
                 return True
         
@@ -374,9 +373,10 @@ where personagem.personagem_id = %s
 select personagem.acessorio from personagem
 where personagem.personagem_id = %s
 """    
-                        cur.execute(select,(item_id,))
+                        cur.execute(select,(personagem_id,))
                         equip_item_id = cur.fetchone()
                         equip_item_id = equip_item_id[0]
+                        print(equip_item_id)
                         if equip_item_id == item_id:
                                 return True
                         else:
@@ -405,23 +405,23 @@ select personagem.persona_equipada from personagem where personagem.personagem_i
                 return persona_id
         
         @staticmethod
-        def skills(personagem_id):
+        def skills(personagem_id, persona_id):
                 try:
-                        select_skill_cap = """
-select persona_habilidade.fk_personagem_persona_personagem_persona_id from persona_habilidade inner join personagem_persona on
-personagem_persona.personagem_persona_id = persona_habilidade.fk_personagem_persona_personagem_persona_id
-where personagem_persona.fk_personagem_personagem_id = %s order by persona_habilidade.fk_personagem_persona_personagem_persona_id desc limit 1
+                        select_personagem_persona = """
+select personagem_persona.personagem_persona_id from personagem_persona
+where personagem_persona.fk_personagem_personagem_id = %s and 
+personagem_persona.fk_persona_persona_id = %s
 """
-                        cur.execute(select_skill_cap,[personagem_id,])
-                        skill_cap = cur.fetchone()
-                        skill_cap = skill_cap[0]
+                        cur.execute(select_personagem_persona,[personagem_id, persona_id])
+                        personagem_persona = cur.fetchone()
+                        personagem_persona = personagem_persona[0]
                         select = """
 select habilidade.nome from habilidade inner join persona_habilidade on
 habilidade.habilidade_id = persona_habilidade.fk_habilidade_habilidade_id inner join personagem_persona on
 persona_habilidade.fk_personagem_persona_personagem_persona_id = personagem_persona.personagem_persona_id
-where personagem_persona.fk_personagem_personagem_id = %s and persona_habilidade.fk_personagem_persona_personagem_persona_id = %s
+where persona_habilidade.fk_personagem_persona_personagem_persona_id = %s
 """
-                        cur.execute(select,(personagem_id, skill_cap))
+                        cur.execute(select,(personagem_persona, ))
                         skills = cur.fetchall()
                         lista_skills = []
                         for skill in skills:
@@ -445,11 +445,11 @@ where persona.persona_id=%s
 order by atributo.atributo_id;
 """
                 select_atributos_crescimento = """
-select crescimento_atributo.nivel, crescimento_atributo.quantidade 
-from persona inner join crescimento_atributo on 
-persona.persona_id = crescimento.fk_persona_persona_id inner join atributo on 
-crescimento_atributo.fk_atributo_atributo_id = atributo.atributo_id 
-where persona.persona_id=%s
+select crescimento_atributo.nivel, atributo.atributo_id, crescimento_atributo.quantidade 
+from personagem_persona inner join crescimento_atributo on 
+personagem_persona.personagem_persona_id = crescimento_atributo.fk_personagem_persona_personagem_persona_id inner join atributo on 
+crescimento_atributo.fk_atributo_atributo_id = atributo.atributo_id
+where personagem_persona.fk_persona_persona_id = %s and personagem_persona.fk_personagem_personagem_id = %s
 order by crescimento_atributo.nivel, atributo.atributo_id;
 """
                 select_fraquezas = """
@@ -479,8 +479,24 @@ where persona.persona_id = %s
                 print(level)
                 print(lista_atributos)
                 if level > 1:
-                        cur.execute(select_atributos_crescimento,[persona_id,])
+                        cur.execute(select_atributos_crescimento,[persona_id, personagem_id,])
                         crescimento = cur.fetchall()
+                        print(crescimento)
+                        for nivel, atributo_id, quant in crescimento:
+                                if atributo_id == 1:
+                                        lista_atributos[0][1] += quant
+                                elif atributo_id == 2:
+                                        lista_atributos[1][1] += quant
+                                elif atributo_id == 3:
+                                        lista_atributos[2][1] += quant
+                                elif atributo_id == 4:
+                                        lista_atributos[3][1] += quant
+                                elif atributo_id == 5:
+                                        lista_atributos[4][1] += quant
+                                elif atributo_id == 6:
+                                        lista_atributos[5][1] += quant
+                                else:
+                                        lista_atributos[6][1] += quant
                 cur.execute(select_fraquezas,[persona_id,])
                 fraquezas = cur.fetchall()
                 cur.execute(select_persona,[persona_id,])
@@ -498,12 +514,362 @@ select personagem.meelee, personagem.ranged, personagem.armadura, personagem.ace
                 return equips
         
         @staticmethod
-        def nivel(personagem_id):
+        def nivel(personagem_id, persona_id):
                 select = """
 select personagem_persona.nivel from personagem_persona
-where personagem_persona.fk_personagem_personagem_id = %s order by personagem_persona.nivel desc limit 1
+where personagem_persona.fk_personagem_personagem_id = %s and
+personagem_persona.fk_persona_persona_id = %s
 """
-                cur.execute(select,(personagem_id,))
+                cur.execute(select,(personagem_id, persona_id,))
                 nivel = cur.fetchone()
                 nivel = nivel[0]
+                print(nivel)
                 return nivel
+        
+        @staticmethod
+        def foto_personagem(personagem_id):
+                select = """
+select personagem.foto from personagem
+where personagem.personagem_id = %s
+"""
+                cur.execute(select,(personagem_id,))
+                foto = cur.fetchone()
+                foto = foto[0]
+                return foto
+        
+        @staticmethod
+        def aumentar_nivel(personagem_id):
+                try:
+                        update = """
+update personagem_persona set nivel = nivel + 1 where fk_personagem_personagem_id = %s;
+"""
+                        cur.execute(update,(personagem_id,))
+                        conn.commit()
+                        return True
+                except:
+                        return False
+        
+        @staticmethod
+        def diminuir_nivel(personagem_id):
+                try:
+                        update = """
+update personagem_persona set nivel = nivel - 1 where fk_personagem_personagem_id = %s;
+"""
+                        cur.execute(update,(personagem_id,))
+                        conn.commit()
+                        return True
+                except:
+                        return False
+                
+        @staticmethod
+        def aumentar_status(personagem_persona_id, nivel, atributos):
+                try:
+                        aumento_status = """
+insert into crescimento_atributo(nivel, quantidade, fk_atributo_atributo_id, fk_personagem_persona_personagem_persona_id)
+values (%s, %s, %s, %s)
+"""
+                        cur.execute(aumento_status,(nivel, atributos[0], 1 , personagem_persona_id,))
+                        cur.execute(aumento_status,(nivel, atributos[1], 2 , personagem_persona_id,))
+                        cur.execute(aumento_status,(nivel, atributos[2], 3 , personagem_persona_id,))
+                        cur.execute(aumento_status,(nivel, atributos[3], 4 , personagem_persona_id,))
+                        cur.execute(aumento_status,(nivel, atributos[4], 5 , personagem_persona_id,))
+                        cur.execute(aumento_status,(nivel, atributos[5], 6 , personagem_persona_id,))
+                        cur.execute(aumento_status,(nivel, atributos[6], 7 , personagem_persona_id,))
+                        conn.commit()
+                        return True
+                except:
+                        return False
+        
+        @staticmethod
+        def atributos_iniciais(persona_id):
+                select_atributos = """
+select atributo.atributo_id, persona_atributo.valor 
+from persona inner join persona_atributo on 
+persona.persona_id = persona_atributo.fk_persona_persona_id inner join atributo on 
+persona_atributo.fk_atributo_atributo_id = atributo.atributo_id 
+where persona.persona_id=%s
+order by atributo.atributo_id;
+"""
+                cur.execute(select_atributos,[persona_id,])
+                atributos = cur.fetchall()
+                return atributos
+        
+        @staticmethod
+        def personagem_persona_id(personagem_id, persona_id):
+                try:
+                        select_personagem_persona = """
+        select personagem_persona.personagem_persona_id from personagem_persona
+        where personagem_persona.fk_personagem_personagem_id = %s and 
+        personagem_persona.fk_persona_persona_id = %s
+        """
+                        cur.execute(select_personagem_persona,[personagem_id, persona_id])
+                        personagem_persona = cur.fetchone()
+                        personagem_persona = personagem_persona[0]
+                        return personagem_persona
+                except:
+                        return False
+        
+        @staticmethod
+        def atributos(personagem_id, persona_id):
+                select_level  = """
+select personagem_persona.nivel from personagem_persona
+where personagem_persona.fk_personagem_personagem_id = %s order by nivel desc limit 1
+"""
+                select_atributos_level1 = """
+select atributo.nome, persona_atributo.valor 
+from persona inner join persona_atributo on 
+persona.persona_id = persona_atributo.fk_persona_persona_id inner join atributo on 
+persona_atributo.fk_atributo_atributo_id = atributo.atributo_id 
+where persona.persona_id=%s
+order by atributo.atributo_id;
+"""
+                select_atributos_crescimento = """
+select crescimento_atributo.nivel, atributo.atributo_id, crescimento_atributo.quantidade 
+from personagem_persona inner join crescimento_atributo on 
+personagem_persona.personagem_persona_id = crescimento_atributo.fk_personagem_persona_personagem_persona_id inner join atributo on 
+crescimento_atributo.fk_atributo_atributo_id = atributo.atributo_id
+where personagem_persona.fk_persona_persona_id = %s and personagem_persona.fk_personagem_personagem_id = %s
+order by crescimento_atributo.nivel, atributo.atributo_id;
+"""
+                cur.execute(select_level,[personagem_id,])
+                level = cur.fetchone()
+                level = level[0]
+                cur.execute(select_atributos_level1,[persona_id,])
+                atributos = cur.fetchall()
+                lista_atributos = []
+                for nome, quant in atributos:
+                        lista_atributos.append([nome, quant])
+                print(level)
+                print(lista_atributos)
+                if level > 1:
+                        cur.execute(select_atributos_crescimento,[persona_id, personagem_id,])
+                        crescimento = cur.fetchall()
+                        print(crescimento)
+                        for nivel, atributo_id, quant in crescimento:
+                                if atributo_id == 1:
+                                        lista_atributos[0][1] += quant
+                                elif atributo_id == 2:
+                                        lista_atributos[1][1] += quant
+                                elif atributo_id == 3:
+                                        lista_atributos[2][1] += quant
+                                elif atributo_id == 4:
+                                        lista_atributos[3][1] += quant
+                                elif atributo_id == 5:
+                                        lista_atributos[4][1] += quant
+                                elif atributo_id == 6:
+                                        lista_atributos[5][1] += quant
+                                else:
+                                        lista_atributos[6][1] += quant
+                return lista_atributos
+        
+        @staticmethod
+        def apagar_crecimento(personagem_persona_id, nivel):
+                try:
+                        delete = """
+delete from crescimento_atributo
+where crescimento_atributo.fk_personagem_persona_personagem_persona_id = %s and crescimento_atributo.nivel = %s
+"""
+                        cur.execute(delete,(personagem_persona_id, nivel,))
+                        conn.commit()
+                        return True
+                except:
+                        return False
+        
+        @staticmethod
+        def nivel_persona(persona_id):
+                try:
+                        select = """
+select persona.nivel from persona where persona.persona_id = %s
+"""
+                        cur.execute(select,(persona_id,))
+                        nivel = cur.fetchone()
+                        nivel = nivel[0]
+                        return nivel
+                except:
+                        return False
+        
+        @staticmethod
+        def persona_id(persona):
+                try:
+                        select = """
+select persona.nivel from persona where persona.nome = %s
+"""
+                        cur.execute(select,(persona,))
+                        persona_id = cur.fetchone()
+                        persona_id = persona_id[0]
+                        return persona_id
+                except:
+                        return False
+
+        @staticmethod
+        def persona_id_shadow(shadow):
+                try:
+                        select = """
+select persona.persona_id 
+from persona inner join persona_arcana on 
+persona.persona_id = persona_arcana.fk_persona_persona_id inner join arcana on
+persona_arcana.fk_arcana_arcana_id = arcana.arcana_id inner join shadow on
+persona.persona_id = shadow.fk_persona_persona_id
+where shadow.codinome = %s
+"""
+                        cur.execute(select,(shadow,))
+                        persona_id = cur.fetchone()
+                        persona_id = persona_id[0]
+                        return persona_id
+                except:
+                        return False
+        
+        @staticmethod
+        def atributos_fool_personagem(personagem_id):
+                try:
+                        select_level  = """
+select personagem.nivel from personagem where personagem.personagem_id = %s
+"""
+                        select1 = """
+select personagem.hp, personagem.sp from personagem
+where personagem.personagem_id = %s
+"""
+                        select2 = """
+select crescimento_fool.fk_atributo_atributo_id, crescimento_fool.quant from crescimento_fool
+where crescimento_fool.fk_personagem_personagem_id = %s
+"""
+                        cur.execute(select_level,(personagem_id,))
+                        level = cur.fetchone()
+                        level = level[0]
+                        cur.execute(select1,(personagem_id,))
+                        atributos = cur.fetchone()
+                        print("Atributos",atributos)
+                        lista_atributos = [atributos[0], atributos[1]]
+                        if level > 1:
+                                cur.execute(select2,(personagem_id,))
+                                crescimento_atributos = cur.fetchall()
+                                for atributo_id, quant in crescimento_atributos:
+                                        if atributo_id == 1:
+                                                lista_atributos[0] += quant
+                                        else:
+                                                lista_atributos[1] += quant
+                        return lista_atributos
+                except:
+                        return False
+        
+        @staticmethod
+        def nivel_fool(personagem_id):
+                try:
+                        select_level  = """
+select personagem.nivel from personagem where personagem.personagem_id = %s
+"""
+                        cur.execute(select_level,(personagem_id,))
+                        level = cur.fetchone()
+                        level = level[0]
+                        return level
+                except:
+                        return False
+        
+        @staticmethod
+        def lista_personas(personagem_id):
+                try:
+                        select = """
+select persona.nome from persona inner join personagem_persona on
+personagem_persona.fk_persona_persona_id = persona.persona_id
+where personagem_persona.fk_personagem_personagem_id = %s
+""" 
+                        cur.execute(select,(personagem_id,))
+                        personas = cur.fetchall()
+                        return personas[0]
+                except:
+                        return False
+        
+        @staticmethod
+        def aumentar_nivel_fool(personagem_id):
+                try:
+                        update = """
+update personagem set nivel = nivel + 1 where personagem.personagem_id = %s
+""" 
+                        cur.execute(update,(personagem_id,))
+                        conn.commit()
+                        return True
+                except:
+                        return False
+        
+        @staticmethod
+        def diminuir_nivel_fool(personagem_id):
+                try:
+                        update = """
+update personagem set nivel = nivel - 1 where personagem.personagem_id = %s
+""" 
+                        cur.execute(update,(personagem_id,))
+                        conn.commit()
+                        return True
+                except:
+                        return False
+                
+        @staticmethod
+        def atributos_iniciais_fool(personagem_id):
+                try:
+                        select = """
+select personagem.hp, personagem.sp from personagem
+where personagem.personagem_id = %s
+"""
+                        cur.execute(select,(personagem_id,))
+                        atributos = cur.fetchall()
+                        return atributos
+                except:
+                        return False
+        
+        @staticmethod
+        def aumentar_status_fool(personagem_id, nivel, atributos):
+                try:
+                        select = """
+insert into crescimento_fool(nivel, quant, fk_personagem_personagem_id, fk_atributo_atributo_id)
+values (%s, %s, %s, %s)
+"""
+                        cur.execute(select,(nivel, atributos[0], personagem_id, 1,))
+                        cur.execute(select,(nivel, atributos[1], personagem_id, 2,))
+                        conn.commit()
+                        return True
+                except:
+                        return False
+        
+        @staticmethod
+        def apagar_crecimento_fool(personagem_id, nivel):
+                try:
+                        delete = """
+delete from crescimento_fool
+where crescimento_fool.fk_personagem_personagem_id = %s and crescimento_fool.nivel = %s
+"""
+                        cur.execute(delete,(personagem_id, nivel,))
+                        conn.commit()
+                        return True
+                except:
+                        return False
+        
+        @staticmethod
+        def aumentar_status_fool_persona(personagem_persona_id, nivel, atributos):
+                try:
+                        aumento_status = """
+insert into crescimento_atributo(nivel, quantidade, fk_atributo_atributo_id, fk_personagem_persona_personagem_persona_id)
+values (%s, %s, %s, %s)
+"""
+                        cur.execute(aumento_status,(nivel, atributos[2], 3 , personagem_persona_id,))
+                        cur.execute(aumento_status,(nivel, atributos[3], 4 , personagem_persona_id,))
+                        cur.execute(aumento_status,(nivel, atributos[4], 5 , personagem_persona_id,))
+                        cur.execute(aumento_status,(nivel, atributos[5], 6 , personagem_persona_id,))
+                        cur.execute(aumento_status,(nivel, atributos[6], 7 , personagem_persona_id,))
+                        conn.commit()
+                        return True
+                except:
+                        return False
+        
+        @staticmethod
+        def nome_persona(persona_id):
+                try:
+                        select = """
+select persona.nome from persona
+where persona.persona_id = %s
+"""
+                        cur.execute(select,(persona_id,))
+                        persona_nome = cur.fetchone()
+                        return persona_nome[0]
+                except:
+                        return False
+        
