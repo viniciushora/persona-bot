@@ -7,7 +7,6 @@ cur = conn.cursor()
 class Database:
         @staticmethod
         def ficha_persona(nome):
-                print(nome)
                 select_atributos = """
 select atributo.nome, persona_atributo.valor 
 from persona inner join persona_atributo on 
@@ -385,3 +384,126 @@ where personagem.personagem_id = %s
                 except:
                         return False
 
+        @staticmethod
+        def eh_fool(personagem_id):
+                select = """
+select personagem.fool from personagem where personagem.personagem_id = %s
+"""
+                cur.execute(select,(personagem_id,))
+                eh_fool = cur.fetchone()
+                eh_fool = eh_fool[0]
+                return eh_fool
+        
+        @staticmethod
+        def persona_equipada(personagem_id):
+                select = """
+select personagem.persona_equipada from personagem where personagem.personagem_id = %s
+"""
+                cur.execute(select,(personagem_id,))
+                persona_id = cur.fetchone()
+                persona_id = persona_id[0]
+                return persona_id
+        
+        @staticmethod
+        def skills(personagem_id):
+                try:
+                        select_skill_cap = """
+select persona_habilidade.fk_personagem_persona_personagem_persona_id from persona_habilidade inner join personagem_persona on
+personagem_persona.personagem_persona_id = persona_habilidade.fk_personagem_persona_personagem_persona_id
+where personagem_persona.fk_personagem_personagem_id = %s order by persona_habilidade.fk_personagem_persona_personagem_persona_id desc limit 1
+"""
+                        cur.execute(select_skill_cap,[personagem_id,])
+                        skill_cap = cur.fetchone()
+                        skill_cap = skill_cap[0]
+                        select = """
+select habilidade.nome from habilidade inner join persona_habilidade on
+habilidade.habilidade_id = persona_habilidade.fk_habilidade_habilidade_id inner join personagem_persona on
+persona_habilidade.fk_personagem_persona_personagem_persona_id = personagem_persona.personagem_persona_id
+where personagem_persona.fk_personagem_personagem_id = %s and persona_habilidade.fk_personagem_persona_personagem_persona_id = %s
+"""
+                        cur.execute(select,(personagem_id, skill_cap))
+                        skills = cur.fetchall()
+                        lista_skills = []
+                        for skill in skills:
+                                lista_skills.append(skill[0])
+                        return lista_skills
+                except:
+                        return False
+        
+        @staticmethod
+        def ficha_personagem(personagem_id, persona_id):
+                select_level  = """
+select personagem_persona.nivel from personagem_persona
+where personagem_persona.fk_personagem_personagem_id = %s order by nivel desc limit 1
+"""
+                select_atributos_level1 = """
+select atributo.nome, persona_atributo.valor 
+from persona inner join persona_atributo on 
+persona.persona_id = persona_atributo.fk_persona_persona_id inner join atributo on 
+persona_atributo.fk_atributo_atributo_id = atributo.atributo_id 
+where persona.persona_id=%s
+order by atributo.atributo_id;
+"""
+                select_atributos_crescimento = """
+select crescimento_atributo.nivel, crescimento_atributo.quantidade 
+from persona inner join crescimento_atributo on 
+persona.persona_id = crescimento.fk_persona_persona_id inner join atributo on 
+crescimento_atributo.fk_atributo_atributo_id = atributo.atributo_id 
+where persona.persona_id=%s
+order by crescimento_atributo.nivel, atributo.atributo_id;
+"""
+                select_fraquezas = """
+select elemento.nome, interacao_elemento.nome_interacao
+from persona inner join reacao_elemental on
+persona.persona_id = reacao_elemental.fk_persona_persona_id inner join elemento on
+reacao_elemental.fk_elemento_elemento_id = elemento_id inner join interacao_elemento on
+reacao_elemental.fk_interacao_elemento_interacao_id = interacao_elemento.interacao_id
+where persona.persona_id=%s
+order by elemento.elemento_id
+"""
+                select_persona = """
+select persona.nome, persona.link_foto, arcana.nome 
+from persona inner join persona_arcana on 
+persona.persona_id = persona_arcana.fk_persona_persona_id inner join arcana on
+persona_arcana.fk_arcana_arcana_id = arcana.arcana_id
+where persona.persona_id = %s
+"""
+                cur.execute(select_level,[personagem_id,])
+                level = cur.fetchone()
+                level = level[0]
+                cur.execute(select_atributos_level1,[persona_id,])
+                atributos = cur.fetchall()
+                lista_atributos = []
+                for nome, quant in atributos:
+                        lista_atributos.append([nome, quant])
+                print(level)
+                print(lista_atributos)
+                if level > 1:
+                        cur.execute(select_atributos_crescimento,[persona_id,])
+                        crescimento = cur.fetchall()
+                cur.execute(select_fraquezas,[persona_id,])
+                fraquezas = cur.fetchall()
+                cur.execute(select_persona,[persona_id,])
+                persona = cur.fetchone()
+                ficha = (persona, lista_atributos, fraquezas)
+                return ficha
+        
+        @staticmethod
+        def itens_equipados(personagem_id):
+                select = """
+select personagem.meelee, personagem.ranged, personagem.armadura, personagem.acessorio from personagem where personagem.personagem_id = %s
+"""
+                cur.execute(select,(personagem_id,))
+                equips = cur.fetchone()
+                return equips
+        
+        @staticmethod
+        def nivel(personagem_id):
+                select = """
+select personagem_persona.nivel from personagem_persona
+where personagem_persona.fk_personagem_personagem_id = %s order by personagem_persona.nivel desc limit 1
+"""
+                cur.execute(select,(personagem_id,))
+                nivel = cur.fetchone()
+                nivel = nivel[0]
+                return nivel

@@ -658,12 +658,72 @@ async def desequipar(ctx, personagem, *item):
 async def ficha(ctx, personagem):
     personagem_id = Database.personagem_id(personagem)
     if personagem_id != False:
-        ficha = discord.Embed(
+        personagem_ficha = discord.Embed(
             title=f"""**Ficha de personagem**""",
             description=F"""Atributos, equipamentos e Persona de **{personagem}**""",
-            colour=discord.Colour.green()
+            colour=discord.Colour.red()
         )
-        
+        eh_fool = Database.eh_fool(personagem_id)
+        if eh_fool == False:
+            persona_id = Database.persona_equipada(personagem_id)
+            ficha = Database.ficha_personagem(personagem_id, persona_id)
+            skills = Database.skills(personagem_id)
+            equips = Database.itens_equipados(personagem_id)
+            nivel = Database.nivel(personagem_id)
+            print(equips)
+            print(nivel)
+            if equips[0] != None:
+                item = Database.nome_item(equips[0])
+                personagem_ficha.add_field(name="Arma corpo-a-corpo", value=item, inline=False)
+            if equips[1] != None:
+                item = Database.nome_item(equips[1])
+                personagem_ficha.add_field(name="Arma à distância", value=item, inline=False)
+            if equips[2] != None:
+                item = Database.nome_item(equips[2])
+                ficha.add_field(name="Armadura", value=item, inline=False)
+            if equips[3] != None:
+                item = Database.nome_item(equips[3])
+                personagem_ficha.add_field(name="Acessório", value=item, inline=False)
+            nome = ficha[0][0]
+            foto = ficha[0][1]
+            arcana = ficha[0][2]
+            embed = discord.Embed(
+                title=f"""**{nome}**""",
+                colour=discord.Colour.red()
+            )
+            embed.set_image(url=foto)
+            embed.add_field(name=f"""**Arcana**""", value=arcana, inline=False)
+            embed.add_field(name=f"""**Nível**""", value=nivel, inline=False)
+            embed.add_field(name=f"""**{ficha[1][0][0]}**""", value=ficha[1][0][1], inline=False)
+            embed.add_field(name=f"""**{ficha[1][1][0]}**""", value=ficha[1][1][1], inline=False)
+            embed.add_field(name=f"""**{ficha[1][2][0]}**""", value=ficha[1][2][1], inline=False)
+            embed.add_field(name=f"""**{ficha[1][3][0]}**""", value=ficha[1][3][1], inline=False)
+            embed.add_field(name=f"""**{ficha[1][4][0]}**""", value=ficha[1][4][1], inline=False)
+            embed.add_field(name=f"""**{ficha[1][5][0]}**""", value=ficha[1][5][1], inline=False)
+            embed.add_field(name=f"""**{ficha[1][6][0]}**""", value=ficha[1][6][1], inline=False)
+            texto = ""
+            for skill in skills:
+                texto += skill + "; "
+            texto = texto[:-2]
+            embed.add_field(name=f"""**Habilidades**""", value=texto, inline=False)
+            embed2 = discord.Embed(
+                title=f"""**Fraquezas**""",
+                colour=discord.Colour.red()
+            )
+            embed2.add_field(name=f"""<:phys:790320130810839101>""", value=ficha[2][0][1], inline=True)
+            embed2.add_field(name=f"""<:gun:790320131028287488>""", value=ficha[2][1][1], inline=True)
+            embed2.add_field(name=f"""<:fire:790320130483421245>""", value=ficha[2][2][1], inline=True)
+            embed2.add_field(name=f"""<:ice:790320130738356224>""", value=ficha[2][3][1], inline=True)
+            embed2.add_field(name=f"""<:elec:790320130151809047>""", value=ficha[2][4][1], inline=True)
+            embed2.add_field(name=f"""<:wind:790320130521169922>""", value=ficha[2][5][1], inline=True)
+            embed2.add_field(name=f"""<:psy:790320130772566046>""", value=ficha[2][6][1], inline=True)
+            embed2.add_field(name=f"""<:nuclear:790320130584084532>""", value=ficha[2][7][1], inline=True)
+            embed2.add_field(name=f"""<:bless:790320130746744892>""", value=ficha[2][8][1], inline=True)
+            embed2.add_field(name=f"""<:curse:790320130387214336>""", value=ficha[2][9][1], inline=True)
+            embed2.add_field(name=f"""<:almighty:790320130297954374>""", value=ficha[2][10][1], inline=True)
+            await ctx.send(embed=personagem_ficha)
+            await ctx.send(embed=embed)
+            await ctx.send(embed=embed2)
     else:
         await ctx.send("Personagem não encontrado.")
 
