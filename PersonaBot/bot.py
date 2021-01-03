@@ -1010,19 +1010,19 @@ async def equipar_persona(ctx, personagem):
                         ok = 3
                     if str(reaction.emoji) == emojis_raw[3] and str(user) != "Persona Bot#0708":
                         info[shadow_id][2] = 1
-                        ok = 3
+                        ok = 4
                     if str(reaction.emoji) == emojis_raw[4] and str(user) != "Persona Bot#0708":
                         info[shadow_id][2] = 1
-                        ok = 3
+                        ok = 5
                     if str(reaction.emoji) == emojis_raw[5] and str(user) != "Persona Bot#0708":
                         info[shadow_id][2] = 1
-                        ok = 3
+                        ok = 6
                     if str(reaction.emoji) == emojis_raw[6] and str(user) != "Persona Bot#0708":
                         info[shadow_id][2] = 1
-                        ok = 3
+                        ok = 7
                     if str(reaction.emoji) == emojis_raw[7] and str(user) != "Persona Bot#0708":
                         info[shadow_id][2] = 1
-                        ok = 3
+                        ok = 8
             else:
                 await ctx.send(f"""Você só tem uma persona, não tem o que equipar xD""")
         else:
