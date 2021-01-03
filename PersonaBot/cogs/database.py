@@ -771,7 +771,7 @@ select personagem.nivel from personagem where personagem.personagem_id = %s
                         select = """
 select persona.nome from persona inner join personagem_persona on
 personagem_persona.fk_persona_persona_id = persona.persona_id
-where personagem_persona.fk_personagem_personagem_id = %s
+where personagem_persona.fk_personagem_personagem_id = %s and personagem_persona.compendium = false
 """ 
                         cur.execute(select,(personagem_id,))
                         personas = cur.fetchall()
@@ -872,4 +872,17 @@ where persona.persona_id = %s
                         return persona_nome[0]
                 except:
                         return False
+        
+        @staticmethod
+        def equipar_persona(personagem_id, persona_id):
+                try:
+                        select = """
+update personagem set persona_equipada = %s where personagem.personagem_id = %s
+"""
+                        cur.execute(select,(persona_id, personagem_id,))
+                        conn.commit()
+                        return True
+                except:
+                        return False
+        
         
