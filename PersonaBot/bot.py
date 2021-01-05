@@ -975,13 +975,13 @@ async def diminuir_nivel_persona(ctx, personagem):
 async def equipar_persona(ctx, personagem):
     personagem_id = Database.personagem_id(personagem)
     eh_fool = Database.eh_fool(personagem_id)
-    if personagem_id != False
+    if personagem_id != False:
         if eh_fool == True:
             personas = Database.lista_personas(personagem_id)
             persona_id = Database.persona_equipada(personagem_id)
-            persona_nome = nome_persona(persona_id)
+            persona_nome = Database.nome_persona(persona_id)
             personas.remove(persona_nome)
-            if len(personas) != []:
+            if personas != []:
                 embed = discord.Embed(
                 title=f"""**Troca de Persona**""",
                 description=f"""Reaja com a opção da Persona que deseja equipar""",
@@ -994,35 +994,49 @@ async def equipar_persona(ctx, personagem):
                 embed_msg = await ctx.send(embed=embed)
                 for j in range(len(personas)):
                     await emb_msg.add_reaction(emoji=emojis_raw[j])
+                await emb_msg.add_reaction(emoji="❌")
                 ok = 0
                 while ok == 0:
                     reaction, user = await bot.wait_for('reaction_add', timeout=None)
                     if str(reaction.emoji) == emojis_raw[0] and str(user) != "Persona Bot#0708":
-                        info[shadow_id][0] = 1
+                        persona_l_id = personas[0]
                         ok = 1
-                        mensagem = f"""Afinidade **Física** de {nome} agora é conhecida pelo grupo"""
                     if str(reaction.emoji) == emojis_raw[1] and str(user) != "Persona Bot#0708":
-                        info[shadow_id][1] = 1
+                        persona_l_id = personas[1]
                         ok = 2
                         mensagem = f"""Afinidade de **Arma de Fogo** de {nome} agora é conhecida pelo grupo"""
                     if str(reaction.emoji) == emojis_raw[2] and str(user) != "Persona Bot#0708":
-                        info[shadow_id][2] = 1
+                        persona_l_id = personas[2]
                         ok = 3
                     if str(reaction.emoji) == emojis_raw[3] and str(user) != "Persona Bot#0708":
-                        info[shadow_id][2] = 1
+                        persona_l_id = personas[3]
                         ok = 4
                     if str(reaction.emoji) == emojis_raw[4] and str(user) != "Persona Bot#0708":
-                        info[shadow_id][2] = 1
+                        persona_l_id = personas[4]
                         ok = 5
                     if str(reaction.emoji) == emojis_raw[5] and str(user) != "Persona Bot#0708":
-                        info[shadow_id][2] = 1
+                        persona_l_id = personas[5]
                         ok = 6
                     if str(reaction.emoji) == emojis_raw[6] and str(user) != "Persona Bot#0708":
-                        info[shadow_id][2] = 1
+                        persona_l_id = personas[6]
                         ok = 7
-                    if str(reaction.emoji) == emojis_raw[7] and str(user) != "Persona Bot#0708":
+                    if str(reaction.emoji) == "❌" and str(user) != "Persona Bot#0708":
                         info[shadow_id][2] = 1
                         ok = 8
+                await embed_msg.delete()
+                if ok < 8:
+                    equipou_persona = Database.equipar_persona(personagem_id, persona_id)
+                    if equipou_persona:
+                        confirmacao = discord.Embed(
+                            title="Persona equipada atualizada",
+                            description=f"""**A Persona equipada de {personagem} agora é {personas[ok-1]}**""",
+                            colour=discord.Colour.blue()
+                        )
+                        await ctx.send(embed=confirmacao)
+                    else:
+                        await ctx.send("Erro na troca de Persona.")
+                else:
+                    await ctx.send("Troca de Persona cancelada.")
             else:
                 await ctx.send(f"""Você só tem uma persona, não tem o que equipar xD""")
         else:
@@ -1030,9 +1044,16 @@ async def equipar_persona(ctx, personagem):
     else:
         await ctx.send(f"""Este personagem não existe.""")
 
-
+async def equipar_persona(ctx, personagem):
+    personagem_id = Database.personagem_id(personagem)
+    eh_fool = Database.eh_fool(personagem_id)
+    if personagem_id != False:
+        if eh_fool == True:
+            
+        else:
+            await ctx.send(f"""Este personagem não possui Arcana Fool""")
     else:
-        await ctx.send(f"""Este personagem não é da Arcana Fool""")
+        await ctx.send(f"""Este personagem não existe.""")
 
 def takeSecond(elem):
     return elem[1]

@@ -775,7 +775,10 @@ where personagem_persona.fk_personagem_personagem_id = %s and personagem_persona
 """ 
                         cur.execute(select,(personagem_id,))
                         personas = cur.fetchall()
-                        return personas[0]
+                        lista_personas = []
+                        for persona in personas:
+                                lista_personas.append(persona[0])
+                        return lista_personas
                 except:
                         return False
         
