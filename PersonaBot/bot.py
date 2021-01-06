@@ -1849,7 +1849,7 @@ async def calcular_turnos(ctx):
         else:
             await ctx.send("Cálculo cancelado.")
     else:
-        await ctx.send("Sem requisitos mínimos para iniciar um combate.")      
+        await ctx.send("Sem requisitos mínimos para iniciar um combate.")
 
 def insertion_sort(arr, ordem): 
     for i in range(1, len(arr)): 
