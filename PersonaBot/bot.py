@@ -14,11 +14,14 @@ from discord.ext import commands
 f = open('config.json')
 data = json.load(f)
 
-
 bot = commands.Bot(command_prefix=data['prefix'])
 bot.remove_command("help")
 
+global horda, party
+
 servers = []
+horda = []
+party = []
 
 @bot.event
 async def on_member_join(member):
@@ -861,6 +864,141 @@ async def subir_nivel(ctx, personagem):
         atributos_aumento.add_field(name="**Ag**", value=f"""+{crescimento_atributo[5]}""")
         atributos_aumento.add_field(name="**Lu**", value=f"""+{crescimento_atributo[6]}""")
         await ctx.send(embed=atributos_aumento)
+        nivel_skills = Database.nivel_skills(nivel, persona_id)
+        if nivel_skills != False:
+            skills = Database.skills(personagem_id, persona_id)
+            skills_id = []
+            for skill in skills:
+                skills_id.append(Database.skill_id(skill))
+            if len(skills) + len(nivel_skills) < 8:
+                for skill in nivel_skills:
+                    if skill not in skills_id:
+                        aprendeu = Database.add_skill(skill, personagem_persona_id)
+                        if aprendeu == True:
+                            nome_skill = Database.nome_skill(skill)
+                            await ctx.send(f"""**{personagem}** aprendeu a habilidade **{nome_skill}**""")
+            elif len(skills_id) + len(nivel_skills) > 8 and len(skills) < 8:
+                tam = len(skills_id)
+                while tam < 8:
+                    if nivel_skills[i] not in skills_id:
+                        aprendeu = Database.add_skill(nivel_skills[0], personagem_persona_id)
+                        if aprendeu == True:
+                            nome_skill = Database.nome_skill(nivel_skills[0])
+                            await ctx.send(f"""**{personagem}** aprendeu a habilidade **{nome_skill}**""")
+                            del nivel_skills[i]
+                            tam += 1
+                if nivel_skills != []:
+                    nova_skills = Database.skills(personagem_id, persona_id)
+                    skills_id = []
+                    for skill in nova_skills:
+                        skills_id.append(Database.skill_id(skill))
+                    for skill in nivel_skills:
+                        nome_skill = Database.nome_skill(skill)
+                        embed = discord.Embed(
+                            title=f"""**{personagem}** aprendeu uma nova habilidade!""",
+                            description=f"""Você já conhece habilidades demais, deseja trocar alguma por **{nome_skill}**?""",
+                            colour=discord.Colour.red()
+                        )
+                        emojis_disc = [":one:", ":two:", ":three:", ":four:", ":five:", ":six:", ":seven:", ":eight:"]
+                        emojis_raw = ["1️⃣", "2️⃣", "3️⃣", "4️⃣", "5️⃣", "6️⃣", "7️⃣", "8️⃣"]
+                        for i in range(len(nova_skills)):
+                            embed.add_field(name=emojis_disc[i], value=Database.nome_skill(skills_id[i]), inline=True)
+                        embed_msg = await ctx.send(embed=embed)
+                        for j in range(len(nova_skills)):
+                            await embed_msg.add_reaction(emoji=emojis_raw[j])
+                        await embed_msg.add_reaction(emoji="❌")
+                        ok = 0
+                        while ok == 0:
+                            reaction, user = await bot.wait_for('reaction_add', timeout=None)
+                            if str(reaction.emoji) == emojis_raw[0] and str(user) != "Persona Bot#0708":
+                                ok = 1
+                            if str(reaction.emoji) == emojis_raw[1] and str(user) != "Persona Bot#0708":
+                                ok = 2
+                            if str(reaction.emoji) == emojis_raw[2] and str(user) != "Persona Bot#0708":
+                                ok = 3
+                            if str(reaction.emoji) == emojis_raw[3] and str(user) != "Persona Bot#0708":
+                                ok = 4
+                            if str(reaction.emoji) == emojis_raw[4] and str(user) != "Persona Bot#0708":
+                                ok = 5
+                            if str(reaction.emoji) == emojis_raw[5] and str(user) != "Persona Bot#0708":
+                                ok = 6
+                            if str(reaction.emoji) == emojis_raw[6] and str(user) != "Persona Bot#0708":
+                                ok = 7
+                            if str(reaction.emoji) == emojis_raw[6] and str(user) != "Persona Bot#0708":
+                                ok = 8
+                            if str(reaction.emoji) == "❌" and str(user) != "Persona Bot#0708":
+                                ok = 9
+                        await embed_msg.delete()
+                        if ok < 9:
+                            mudou = Database.mod_skill(skills_id[ok-1], skill, personagem_persona_id)
+                            if mudou:
+                                confirmacao = discord.Embed(
+                                    title=f"""Nova habilidade aprendida: **{nome_skill}**""",
+                                    description=f"""**{personagem}** esqueceu de **{nova_skills[ok-1]}**""",
+                                    colour=discord.Colour.blue()
+                                )
+                                await ctx.send(embed=confirmacao)
+                            else:
+                                await ctx.send("Erro no aprendizado da habilidade")
+                        else:
+                            await ctx.send(f"""**{personagem}** ignorou a habilidade **{nome_skill}**""")
+                        nova_skills = Database.skills(personagem_id, persona_id)
+            else:
+                nova_skills = Database.skills(personagem_id, persona_id)
+                skills_id = []
+                for skill in skills:
+                    skills_id.append(Database.skill_id(skill))
+                for skill in nivel_skills:
+                    nome_skill = Database.nome_skill(skill)
+                    embed = discord.Embed(
+                        title=f"""**{personagem}** aprendeu uma nova habilidade!""",
+                        description=f"""Você já conhece habilidades demais, deseja trocar alguma por **{nome_skill}**?""",
+                        colour=discord.Colour.red()
+                    )
+                    emojis_disc = [":one:", ":two:", ":three:", ":four:", ":five:", ":six:", ":seven:", ":eight:"]
+                    emojis_raw = ["1️⃣", "2️⃣", "3️⃣", "4️⃣", "5️⃣", "6️⃣", "7️⃣", "8️⃣"]
+                    for i in range(len(nova_skills)):
+                        embed.add_field(name=emojis_disc[i], value=nova_skills[i], inline=True)
+                    embed_msg = await ctx.send(embed=embed)
+                    for j in range(len(nova_skills)):
+                        await embed_msg.add_reaction(emoji=emojis_raw[j])
+                    await embed_msg.add_reaction(emoji="❌")
+                    ok = 0
+                    while ok == 0:
+                        reaction, user = await bot.wait_for('reaction_add', timeout=None)
+                        if str(reaction.emoji) == emojis_raw[0] and str(user) != "Persona Bot#0708":
+                            ok = 1
+                        if str(reaction.emoji) == emojis_raw[1] and str(user) != "Persona Bot#0708":
+                            ok = 2
+                        if str(reaction.emoji) == emojis_raw[2] and str(user) != "Persona Bot#0708":
+                            ok = 3
+                        if str(reaction.emoji) == emojis_raw[3] and str(user) != "Persona Bot#0708":
+                            ok = 4
+                        if str(reaction.emoji) == emojis_raw[4] and str(user) != "Persona Bot#0708":
+                            ok = 5
+                        if str(reaction.emoji) == emojis_raw[5] and str(user) != "Persona Bot#0708":
+                            ok = 6
+                        if str(reaction.emoji) == emojis_raw[6] and str(user) != "Persona Bot#0708":
+                            ok = 7
+                        if str(reaction.emoji) == emojis_raw[6] and str(user) != "Persona Bot#0708":
+                            ok = 8
+                        if str(reaction.emoji) == "❌" and str(user) != "Persona Bot#0708":
+                            ok = 9
+                    await embed_msg.delete()
+                    if ok < 9:
+                        mudou = Database.mod_skill(skills_id[ok-1], skill, personagem_persona_id)
+                        if mudou:
+                            confirmacao = discord.Embed(
+                                title=f"""Nova habilidade aprendida: **{nome_skill}**""",
+                                description=f"""**{personagem}** esqueceu de **{nova_skills[ok-1]}**""",
+                                colour=discord.Colour.blue()
+                            )
+                            await ctx.send(embed=confirmacao)
+                        else:
+                            await ctx.send("Erro no aprendizado da habilidade")
+                    else:
+                        await ctx.send(f"""**{personagem}** ignorou a habilidade **{nome_skill}**""")
+                    nova_skills = Database.skills(personagem_id, persona_id)
     else:
         subiu_nivel = Database.aumentar_nivel_fool(personagem_id)
         nivel = Database.nivel_fool(personagem_id)
@@ -893,6 +1031,11 @@ async def diminuir_nivel(ctx, personagem):
         apagar = Database.apagar_crecimento(personagem_persona_id, nivel)
         if apagar:
             await ctx.send(f"""Atributos de **{personagem}** resetado para os do {nivel -1}""")
+        nivel_skills = Database.nivel_skills(nivel, persona_id)
+        for skill in nivel_skills:
+            desaprendeu = Database.del_skill(skill, personagem_persona_id)
+            if desaprendeu:
+                await ctx.send(f"""Habilidade: **{Database.nome_skill(skill)}** foi desaprendida.""")
     else:
         nivel = Database.nivel_fool(personagem_id)
         diminuiu_nivel = Database.diminuir_nivel_fool(personagem_id)
@@ -951,6 +1094,132 @@ async def subir_nivel_persona(ctx, personagem):
         atributos_aumento.add_field(name="**Ag**", value=f"""+{crescimento_atributo[5]}""")
         atributos_aumento.add_field(name="**Lu**", value=f"""+{crescimento_atributo[6]}""")
         await ctx.send(embed=atributos_aumento)
+        nivel_skills = Database.nivel_skills(nivel, persona_id)
+        if nivel_skills != False:
+            skills = Database.skills(personagem_id, persona_id)
+            
+            if len(skills) + len(nivel_skills) < 8:
+                for skill in nivel_skills:
+                    if skill not in skills:
+                        aprendeu = Database.add_skill(skill, personagem_persona_id)
+                        if aprendeu == True:
+                            nome_skill = Database.nome_skill(skill)
+                            await ctx.send(f"""**{Database.nome_persona(persona_id)}** aprendeu a habilidade **{nome_skill}**""")
+            elif len(skills) + len(nivel_skills) > 8 and len(skills) < 8:
+                tam = len(skills)
+                while tam < 8:
+                    if nivel_skills[i] not in skills:
+                        aprendeu = Database.add_skill(nivel_skills[0], personagem_persona_id)
+                        if aprendeu == True:
+                            nome_skill = Database.nome_skill(nivel_skills[0])
+                            await ctx.send(f"""**{Database.nome_persona(persona_id)}** aprendeu a habilidade **{nome_skill}**""")
+                            del nivel_skills[i]
+                            tam += 1
+                if nivel_skills != []:
+                    nova_skills = Database.skills(personagem_id, persona_id)
+                    for skill in nivel_skills:
+                        nome_skill = Database.nome_skill(skill)
+                        embed = discord.Embed(
+                            title=f"""**{Database.nome_persona(persona_id)}** aprendeu uma nova habilidade!""",
+                            description=f"""Você já conhece habilidades demais, deseja trocar alguma por **{nome_skill}**?""",
+                            colour=discord.Colour.red()
+                        )
+                        emojis_disc = [":one:", ":two:", ":three:", ":four:", ":five:", ":six:", ":seven:", ":eight:"]
+                        emojis_raw = ["1️⃣", "2️⃣", "3️⃣", "4️⃣", "5️⃣", "6️⃣", "7️⃣", "8️⃣"]
+                        for i in range(len(nova_skills)):
+                            embed.add_field(name=emojis_disc[i], value=Database.nome_skill(nova_skills[i]), inline=True)
+                        embed_msg = await ctx.send(embed=embed)
+                        for j in range(len(nova_skills)):
+                            await embed_msg.add_reaction(emoji=emojis_raw[j])
+                        await embed_msg.add_reaction(emoji="❌")
+                        ok = 0
+                        while ok == 0:
+                            reaction, user = await bot.wait_for('reaction_add', timeout=None)
+                            if str(reaction.emoji) == emojis_raw[0] and str(user) != "Persona Bot#0708":
+                                ok = 1
+                            if str(reaction.emoji) == emojis_raw[1] and str(user) != "Persona Bot#0708":
+                                ok = 2
+                            if str(reaction.emoji) == emojis_raw[2] and str(user) != "Persona Bot#0708":
+                                ok = 3
+                            if str(reaction.emoji) == emojis_raw[3] and str(user) != "Persona Bot#0708":
+                                ok = 4
+                            if str(reaction.emoji) == emojis_raw[4] and str(user) != "Persona Bot#0708":
+                                ok = 5
+                            if str(reaction.emoji) == emojis_raw[5] and str(user) != "Persona Bot#0708":
+                                ok = 6
+                            if str(reaction.emoji) == emojis_raw[6] and str(user) != "Persona Bot#0708":
+                                ok = 7
+                            if str(reaction.emoji) == emojis_raw[6] and str(user) != "Persona Bot#0708":
+                                ok = 8
+                            if str(reaction.emoji) == "❌" and str(user) != "Persona Bot#0708":
+                                ok = 9
+                        await embed_msg.delete()
+                        if ok < 9:
+                            mudou = Database.mod_skill(nova_skills[ok-1], skill, personagem_persona_id)
+                            if mudou:
+                                confirmacao = discord.Embed(
+                                    title=f"""Nova habilidade aprendida: **{nome_skill}**""",
+                                    description=f"""**{Database.nome_persona(persona_id)}** esqueceu de **{Database.nome_skill(nova_skills[ok-1])}**""",
+                                    colour=discord.Colour.blue()
+                                )
+                                await ctx.send(embed=confirmacao)
+                            else:
+                                await ctx.send("Erro no aprendizado da habilidade")
+                        else:
+                            await ctx.send(f"""**{Database.nome_persona(persona_id)}** ignorou a habilidade **{nome_skill}**""")
+                        nova_skills = Database.skills(personagem_id, persona_id)
+            else:
+                for skill in nivel_skills:
+                    nome_skill = Database.nome_skill(skill)
+                    embed = discord.Embed(
+                        title=f"""**{Database.nome_persona(persona_id)}** aprendeu uma nova habilidade!""",
+                        description=f"""Você já conhece habilidades demais, deseja trocar alguma por **{nome_skill}**?""",
+                        colour=discord.Colour.red()
+                    )
+                    emojis_disc = [":one:", ":two:", ":three:", ":four:", ":five:", ":six:", ":seven:", ":eight:"]
+                    emojis_raw = ["1️⃣", "2️⃣", "3️⃣", "4️⃣", "5️⃣", "6️⃣", "7️⃣", "8️⃣"]
+                    for i in range(len(nova_skills)):
+                        embed.add_field(name=emojis_disc[i], value=Database.nome_skill(nova_skills[i]), inline=True)
+                    embed_msg = await ctx.send(embed=embed)
+                    for j in range(len(nova_skills)):
+                        await embed_msg.add_reaction(emoji=emojis_raw[j])
+                    await embed_msg.add_reaction(emoji="❌")
+                    ok = 0
+                    while ok == 0:
+                        reaction, user = await bot.wait_for('reaction_add', timeout=None)
+                        if str(reaction.emoji) == emojis_raw[0] and str(user) != "Persona Bot#0708":
+                            ok = 1
+                        if str(reaction.emoji) == emojis_raw[1] and str(user) != "Persona Bot#0708":
+                            ok = 2
+                        if str(reaction.emoji) == emojis_raw[2] and str(user) != "Persona Bot#0708":
+                            ok = 3
+                        if str(reaction.emoji) == emojis_raw[3] and str(user) != "Persona Bot#0708":
+                            ok = 4
+                        if str(reaction.emoji) == emojis_raw[4] and str(user) != "Persona Bot#0708":
+                            ok = 5
+                        if str(reaction.emoji) == emojis_raw[5] and str(user) != "Persona Bot#0708":
+                            ok = 6
+                        if str(reaction.emoji) == emojis_raw[6] and str(user) != "Persona Bot#0708":
+                            ok = 7
+                        if str(reaction.emoji) == emojis_raw[6] and str(user) != "Persona Bot#0708":
+                            ok = 8
+                        if str(reaction.emoji) == "❌" and str(user) != "Persona Bot#0708":
+                            ok = 9
+                    await embed_msg.delete()
+                    if ok < 9:
+                        mudou = Database.mod_skill(nova_skills[ok-1], skill, personagem_persona_id)
+                        if mudou:
+                            confirmacao = discord.Embed(
+                                title=f"""Nova habilidade aprendida: **{nome_skill}**""",
+                                description=f"""**{Database.nome_persona(persona_id)}** esqueceu de **{Database.nome_skill(nova_skills[ok-1])}**""",
+                                colour=discord.Colour.blue()
+                            )
+                            await ctx.send(embed=confirmacao)
+                        else:
+                            await ctx.send("Erro no aprendizado da habilidade")
+                    else:
+                        await ctx.send(f"""**{Database.nome_persona(persona_id)}** ignorou a habilidade **{nome_skill}**""")
+                    nova_skills = Database.skills(personagem_id, persona_id)
     else:
         await ctx.send("Este personagem não é da Arcana Fool")
     
@@ -968,6 +1237,11 @@ async def diminuir_nivel_persona(ctx, personagem):
         apagar = Database.apagar_crecimento(personagem_persona_id, nivel)
         if apagar:
             await ctx.send(f"""Atributos de **{Database.nome_persona(persona_id)}** resetado para os do {nivel -1}""")
+        nivel_skills = Database.nivel_skills(nivel-1, persona_id)
+        for skill in nivel_skills:
+            desaprendeu = Database.del_skill(skill, personagem_persona_id)
+            if desaprendeu:
+                await ctx.send(f"""Habilidade: **{Database.nome_skill(skill)}** foi desaprendida.""")
         else:
             await ctx.send(f"""Este personagem não é da Arcana Fool""")
 
@@ -990,11 +1264,11 @@ async def equipar_persona(ctx, personagem):
                 emojis_disc = [":one:", ":two:", ":three:", ":four:", ":five:", ":six:", ":seven:", ":eight:"]
                 emojis_raw = ["1️⃣", "2️⃣", "3️⃣", "4️⃣", "5️⃣", "6️⃣", "7️⃣", "8️⃣"]
                 for i in range(len(personas)):
-                    embed.add_field(name=emojis_disc, value=personas[i], inline=False)
+                    embed.add_field(name=emojis_disc[i], value=personas[i], inline=True)
                 embed_msg = await ctx.send(embed=embed)
                 for j in range(len(personas)):
-                    await emb_msg.add_reaction(emoji=emojis_raw[j])
-                await emb_msg.add_reaction(emoji="❌")
+                    await embed_msg.add_reaction(emoji=emojis_raw[j])
+                await embed_msg.add_reaction(emoji="❌")
                 ok = 0
                 while ok == 0:
                     reaction, user = await bot.wait_for('reaction_add', timeout=None)
@@ -1004,7 +1278,6 @@ async def equipar_persona(ctx, personagem):
                     if str(reaction.emoji) == emojis_raw[1] and str(user) != "Persona Bot#0708":
                         persona_l_id = personas[1]
                         ok = 2
-                        mensagem = f"""Afinidade de **Arma de Fogo** de {nome} agora é conhecida pelo grupo"""
                     if str(reaction.emoji) == emojis_raw[2] and str(user) != "Persona Bot#0708":
                         persona_l_id = personas[2]
                         ok = 3
@@ -1020,12 +1293,15 @@ async def equipar_persona(ctx, personagem):
                     if str(reaction.emoji) == emojis_raw[6] and str(user) != "Persona Bot#0708":
                         persona_l_id = personas[6]
                         ok = 7
-                    if str(reaction.emoji) == "❌" and str(user) != "Persona Bot#0708":
-                        info[shadow_id][2] = 1
+                    if str(reaction.emoji) == emojis_raw[7] and str(user) != "Persona Bot#0708":
+                        persona_l_id = personas[7]
                         ok = 8
+                    if str(reaction.emoji) == "❌" and str(user) != "Persona Bot#0708":
+                        ok = 9
                 await embed_msg.delete()
-                if ok < 8:
-                    equipou_persona = Database.equipar_persona(personagem_id, persona_id)
+                if ok < 9:
+                    p_id = Database.persona_id(personas[ok-1])
+                    equipou_persona = Database.equipar_persona(personagem_id, p_id)
                     if equipou_persona:
                         confirmacao = discord.Embed(
                             title="Persona equipada atualizada",
@@ -1044,16 +1320,549 @@ async def equipar_persona(ctx, personagem):
     else:
         await ctx.send(f"""Este personagem não existe.""")
 
-async def equipar_persona(ctx, personagem):
+@bot.command()
+async def tomar_persona(ctx, personagem, *persona):
     personagem_id = Database.personagem_id(personagem)
     eh_fool = Database.eh_fool(personagem_id)
+    nome = ""
+    for palavra in persona:
+        nome+=palavra + " "
+    nome = nome[:-1]
+    persona_id = Database.persona_id(nome)
     if personagem_id != False:
-        if eh_fool == True:
-            
+        if persona_id != False:
+            if eh_fool == True:
+                persona_habilitada = Database.personagem_persona_id(personagem_id, persona_id)
+                print(persona_habilitada)
+                if persona_habilitada == False:
+                    nova_persona = Database.personagem_add_persona(personagem_id, persona_id)
+                    if nova_persona:
+                        await ctx.send(f"""{nome} agora é bem vindo(a) ao coração de {personagem}""")
+                    else:
+                        await ctx.send(f"""Erro interno""")
+                else:
+                    compendium = Database.compendium(persona_habilitada)
+                    print(compendium)
+                    if compendium == True:
+                        reativar_persona = Database.personagem_reativar_persona(personagem_id, persona_id)
+                        if reativar_persona:
+                            await ctx.send(f"""{nome} agora é bem vindo(a) ao coração de {personagem} novamente""")
+                    else:
+                        await ctx.send(f"""Você já possui essa Persona""")
+            else:
+                await ctx.send(f"""Este personagem não possui Arcana Fool""")
         else:
-            await ctx.send(f"""Este personagem não possui Arcana Fool""")
+            await ctx.send(f"""Esta Persona não existe""")
     else:
         await ctx.send(f"""Este personagem não existe.""")
+
+@bot.command()
+async def soltar_persona(ctx, personagem, *persona):
+    personagem_id = Database.personagem_id(personagem)
+    eh_fool = Database.eh_fool(personagem_id)
+    nome = ""
+    for palavra in persona:
+        nome+=palavra + " "
+    nome = nome[:-1]
+    persona_id = Database.persona_id(nome)
+    if personagem_id != False:
+        if persona_id != False:
+            if eh_fool == True:
+                persona_habilitada = Database.personagem_persona_id(personagem_id, persona_id)
+                compendium = Database.compendium(persona_habilitada)
+                if persona_habilitada != False and compendium != True:
+                    persona_solta = Database.personagem_del_persona(personagem_id, persona_id)
+                    if persona_solta:
+                        await ctx.send(f"""{nome} agora é não é mais bem vindo(a) ao coração de {personagem}""")
+                    else:
+                        await ctx.send(f"""Erro interno""")
+                else:
+                    await ctx.send(f"""Você não possui essa Persona""")
+            else:
+                await ctx.send(f"""Este personagem não possui Arcana Fool""")
+        else:
+            await ctx.send(f"""Esta Persona não existe""")
+    else:
+        await ctx.send(f"""Este personagem não existe.""")
+    
+@bot.command()
+async def skills_conhecidas(ctx, personagem):
+    personagem_id = Database.personagem_id(personagem)
+    persona_id = Database.persona_equipada(personagem_id)
+    nome = Database.nome_persona(persona_id)
+    nivel = Database.nivel(personagem_id, persona_id)
+    skills = Database.skills_conhecidas(nivel, persona_id)
+    texto = ""
+    for skill in skills:
+        texto += Database.nome_skill(skill) + "\n"
+    texto = texto[:-1]
+    embed = discord.Embed(
+        title=f"""Habilidades conhecidas de **{nome}**""",
+        description=texto,
+        colour=discord.Colour.blue()
+    )
+    await ctx.send(embed=embed)
+
+@bot.command()
+async def aprender_skill(ctx, personagem, *skill):
+    nome = ""
+    for palavra in skill:
+        nome += palavra + " "
+    nome = nome[:-1]
+    personagem_id = Database.personagem_id(personagem)
+    persona_id = Database.persona_equipada(personagem_id)
+    nome = Database.nome_persona(persona_id)
+    personagem_persona_id = Database.personagem_persona_id(personagem_id, persona_id)
+    skills = Database.skills(personagem_id, persona_id)
+    skill_id = Database.skill_id(skill)
+    skills_id = []
+    for skill in skills:
+        skills_id.append(Database.skill_id(skill))
+    if skill_id != False:
+        nome_skill = Database.nome_skill(skill_id)
+        if skill_id not in skills:
+            if len(skills) < 8:
+                aprendeu = Database.add_skill(skill_id, personagem_persona_id)
+                if aprendeu == True:
+                    await ctx.send(f"""**{personagem}** aprendeu a habilidade **{nome_skill}**""")
+            else:
+                embed = discord.Embed(
+                    title=f"""**{personagem}** aprendeu uma nova habilidade!""",
+                    description=f"""Você já conhece habilidades demais, deseja trocar alguma por **{nome_skill}**?""",
+                    colour=discord.Colour.red()
+                )
+                emojis_disc = [":one:", ":two:", ":three:", ":four:", ":five:", ":six:", ":seven:", ":eight:"]
+                emojis_raw = ["1️⃣", "2️⃣", "3️⃣", "4️⃣", "5️⃣", "6️⃣", "7️⃣", "8️⃣"]
+                for i in range(len(skills)):
+                    embed.add_field(name=emojis_disc[i], value=Database.nome_skill(skills[i]), inline=True)
+                embed_msg = await ctx.send(embed=embed)
+                for j in range(len(skills)):
+                    await embed_msg.add_reaction(emoji=emojis_raw[j])
+                await embed_msg.add_reaction(emoji="❌")
+                ok = 0
+                while ok == 0:
+                    reaction, user = await bot.wait_for('reaction_add', timeout=None)
+                    if str(reaction.emoji) == emojis_raw[0] and str(user) != "Persona Bot#0708":
+                        ok = 1
+                    if str(reaction.emoji) == emojis_raw[1] and str(user) != "Persona Bot#0708":
+                        ok = 2
+                    if str(reaction.emoji) == emojis_raw[2] and str(user) != "Persona Bot#0708":
+                        ok = 3
+                    if str(reaction.emoji) == emojis_raw[3] and str(user) != "Persona Bot#0708":
+                        ok = 4
+                    if str(reaction.emoji) == emojis_raw[4] and str(user) != "Persona Bot#0708":
+                        ok = 5
+                    if str(reaction.emoji) == emojis_raw[5] and str(user) != "Persona Bot#0708":
+                        ok = 6
+                    if str(reaction.emoji) == emojis_raw[6] and str(user) != "Persona Bot#0708":
+                        ok = 7
+                    if str(reaction.emoji) == emojis_raw[6] and str(user) != "Persona Bot#0708":
+                        ok = 8
+                    if str(reaction.emoji) == "❌" and str(user) != "Persona Bot#0708":
+                        ok = 9
+                await embed_msg.delete()
+                if ok < 9:
+                    mudou = Database.mod_skill(skills_id[ok-1], skill_id, personagem_persona_id)
+                    if mudou:
+                        confirmacao = discord.Embed(
+                            title=f"""Nova habilidade aprendida: **{nome_skill}**""",
+                            description=f"""**{personagem}** esqueceu de **{skills[ok-1]}**""",
+                            colour=discord.Colour.blue()
+                        )
+                        await ctx.send(embed=confirmacao)
+                    else:
+                        await ctx.send("Erro no aprendizado da habilidade")
+                else:
+                    await ctx.send(f"""**{personagem}** ignorou a habilidade **{nome_skill}**""")
+        else:
+            await ctx.send(f"""**{personagem}** já conhece essa habildade.""")
+    else:
+        await ctx.send(f"""Esta habilidade não existe.""")
+
+@bot.command()
+async def esquecer_skill(ctx, personagem):
+    personagem_id = Database.personagem_id(personagem)
+    persona_id = Database.persona_equipada(personagem_id)
+    nome = Database.nome_persona(persona_id)
+    personagem_persona_id = Database.personagem_persona_id(personagem_id, persona_id)
+    skills = Database.skills(personagem_id, persona_id)
+    skills_id = []
+    for skill in skills:
+        skills_id.append(Database.skill_id(skill))
+    embed = discord.Embed(
+        title=f"""**{personagem}** deseja esquecer uma habilidade!""",
+        description=f"""Reaja com a opção da habilidade que deseja esquecer.""",
+        colour=discord.Colour.red()
+    )
+    emojis_disc = [":one:", ":two:", ":three:", ":four:", ":five:", ":six:", ":seven:", ":eight:"]
+    emojis_raw = ["1️⃣", "2️⃣", "3️⃣", "4️⃣", "5️⃣", "6️⃣", "7️⃣", "8️⃣"]
+    for i in range(len(skills)):
+        embed.add_field(name=emojis_disc[i], value=skills[i], inline=True)
+    embed_msg = await ctx.send(embed=embed)
+    for j in range(len(skills)):
+        await embed_msg.add_reaction(emoji=emojis_raw[j])
+    await embed_msg.add_reaction(emoji="❌")
+    ok = 0
+    while ok == 0:
+        reaction, user = await bot.wait_for('reaction_add', timeout=None)
+        if str(reaction.emoji) == emojis_raw[0] and str(user) != "Persona Bot#0708":
+            ok = 1
+        if str(reaction.emoji) == emojis_raw[1] and str(user) != "Persona Bot#0708":
+            ok = 2
+        if str(reaction.emoji) == emojis_raw[2] and str(user) != "Persona Bot#0708":
+            ok = 3
+        if str(reaction.emoji) == emojis_raw[3] and str(user) != "Persona Bot#0708":
+            ok = 4
+        if str(reaction.emoji) == emojis_raw[4] and str(user) != "Persona Bot#0708":
+            ok = 5
+        if str(reaction.emoji) == emojis_raw[5] and str(user) != "Persona Bot#0708":
+            ok = 6
+        if str(reaction.emoji) == emojis_raw[6] and str(user) != "Persona Bot#0708":
+            ok = 7
+        if str(reaction.emoji) == emojis_raw[6] and str(user) != "Persona Bot#0708":
+            ok = 8
+        if str(reaction.emoji) == "❌" and str(user) != "Persona Bot#0708":
+            ok = 9
+    await embed_msg.delete()
+    if ok < 9:
+        deletou = Database.del_skill(skills_id[ok-1], personagem_persona_id)
+        print(deletou)
+        if deletou:
+            confirmacao = discord.Embed(
+                title=f"""Habilidade esquecida: **{nome_skill}**""",
+                description=f"""**{personagem}** esqueceu de **{skills[ok-1]}**""",
+                colour=discord.Colour.blue()
+            )
+            await ctx.send(embed=confirmacao)
+        else:
+            await ctx.send("Erro no esquecimento da habilidade")
+    else:
+        await ctx.send(f"""**Esquecimento cancelado**""")
+
+@bot.command()
+async def adicionar_horda(ctx, tipo, *personagem):
+    nome = ""
+    for palavra in personagem:
+        nome += palavra + " "
+    nome = nome[:-1]
+    if tipo == "shadow"  or tipo == "s":
+        shadow_id = Database.shadow_id(nome)
+        if shadow_id != False:
+            horda.append(("s",nome))
+            await ctx.send(f"""**{nome}** foi adicionado à horda.""")
+        else:
+            await ctx.send("Shadow não existente.")
+    elif tipo == "personagem" or tipo == "p":
+        personagem_id = Database.personagem_id(nome)
+        if personagem_id != False:
+            horda.append(("p",nome))
+            await ctx.send(f"""**{nome}** foi adicionado à horda.""")
+        else:
+            await ctx.send("Personagem não existente.")
+    else:
+        await ctx.send("Tipo incorreto.")
+
+@bot.command()
+async def adicionar_party(ctx, personagem):
+    personagem_id = Database.personagem_id(personagem)
+    if personagem_id != False:
+        party.append(personagem)
+        await ctx.send(f"""**{personagem}** foi adicionado à Party.""")
+    else:
+        await ctx.send("Personagem não existente.")
+
+@bot.command()
+async def remover_party(ctx, personagem):
+    try:
+        party.remove(personagem)
+        await ctx.send(f"""**{personagem}** foi removido da Party.""")
+    except:
+        await ctx.send("Nome não encontrado.")
+
+@bot.command()
+async def remover_horda(ctx, *personagem):
+    nome = ""
+    for palavra in personagem:
+        nome += palavra + " "
+    nome = nome[:-1]
+    if horda != []:
+        achou = 0
+        i = 0
+        while i < len(horda) and achou == 0:
+            if horda[i][1] == nome:
+                del horda[i]
+                await ctx.send(f"""**{nome}** foi removido da horda.""")
+                achou = 1
+        if achou == 0:
+            await ctx.send("Nome não encontrado.")
+    else:
+        await ctx.send("Nome não encontrado.")
+    #try:
+    horda.remove(nome)
+    #except:
+    #    await ctx.send("Nome não encontrado.")
+
+@bot.command()
+async def mostrar_party(ctx):
+    if party != []:
+        embed = discord.Embed(
+            title=f"""**PARTY**""",
+            colour=discord.Colour.blue()
+        )
+        texto = ""
+        for elem in party:
+            texto += f"""**{elem}**\n"""
+        texto = texto[:-1]
+        embed.add_field(name="Lista dos membros da Party", value=texto, inline=False)
+        await ctx.send(embed=embed)
+    else:
+        await ctx.send("A party está vazia")
+    
+@bot.command()
+async def mostrar_horda(ctx):
+    if horda != []:
+        embed = discord.Embed(
+            title=f"""**HORDA**""",
+            colour=discord.Colour.blue()
+        )
+        texto = ""
+        for tipo, elem in horda:
+            nome = ""
+            if tipo == "s":
+                nome = "Shadow"
+            else:
+                nome = "Personagem"
+            texto += f"""**{elem}** ({nome})\n"""
+        texto = texto[:-1]
+        embed.add_field(name="Lista dos elementos da horda", value=texto, inline=False)
+        await ctx.send(embed=embed)
+    else:
+        await ctx.send("A horda está vazia")
+
+@bot.command()
+async def calcular_turnos(ctx):
+    ordem = []
+    if horda != [] and party != []:
+        embed = discord.Embed(
+            title=f"""Qual a forma de interação pós combate?""",
+            description=f"""Reaja com a opção desejada""",
+            colour=discord.Colour.blue()
+        )
+        embed.add_field(name=":one:", value="Emboscada", inline=False)
+        embed.add_field(name=":two:", value="Disputa", inline=False)
+        embed_msg = await ctx.send(embed=embed)
+        emojis_raw = ["1️⃣", "2️⃣"]
+        for i in range(2):
+            await embed_msg.add_reaction(emoji=emojis_raw[i])
+        await embed_msg.add_reaction(emoji="❌")
+        ok = 0
+        while ok == 0:
+            reaction, user = await bot.wait_for('reaction_add', timeout=None)
+            if str(reaction.emoji) == emojis_raw[0] and str(user) != "Persona Bot#0708":
+                ok = 1
+            if str(reaction.emoji) == emojis_raw[1] and str(user) != "Persona Bot#0708":
+                ok = 2
+            if str(reaction.emoji) == "❌" and str(user) != "Persona Bot#0708":
+                ok = 3
+        await embed_msg.delete()
+        if ok == 1:
+            next = 0
+            while next == 0:
+                await ctx.send("**EMBOSCADA**: Qual o valor critério? (0 a 100)")
+                msg = await bot.wait_for('message')
+                mensagem = msg.content
+                try:
+                    valor_criterio = int(mensagem)
+                    if valor_criterio > 0 and valor_criterio <= 100:
+                        next = 1
+                except:
+                    await ctx.send("Digite um número entre 0 e 100.")
+            lider_id = Database.personagem_id(party[0])
+            usuario = Database.discord_user(lider_id)
+            dado = await Dado.rolagem_pronta(bot, ctx, party[0], usuario, 1, 100)
+            if dado <= valor_criterio:
+                ordem1 = []
+                ordem2 = []
+                quant1 = []
+                quant2 = []
+                await ctx.send(f"""O grupo tirou um dado de {dado} e conseguiu emboscar a Shadow, vocês atacarão primeiro.""")
+                for personagem in party:
+                    personagem_id = Database.personagem_id(personagem)
+                    persona_id = Database.persona_equipada(personagem_id)
+                    atributos = Database.atributos(personagem_id, persona_id)
+                    agilidade = atributos[5]
+                    ordem1.append(personagem)
+                    quant1.append(agilidade)
+                insertion_sort(quant1, ordem1)
+                for tipo, char in horda:
+                    if tipo == "s":
+                        shadow_id = Database.shadow_id(char)
+                        atributos = Database.atributos_iniciais(shadow_id)
+                        agilidade = 0
+                        for atributo_id, valor in atributos:
+                            if atributo_id == 6:
+                                agilidade = valor
+                                ordem2.append(char)
+                                quant2.append(agilidade)
+                    else:
+                        personagem_id = Database.personagem_id(char)
+                        persona_id = Database.persona_equipada(personagem_id)
+                        atributos = Database.atributos(personagem_id, persona_id)
+                        agilidade = atributos[5]
+                        ordem2.append(personagem_id)
+                        quant2.append(agilidade)
+                insertion_sort(quant2, ordem2)
+                ordem = ordem1 + ordem2
+            else:
+                ordem1 = []
+                quant1 = []
+                await ctx.send(f"""O grupo tirou um dado de {dado} e falhou em emboscar a shadow, vocês atacarão de acordo com a sua agilidade.""")
+                for personagem in party:
+                    personagem_id = Database.personagem_id(personagem)
+                    persona_id = Database.persona_equipada(personagem_id)
+                    atributos = Database.atributos(personagem_id, persona_id)
+                    agilidade = atributos[5]
+                    ordem1.append(personagem)
+                    quant1.append(agilidade)
+                for tipo, char in horda:
+                    if tipo == "s":
+                        shadow_id = Database.shadow_id(char)
+                        atributos = Database.atributos_iniciais(shadow_id)
+                        agilidade = 0
+                        for atributo_id, valor in atributos:
+                            if atributo_id == 6:
+                                agilidade = valor
+                                ordem2.append(char)
+                                quant2.append(agilidade)
+                    else:
+                        personagem_id = Database.personagem_id(char)
+                        persona_id = Database.persona_equipada(personagem_id)
+                        atributos = Database.atributos(personagem_id, persona_id)
+                        agilidade = atributos[5]
+                        ordem1.append(personagem_id)
+                        quant1.append(agilidade)
+                insertion_sort(quant1, ordem1)
+                ordem = ordem1
+            embed = discord.Embed(
+                title=f"""**Ordem de turnos*""",
+                colour=discord.Colour.blue()
+            )
+            texto = ""
+            i = 1
+            for elem in ordem:
+                texto += f"""{i}. {elem}\n"""
+                i += 1
+            texto[:-1]
+            embed.add_field(name="ORDEM:", value=texto, inline=False)
+            await ctx.send(embed=embed)
+        elif ok == 2:
+            next = 0
+            while next == 0:
+                await ctx.send("**DISPUTA**: Qual o valor critério? (0 a 100)")
+                msg = await bot.wait_for('message')
+                mensagem = msg.content
+                try:
+                    valor_criterio = int(mensagem)
+                    if valor_criterio > 0 and valor_criterio <= 100:
+                        next = 1
+                except:
+                    await ctx.send("Digite um número entre 0 e 100.")
+            lider_id = Database.personagem_id(party[0])
+            usuario = Database.discord_user(lider_id)
+            dado = await Dado.rolagem_pronta(bot, ctx, party[0], usuario, 1, 100)
+            if dado <= valor_criterio:
+                ordem1 = []
+                quant1 = []
+                await ctx.send(f"""O grupo tirou um dado de {dado} e conseguiu evitar ser emboscado, vocês atacarão de acordo co ma sua agilidade.""")
+                for personagem in party:
+                    personagem_id = Database.personagem_id(personagem)
+                    persona_id = Database.persona_equipada(personagem_id)
+                    atributos = Database.atributos(personagem_id, persona_id)
+                    agilidade = atributos[5]
+                    ordem1.append(personagem)
+                    quant1.append(agilidade)
+                insertion_sort(quant1, ordem1)
+                for tipo, char in horda:
+                    if tipo == "s":
+                        shadow_id = Database.shadow_id(char)
+                        atributos = Database.atributos_iniciais(shadow_id)
+                        agilidade = 0
+                        for atributo_id, valor in atributos:
+                            if atributo_id == 6:
+                                agilidade = valor
+                                ordem1.append(char)
+                                quant1.append(agilidade)
+                    else:
+                        personagem_id = Database.personagem_id(char)
+                        persona_id = Database.persona_equipada(personagem_id)
+                        atributos = Database.atributos(personagem_id, persona_id)
+                        agilidade = atributos[5]
+                        ordem1.append(personagem_id)
+                        quant1.append(agilidade)
+                insertion_sort(quant1, ordem1)
+                ordem = ordem1
+            else:
+                ordem1 = []
+                ordem2 = []
+                quant1 = []
+                quant2 = []
+                await ctx.send(f"""O grupo tirou um dado de {dado} e falhou em evitar ser emboscado, vocês atacarão por último.""")
+                for personagem in party:
+                    personagem_id = Database.personagem_id(personagem)
+                    persona_id = Database.persona_equipada(personagem_id)
+                    atributos = Database.atributos(personagem_id, persona_id)
+                    agilidade = atributos[5]
+                    ordem1.append(personagem)
+                    quant1.append(agilidade)
+                insertion_sort(quant1, ordem1)
+                for tipo, char in horda:
+                    if tipo == "s":
+                        shadow_id = Database.shadow_id(char)
+                        atributos = Database.atributos_iniciais(shadow_id)
+                        agilidade = 0
+                        for atributo_id, valor in atributos:
+                            if atributo_id == 6:
+                                agilidade = valor
+                                ordem2.append(char)
+                                quant2.append(agilidade)
+                    else:
+                        personagem_id = Database.personagem_id(char)
+                        persona_id = Database.persona_equipada(personagem_id)
+                        atributos = Database.atributos(personagem_id, persona_id)
+                        agilidade = atributos[5]
+                        ordem2.append(personagem_id)
+                        quant2.append(agilidade)
+                insertion_sort(quant2, ordem2)
+                ordem = ordem2 + ordem1
+            embed = discord.Embed(
+                title=f"""**Ordem de turnos**""",
+                colour=discord.Colour.blue()
+            )
+            texto = ""
+            i = 1
+            for elem in ordem:
+                texto += f"""{i}. {elem}\n"""
+                i += 1
+            texto[:-1]
+            embed.add_field(name="ORDEM:", value=texto, inline=False)
+            await ctx.send(embed=embed)
+        else:
+            await ctx.send("Cálculo cancelado.")
+    else:
+        await ctx.send("Sem requisitos mínimos para iniciar um combate.")      
+
+def insertion_sort(arr, ordem): 
+    for i in range(1, len(arr)): 
+        key = arr[i]
+        key2 = ordem[i]
+        j = i-1
+        while j >=0 and key < arr[j] : 
+                arr[j+1] = arr[j]
+                ordem[j+1] = ordem[j]
+                j -= 1
+        arr[j+1] = key 
+        ordem[j+1] = key2
+
 
 def takeSecond(elem):
     return elem[1]

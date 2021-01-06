@@ -598,12 +598,13 @@ order by atributo.atributo_id;
         def personagem_persona_id(personagem_id, persona_id):
                 try:
                         select_personagem_persona = """
-        select personagem_persona.personagem_persona_id from personagem_persona
-        where personagem_persona.fk_personagem_personagem_id = %s and 
-        personagem_persona.fk_persona_persona_id = %s
-        """
+select personagem_persona.personagem_persona_id from personagem_persona
+where personagem_persona.fk_personagem_personagem_id = %s and 
+personagem_persona.fk_persona_persona_id = %s
+"""
                         cur.execute(select_personagem_persona,[personagem_id, persona_id])
                         personagem_persona = cur.fetchone()
+                        print(personagem_persona)
                         personagem_persona = personagem_persona[0]
                         return personagem_persona
                 except:
@@ -692,7 +693,7 @@ select persona.nivel from persona where persona.persona_id = %s
         def persona_id(persona):
                 try:
                         select = """
-select persona.nivel from persona where persona.nome = %s
+select persona.persona_id from persona where persona.nome = %s
 """
                         cur.execute(select,(persona,))
                         persona_id = cur.fetchone()
@@ -879,13 +880,182 @@ where persona.persona_id = %s
         @staticmethod
         def equipar_persona(personagem_id, persona_id):
                 try:
-                        select = """
+                        update = """
 update personagem set persona_equipada = %s where personagem.personagem_id = %s
 """
-                        cur.execute(select,(persona_id, personagem_id,))
+                        cur.execute(update,(persona_id, personagem_id,))
                         conn.commit()
                         return True
                 except:
                         return False
         
+        @staticmethod
+        def personagem_add_persona(personagem_id, persona_id):
+                nivel = Database.nivel_persona(persona_id)
+                try:
+                        insert = """
+insert into personagem_persona(nivel, fk_personagem_personagem_id, fk_persona_persona_id, compendium)
+values (%s, %s, %s, false)
+"""
+                        select_skills = """
+select habilidade_persona.fk_habilidade_habilidade_id from habilidade_persona
+where nivel = %s and fk_persona_persona_id = %s
+"""
+                        insert_skills = """
+insert into persona_habilidade(fk_habilidade_habilidade_id, fk_personagem_persona_personagem_persona_id)
+values (%s, %s)
+"""
+                        cur.execute(insert,(nivel, personagem_id, persona_id,))
+                        cur.execute(select_skills,(nivel, persona_id,))
+                        skills = cur.fetchall()
+                        personagem_persona_id = Database.personagem_persona_id(personagem_id, persona_id)
+                        for skill in skills:
+                                cur.execute(insert_skills,(skill, personagem_persona_id,))
+                        conn.commit()
+                        return True
+                except:
+                        return False
+        
+        @staticmethod
+        def personagem_del_persona(personagem_id, persona_id):
+                personagem_persona_id = Database.personagem_persona_id(personagem_id, persona_id)
+                try:
+                        update = """
+update personagem_persona set compendium = true where personagem_persona_id = %s
+"""
+                        cur.execute(update,(personagem_persona_id,))
+                        conn.commit()
+                        return True
+                except:
+                        return False
+        
+        @staticmethod
+        def compendium(personagem_persona_id):
+                try:
+                        select = """
+select compendium from personagem_persona where personagem_persona_id = %s
+"""
+                        cur.execute(select,(personagem_persona_id,))
+                        compendium = cur.fetchone()
+                        return compendium[0]
+                except:
+                        return 0
+        
+        @staticmethod
+        def personagem_reativar_persona(personagem_id, persona_id):
+                personagem_persona_id = Database.personagem_persona_id(personagem_id, persona_id)
+                try:
+                        update = """
+update personagem_persona set compendium = false where personagem_persona_id = %s
+"""
+                        cur.execute(update,(personagem_persona_id,))
+                        conn.commit()
+                        return True
+                except:
+                        return False
+        
+        @staticmethod
+        def nivel_skills(nivel, persona_id):
+                select = """
+select fk_habilidade_habilidade_id from habilidade_persona
+where nivel = %s and fk_persona_persona_id = %s
+"""
+                cur.execute(select,(nivel, persona_id,))
+                skills = cur.fetchall()
+                if skills != None:
+                        return skills
+                else:
+                        return False
+        
+        @staticmethod
+        def add_skill(skill_id, personagem_persona_id):
+                try:
+                        insert = """
+insert into persona_habilidade(fk_habilidade_habilidade_id, fk_personagem_persona_personagem_persona_id)
+values (%s, %s)
+"""
+                        cur.execute(insert,(skill_id, personagem_persona_id,))
+                        conn.commit()
+                        return True
+                except:
+                        return False
+        
+        @staticmethod
+        def del_skill(skill_id, personagem_persona_id):
+                try:
+                        delete = """
+delete from persona_habilidade where fk_habilidade_habilidade_id = %s and fk_personagem_persona_personagem_persona_id = %s
+"""
+                        cur.execute(delete,(skill_id, personagem_persona_id,))
+                        conn.commit()
+                        return True
+                except:
+                        return False
+        
+        @staticmethod
+        def mod_skill(skill_antiga_id, skill_nova_id, personagem_persona_id):
+                try:
+                        update = """
+update persona_habilidade set fk_habilidade_habilidade_id = %s
+where fk_habilidade_habilidade_id = %s and fk_personagem_persona_personagem_persona_id = %s
+"""
+                        cur.execute(update,(skill_antiga_id, skill_nova_id, personagem_persona_id,))
+                        conn.commit()
+                        return True
+                except:
+                        return False
+        
+
+        @staticmethod
+        def nome_skill(skill_id):
+                try:
+                        select = """
+select nome from habilidade
+where habilidade_id = %s
+"""
+                        cur.execute(select,(skill_id,))
+                        skill_nome = cur.fetchone()
+                        return skill_nome[0]
+                except:
+                        return False
+        
+        @staticmethod
+        def skills_conhecidas(nivel,persona_id):
+                try:
+                        select = """
+select fk_habilidade_habilidade_id from habilidade_persona
+where nivel <= %s and fk_persona_persona_id = %s
+"""
+                        cur.execute(select,(nivel, persona_id,))
+                        skills = cur.fetchall()
+                        return skills
+                except:
+                        return False
+        
+        @staticmethod
+        def skill_id(skill):
+                try:
+                        select = """
+select habilidade.habilidade_id from habilidade
+where habilidade.nome = %s
+"""
+                        cur.execute(select,(skill,))
+                        skill = cur.fetchone()
+                        return skill[0]
+                except:
+                        return False
+        
+        @staticmethod
+        def discord_user(personagem_id):
+                try:
+                        select = """
+select usuario from personagem
+where personagem_id = %s
+"""
+                        cur.execute(select,(personagem_id,))
+                        user = cur.fetchone()
+                        return user[0]
+                except:
+                        return False
+
         
