@@ -376,7 +376,6 @@ where personagem.personagem_id = %s
                         cur.execute(select,(personagem_id,))
                         equip_item_id = cur.fetchone()
                         equip_item_id = equip_item_id[0]
-                        print(equip_item_id)
                         if equip_item_id == item_id:
                                 return True
                         else:
@@ -476,12 +475,9 @@ where persona.persona_id = %s
                 lista_atributos = []
                 for nome, quant in atributos:
                         lista_atributos.append([nome, quant])
-                print(level)
-                print(lista_atributos)
                 if level > 1:
                         cur.execute(select_atributos_crescimento,[persona_id, personagem_id,])
                         crescimento = cur.fetchall()
-                        print(crescimento)
                         for nivel, atributo_id, quant in crescimento:
                                 if atributo_id == 1:
                                         lista_atributos[0][1] += quant
@@ -523,7 +519,6 @@ personagem_persona.fk_persona_persona_id = %s
                 cur.execute(select,(personagem_id, persona_id,))
                 nivel = cur.fetchone()
                 nivel = nivel[0]
-                print(nivel)
                 return nivel
         
         @staticmethod
@@ -604,7 +599,6 @@ personagem_persona.fk_persona_persona_id = %s
 """
                         cur.execute(select_personagem_persona,[personagem_id, persona_id])
                         personagem_persona = cur.fetchone()
-                        print(personagem_persona)
                         personagem_persona = personagem_persona[0]
                         return personagem_persona
                 except:
@@ -640,12 +634,9 @@ order by crescimento_atributo.nivel, atributo.atributo_id;
                 lista_atributos = []
                 for nome, quant in atributos:
                         lista_atributos.append([nome, quant])
-                print(level)
-                print(lista_atributos)
                 if level > 1:
                         cur.execute(select_atributos_crescimento,[persona_id, personagem_id,])
                         crescimento = cur.fetchall()
-                        print(crescimento)
                         for nivel, atributo_id, quant in crescimento:
                                 if atributo_id == 1:
                                         lista_atributos[0][1] += quant
@@ -739,7 +730,6 @@ where crescimento_fool.fk_personagem_personagem_id = %s
                         level = level[0]
                         cur.execute(select1,(personagem_id,))
                         atributos = cur.fetchone()
-                        print("Atributos",atributos)
                         lista_atributos = [atributos[0], atributos[1]]
                         if level > 1:
                                 cur.execute(select2,(personagem_id,))
@@ -1057,5 +1047,33 @@ where personagem_id = %s
                         return user[0]
                 except:
                         return False
-
         
+        @staticmethod
+        def valor_item(item_id):
+                try:
+                        select = """
+select valor from item
+where item_id = %s
+"""
+                        cur.execute(select,(item_id,))
+                        valor = cur.fetchone()
+                        return valor[0]
+                except:
+                        return False
+
+        @staticmethod
+        def fraquezas(persona_id):
+                select = """
+select interacao_elemento.interacao_id
+from persona inner join reacao_elemental on
+persona.persona_id = reacao_elemental.fk_persona_persona_id inner join elemento on
+reacao_elemental.fk_elemento_elemento_id = elemento_id inner join interacao_elemento on
+reacao_elemental.fk_interacao_elemento_interacao_id = interacao_elemento.interacao_id
+where persona.persona_id = %s
+order by elemento.elemento_id
+"""
+                cur.execute(select,[persona_id])
+                fraquezas = cur.fetchall()
+                for i in range(len(fraquezas)):
+                        fraquezas[i] = fraquezas[i][0]
+                return fraquezas
