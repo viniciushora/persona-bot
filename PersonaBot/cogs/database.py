@@ -1077,3 +1077,89 @@ order by elemento.elemento_id
                 for i in range(len(fraquezas)):
                         fraquezas[i] = fraquezas[i][0]
                 return fraquezas
+        
+        @staticmethod
+        def add_atributo(personagem_id, atributo_id, quant):
+                try:
+                        update = """
+update crescimento_personagem set quant = quant + %s
+where fk_personagem_personagem_id = %s and fk_atributo_atributo_id = %s and fk_tipo_crescimento_tipo_crescimento_id = 1
+"""
+                        cur.execute(update,(quant, personagem_id, atributo_id,))
+                        conn.commit()
+                        return True
+                except:
+                        return False
+        
+        @staticmethod
+        def del_atributo(personagem_id, atributo_id, quant):
+                try:
+                        update = """
+update crescimento_personagem set quant = quant - %s
+where fk_personagem_personagem_id = %s and fk_atributo_atributo_id = %s and fk_tipo_crescimento_tipo_crescimento_id = 1
+"""
+                        cur.execute(update,(quant, personagem_id, atributo_id,))
+                        conn.commit()
+                        return True
+                except:
+                        return False
+        
+        @staticmethod
+        def mod_atributo(personagem_id, atributo_id, quant):
+                try:
+                        update = """
+update crescimento_personagem set quant = %s
+where fk_personagem_personagem_id = %s and fk_atributo_atributo_id = %s and fk_tipo_crescimento_tipo_crescimento_id = 2
+"""
+                        cur.execute(update,(quant, personagem_id, atributo_id,))
+                        conn.commit()
+                        return True
+                except:
+                        return False
+
+        @staticmethod
+        def atributo_id(nome):
+                try:
+                        select = """
+select atributo_id from atributo
+where nome = %s
+"""
+                        cur.execute(select,(atributo_id,))
+                        atributo_id = cur.fetchone()
+                        return atributo_id[0]
+                except:
+                        return False
+        
+        @staticmethod
+        def atributos_soma(personagem_id):
+                try:
+                        select = """
+select quant from crescimento_personagem
+where fk_personagem_personagem_id = %s and fk_tipo_crescimento_tipo_crescimento_id = 1
+order by fk_atributo_atributo_id
+"""
+                        cur.execute(select,(personagem_id,))
+                        atributos = cur.fetchall()
+                        print(atributos)
+                        for i in range(len(atributos)):
+                                atributos[i] = atributos[i][0]
+                        return atributos
+                except:
+                        return False
+        
+        @staticmethod
+        def atributos_porcent(personagem_id):
+                try:
+                        select = """
+select quant from crescimento_personagem
+where fk_personagem_personagem_id = %s and fk_tipo_crescimento_tipo_crescimento_id = 2
+order by fk_atributo_atributo_id
+"""
+                        cur.execute(select,(personagem_id,))
+                        atributos = cur.fetchall()
+                        print(atributos)
+                        for i in range(len(atributos)):
+                                atributos[i] = atributos[i][0]
+                        return atributos
+                except:
+                        return False
