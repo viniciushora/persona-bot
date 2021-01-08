@@ -430,6 +430,32 @@ where persona_habilidade.fk_personagem_persona_personagem_persona_id = %s
                         return False
         
         @staticmethod
+        def skills_id(personagem_id, persona_id):
+                try:
+                        select_personagem_persona = """
+select personagem_persona.personagem_persona_id from personagem_persona
+where personagem_persona.fk_personagem_personagem_id = %s and 
+personagem_persona.fk_persona_persona_id = %s
+"""
+                        cur.execute(select_personagem_persona,[personagem_id, persona_id])
+                        personagem_persona = cur.fetchone()
+                        personagem_persona = personagem_persona[0]
+                        select = """
+select habilidade.habilidade_id from habilidade inner join persona_habilidade on
+habilidade.habilidade_id = persona_habilidade.fk_habilidade_habilidade_id inner join personagem_persona on
+persona_habilidade.fk_personagem_persona_personagem_persona_id = personagem_persona.personagem_persona_id
+where persona_habilidade.fk_personagem_persona_personagem_persona_id = %s
+"""
+                        cur.execute(select,(personagem_persona,))
+                        skills = cur.fetchall()
+                        lista_skills = []
+                        for skill in skills:
+                                lista_skills.append(skill[0])
+                        return lista_skills
+                except:
+                        return False
+        
+        @staticmethod
         def ficha_personagem(personagem_id, persona_id):
                 select_level  = """
 select personagem_persona.nivel from personagem_persona
@@ -1140,7 +1166,6 @@ order by fk_atributo_atributo_id
 """
                         cur.execute(select,(personagem_id,))
                         atributos = cur.fetchall()
-                        print(atributos)
                         for i in range(len(atributos)):
                                 atributos[i] = atributos[i][0]
                         return atributos
@@ -1157,9 +1182,62 @@ order by fk_atributo_atributo_id
 """
                         cur.execute(select,(personagem_id,))
                         atributos = cur.fetchall()
-                        print(atributos)
                         for i in range(len(atributos)):
                                 atributos[i] = atributos[i][0]
                         return atributos
+                except:
+                        return False
+        
+        @staticmethod
+        def intensidade(habilidade_id):
+                try:
+                        select = """
+select fk_intensidade_intensidade_id from habilidade
+where habilidade_id = %s
+"""
+                        cur.execute(select,(habilidade_id,))
+                        intensidade = cur.fetchone()
+                        return intensidade[0]
+                except:
+                        return False
+        
+        @staticmethod
+        def elemento(habilidade_id):
+                try:
+                        select = """
+select fk_elemento_elemento_id from habilidade
+where habilidade_id = %s
+"""
+                        cur.execute(select,(habilidade_id,))
+                        elemento = cur.fetchone()
+                        return elemento[0]
+                except:
+                        return False
+        
+        @staticmethod
+        def nome_elemento(elemento_id):
+                try:
+                        select = """
+select nome from elemento
+where elemento_id = %s
+"""
+                        cur.execute(select,(elemento_id,))
+                        elemento = cur.fetchone()
+                        return elemento[0]
+                except:
+                        return False
+
+        @staticmethod
+        def skills_shadow(shadow_id, nivel):
+                try:
+                        select = """
+select fk_habilidade_habilidade_id from habilidade_persona
+where fk_persona_persona_id = %s and nivel = %s
+"""
+                        cur.execute(select,(shadow_id, nivel,))
+                        skills = cur.fetchall()
+                        for i in range(len(skills)):
+                                skills[i] = skills[i][0]
+                        return skills
                 except:
                         return False

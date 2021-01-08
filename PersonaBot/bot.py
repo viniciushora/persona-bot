@@ -29,6 +29,8 @@ horda_mult_def = []
 party_mult_def = []
 horda_mult_acc = []
 party_mult_acc = []
+horda_mult_evs = []
+party_mult_evs = []
 horda_elem_dano = []
 party_elem_dano = []
 
@@ -55,7 +57,7 @@ async def on_ready():
     print("Tudo Ok")
 
 @bot.command()
-async def mostrar_ficha(ctx, *persona):
+async def mostrar_ficha(ctx, *persona, canal : discord.TextChannel):
     nome = ""
     for palavra in persona:
         nome+=palavra + " "
@@ -96,13 +98,13 @@ async def mostrar_ficha(ctx, *persona):
         embed2.add_field(name=f"""<:bless:790320130746744892>""", value=ficha[2][8][1], inline=True)
         embed2.add_field(name=f"""<:curse:790320130387214336>""", value=ficha[2][9][1], inline=True)
         embed2.add_field(name=f"""<:almighty:790320130297954374>""", value=ficha[2][10][1], inline=True)
-        await ctx.send(embed=embed)
-        await ctx.send(embed=embed2)
+        await canal.send(embed=embed)
+        await canal.send(embed=embed2)
     except:
         await ctx.send("**Ficha não encontrada, digite novamente e corretamente.**")
     
 @bot.command()
-async def info_shadow(ctx, *shadow):
+async def info_shadow(ctx, *shadow, canal : discord.TextChannel):
     nome = ""
     for palavra in shadow:
         nome += palavra + " "
@@ -157,7 +159,7 @@ async def info_shadow(ctx, *shadow):
         embed.add_field(name=f"""<:bless:790320130746744892>""", value=fraquezas[8], inline=True)
         embed.add_field(name=f"""<:curse:790320130387214336>""", value=fraquezas[9], inline=True)
         embed.add_field(name=f"""<:almighty:790320130297954374>""", value=fraquezas[10], inline=True)
-        await ctx.send(embed=embed)
+        await canal.send(embed=embed)
     except:
         await ctx.send("**Shadow não encontrada, digite novamente e corretamente.**")
 
@@ -378,7 +380,7 @@ async def esconder_afinidade(ctx, *shadow):
         handle.close()
 
 @bot.command()
-async def add_item(ctx, quant, *item):
+async def add_item(ctx, canal : discord.TextChannel, quant, *item):
     quant = int(quant)
     nome = ""
     for palavra in item:
@@ -390,18 +392,18 @@ async def add_item(ctx, quant, *item):
         if contem_item != False:
             soma_item = Database.soma_item_database(item_id, contem_item[1], quant)
             if soma_item:
-                await ctx.send(f"""**{quant} {nome}** adicionado(s) no inventário do grupo. Quantidade atual: ({contem_item[1]+quant})""")
+                await canal.send(f"""**{quant} {nome}** adicionado(s) no inventário do grupo. Quantidade atual: ({contem_item[1]+quant})""")
         else:
             add_item = Database.add_item_database(item_id, quant)
             if add_item:
-                await ctx.send(f"""**{quant} {nome}** adicionado(s) no inventário do grupo.""")
+                await canal.send(f"""**{quant} {nome}** adicionado(s) no inventário do grupo.""")
             else:
                 await ctx.send(f"""**Erro interno**""")
     else:
         await ctx.send(f"""**{nome} não existe.**""")
 
 @bot.command()
-async def del_item(ctx, quant, *item):
+async def del_item(ctx, canal : discord.TextChannel, quant, *item):
     quant = int(quant)
     nome = ""
     for palavra in item:
@@ -414,10 +416,10 @@ async def del_item(ctx, quant, *item):
             if contem_item[1] > quant:
                 subtrai_item = Database.subtrai_item_database(item_id, contem_item[1], quant)
                 print(subtrai_item)
-                await ctx.send(f"""**{quant} {nome}** removido(s) no inventário do grupo. Quantidade atual: ({contem_item[1]-quant})""")
+                await canal.send(f"""**{quant} {nome}** removido(s) no inventário do grupo. Quantidade atual: ({contem_item[1]-quant})""")
             else:
                 delete_item = Database.del_item_database(item_id)
-                await ctx.send(f"""**{nome}** removido completamente do inventário do grupo.""")
+                await canal.send(f"""**{nome}** removido completamente do inventário do grupo.""")
         else:
             await ctx.send(f"""**{nome}** não encontrado no inventário do grupo.""")
     else:
@@ -535,26 +537,26 @@ async def inventario(ctx):
     await ctx.send(embed=inventario)
 
 @bot.command()
-async def modificar_dinheiro(ctx, quant):
+async def modificar_dinheiro(ctx, quant, canal : discord.TextChannel):
     try:
         quant = int(quant)
         dinheiro_inicial = Database.dinheiro_grupo()
         dinheiro_final = dinheiro_inicial + quant
         novo_dinheiro = Database.modificar_dinheiro(dinheiro_final)
         if novo_dinheiro:
-            await ctx.send(f"""Adicionado **R$ {quant}**; (Valor anterior: **R$ {dinheiro_inicial}**). O dinheiro do grupo agora é **R$ {dinheiro_final}**""")
+            await canal.send(f"""Adicionado **R$ {quant}**; (Valor anterior: **R$ {dinheiro_inicial}**). O dinheiro do grupo agora é **R$ {dinheiro_final}**""")
         else:
             await ctx.send(f"""Erro interno""")
     except:
         await ctx.send(f"""Valor incorreto""")
 
 @bot.command()
-async def setar_dinheiro(ctx, quant):
+async def setar_dinheiro(ctx, quant, canal : discord.TextChannel):
     try:
         quant = int(quant)
         novo_dinheiro = Database.modificar_dinheiro(quant)
         if novo_dinheiro:
-            await ctx.send(f"""O dinheiro do grupo agora é **R$ {quant}**""")
+            await canal.send(f"""O dinheiro do grupo agora é **R$ {quant}**""")
         else:
             await ctx.send(f"""Erro interno""")
     except:
@@ -565,7 +567,7 @@ async def testar_rolagem(ctx):
     dado = await Dado.rolagem_pronta(bot,ctx,"João","Freefes#9639",1,100)
 
 @bot.command()
-async def drop(ctx, *shadow):
+async def drop(ctx, *shadow, canal : discord.TextChannel):
     nome = ""
     for palavra in shadow:
         nome+=palavra + " "
@@ -598,7 +600,7 @@ async def drop(ctx, *shadow):
     else:
         texto = "Sem itens dropados"
     embed_drops.add_field(name="Itens dropados", value=texto, inline=False)
-    await ctx.send(embed=embed_drops)        
+    await canal.send(embed=embed_drops)        
 
 
 def add_item(quant, item_id):
@@ -609,7 +611,7 @@ def add_item(quant, item_id):
         add_item = Database.add_item_database(item_id, quant)
 
 @bot.command()
-async def equipar(ctx, personagem, *item):
+async def equipar(ctx, personagem, *item, canal : discord.TextChannel):
     nome = ""
     for palavra in item:
         nome+=palavra + " "
@@ -623,15 +625,15 @@ async def equipar(ctx, personagem, *item):
                 tipo_item_id = Database.tipo_item_id(item_id)
                 equip = Database.equipar_item(personagem_id, item_id, tipo_item_id)
                 if equip == False:
-                    await ctx.send("Este item não é equipável")
+                    await canal.send("Este item não é equipável")
                 elif tipo_item_id == 7:
-                    await ctx.send(f"""**{nome}** agora é a arma corpo-a-corpo equipada de **{personagem}**""")
+                    await canal.send(f"""**{nome}** agora é a arma corpo-a-corpo equipada de **{personagem}**""")
                 elif tipo_item_id == 8:
-                    await ctx.send(f"""**{nome}** agora é a arma à distância equipada de **{personagem}**""")
+                    await canal.send(f"""**{nome}** agora é a arma à distância equipada de **{personagem}**""")
                 elif tipo_item_id == 9:
-                    await ctx.send(f"""**{nome}** agora é a armadura equipado de **{personagem}**""")
+                    await canal.send(f"""**{nome}** agora é a armadura equipado de **{personagem}**""")
                 else:
-                    await ctx.send(f"""**{nome}** agora é o acessório equipado de **{personagem}**""")
+                    await canal.send(f"""**{nome}** agora é o acessório equipado de **{personagem}**""")
             else:
                 await ctx.send("Este item não está no inventário do grupo.")
         else:
@@ -640,7 +642,7 @@ async def equipar(ctx, personagem, *item):
         await ctx.send("Este personagem não existe.")
     
 @bot.command()
-async def desequipar(ctx, personagem, *item):
+async def desequipar(ctx, personagem, *item, canal : discord.TextChannel):
     nome = ""
     for palavra in item:
         nome+=palavra + " "
@@ -656,15 +658,15 @@ async def desequipar(ctx, personagem, *item):
                 if item_equipado:
                     desequip = Database.desequipar_item(personagem_id, tipo_item_id)
                     if desequip == False:
-                        await ctx.send("Este item não é equipável")
+                        await canal.send("Este item não é equipável")
                     elif tipo_item_id == 7:
-                        await ctx.send(f"""**{nome}** não está mais equipado(a) como arma corpo-a-corpo de **{personagem}**""")
+                        await canal.send(f"""**{nome}** não está mais equipado(a) como arma corpo-a-corpo de **{personagem}**""")
                     elif tipo_item_id == 8:
-                        await ctx.send(f"""**{nome}** não está mais equipado(a) como arma à distância equipada de **{personagem}**""")
+                        await canal.send(f"""**{nome}** não está mais equipado(a) como arma à distância equipada de **{personagem}**""")
                     elif tipo_item_id == 9:
-                        await ctx.send(f"""**{nome}** não está mais equipado(a) como armadura equipada de **{personagem}**""")
+                        await canal.send(f"""**{nome}** não está mais equipado(a) como armadura equipada de **{personagem}**""")
                     else:
-                        await ctx.send(f"""**{nome}** não está mais equipado(a) como acessório equipado de **{personagem}**""")
+                        await canal.send(f"""**{nome}** não está mais equipado(a) como acessório equipado de **{personagem}**""")
                 else:
                     await ctx.send("Este item não está equipado.")
             else:
@@ -842,7 +844,7 @@ async def ficha(ctx, personagem):
         await ctx.send("Personagem não encontrado.")
     
 @bot.command()
-async def subir_nivel(ctx, personagem):
+async def subir_nivel(ctx, personagem, canal : discord.TextChannel):
     personagem_id = Database.personagem_id(personagem)
     eh_fool = Database.eh_fool(personagem_id)
     if eh_fool != True:
@@ -891,7 +893,7 @@ async def subir_nivel(ctx, personagem):
         atributos_aumento.add_field(name="**En**", value=f"""+{crescimento_atributo[4]}""")
         atributos_aumento.add_field(name="**Ag**", value=f"""+{crescimento_atributo[5]}""")
         atributos_aumento.add_field(name="**Lu**", value=f"""+{crescimento_atributo[6]}""")
-        await ctx.send(embed=atributos_aumento)
+        await canal.send(embed=atributos_aumento)
         nivel_skills = Database.nivel_skills(nivel, persona_id)
         if nivel_skills != False:
             skills = Database.skills(personagem_id, persona_id)
@@ -904,7 +906,7 @@ async def subir_nivel(ctx, personagem):
                         aprendeu = Database.add_skill(skill, personagem_persona_id)
                         if aprendeu == True:
                             nome_skill = Database.nome_skill(skill)
-                            await ctx.send(f"""**{personagem}** aprendeu a habilidade **{nome_skill}**""")
+                            await canal.send(f"""**{personagem}** aprendeu a habilidade **{nome_skill}**""")
             elif len(skills_id) + len(nivel_skills) > 8 and len(skills) < 8:
                 tam = len(skills_id)
                 while tam < 8:
@@ -912,7 +914,7 @@ async def subir_nivel(ctx, personagem):
                         aprendeu = Database.add_skill(nivel_skills[0], personagem_persona_id)
                         if aprendeu == True:
                             nome_skill = Database.nome_skill(nivel_skills[0])
-                            await ctx.send(f"""**{personagem}** aprendeu a habilidade **{nome_skill}**""")
+                            await canal.send(f"""**{personagem}** aprendeu a habilidade **{nome_skill}**""")
                             del nivel_skills[i]
                             tam += 1
                 if nivel_skills != []:
@@ -931,7 +933,7 @@ async def subir_nivel(ctx, personagem):
                         emojis_raw = ["1️⃣", "2️⃣", "3️⃣", "4️⃣", "5️⃣", "6️⃣", "7️⃣", "8️⃣"]
                         for i in range(len(nova_skills)):
                             embed.add_field(name=emojis_disc[i], value=Database.nome_skill(skills_id[i]), inline=True)
-                        embed_msg = await ctx.send(embed=embed)
+                        embed_msg = await canal.send(embed=embed)
                         for j in range(len(nova_skills)):
                             await embed_msg.add_reaction(emoji=emojis_raw[j])
                         await embed_msg.add_reaction(emoji="❌")
@@ -965,11 +967,11 @@ async def subir_nivel(ctx, personagem):
                                     description=f"""**{personagem}** esqueceu de **{nova_skills[ok-1]}**""",
                                     colour=discord.Colour.blue()
                                 )
-                                await ctx.send(embed=confirmacao)
+                                await canal.send(embed=confirmacao)
                             else:
                                 await ctx.send("Erro no aprendizado da habilidade")
                         else:
-                            await ctx.send(f"""**{personagem}** ignorou a habilidade **{nome_skill}**""")
+                            await canal.send(f"""**{personagem}** ignorou a habilidade **{nome_skill}**""")
                         nova_skills = Database.skills(personagem_id, persona_id)
             else:
                 nova_skills = Database.skills(personagem_id, persona_id)
@@ -987,7 +989,7 @@ async def subir_nivel(ctx, personagem):
                     emojis_raw = ["1️⃣", "2️⃣", "3️⃣", "4️⃣", "5️⃣", "6️⃣", "7️⃣", "8️⃣"]
                     for i in range(len(nova_skills)):
                         embed.add_field(name=emojis_disc[i], value=nova_skills[i], inline=True)
-                    embed_msg = await ctx.send(embed=embed)
+                    embed_msg = await canal.send(embed=embed)
                     for j in range(len(nova_skills)):
                         await embed_msg.add_reaction(emoji=emojis_raw[j])
                     await embed_msg.add_reaction(emoji="❌")
@@ -1021,11 +1023,11 @@ async def subir_nivel(ctx, personagem):
                                 description=f"""**{personagem}** esqueceu de **{nova_skills[ok-1]}**""",
                                 colour=discord.Colour.blue()
                             )
-                            await ctx.send(embed=confirmacao)
+                            await canal.send(embed=confirmacao)
                         else:
                             await ctx.send("Erro no aprendizado da habilidade")
                     else:
-                        await ctx.send(f"""**{personagem}** ignorou a habilidade **{nome_skill}**""")
+                        await canal.send(f"""**{personagem}** ignorou a habilidade **{nome_skill}**""")
                     nova_skills = Database.skills(personagem_id, persona_id)
     else:
         subiu_nivel = Database.aumentar_nivel_fool(personagem_id)
@@ -1043,10 +1045,10 @@ async def subir_nivel(ctx, personagem):
         )
         atributos_aumento.add_field(name="**HP**", value=f"""+{crescimento_atributo[0]}""")
         atributos_aumento.add_field(name="**SP**", value=f"""+{crescimento_atributo[1]}""")
-        await ctx.send(embed=atributos_aumento)
+        await canal.send(embed=atributos_aumento)
 
 @bot.command()
-async def diminuir_nivel(ctx, personagem):
+async def diminuir_nivel(ctx, personagem, canal : discord.TextChannel):
     personagem_id = Database.personagem_id(personagem)
     eh_fool = Database.eh_fool(personagem_id)
     if eh_fool == False:
@@ -1054,27 +1056,27 @@ async def diminuir_nivel(ctx, personagem):
         nivel = Database.nivel(personagem_id, persona_id)
         diminuiu_nivel = Database.diminuir_nivel(personagem_id)
         if diminuiu_nivel:
-            await ctx.send(f"""Nível de **{personagem}** diminuído para {nivel -1}""")
+            await canal.send(f"""Nível de **{personagem}** diminuído para {nivel -1}""")
         personagem_persona_id = Database.personagem_persona_id(personagem_id, persona_id)
         apagar = Database.apagar_crecimento(personagem_persona_id, nivel)
         if apagar:
-            await ctx.send(f"""Atributos de **{personagem}** resetado para os do {nivel -1}""")
+            await canal.send(f"""Atributos de **{personagem}** resetado para os do {nivel -1}""")
         nivel_skills = Database.nivel_skills(nivel, persona_id)
         for skill in nivel_skills:
             desaprendeu = Database.del_skill(skill, personagem_persona_id)
             if desaprendeu:
-                await ctx.send(f"""Habilidade: **{Database.nome_skill(skill)}** foi desaprendida.""")
+                await canal.send(f"""Habilidade: **{Database.nome_skill(skill)}** foi desaprendida.""")
     else:
         nivel = Database.nivel_fool(personagem_id)
         diminuiu_nivel = Database.diminuir_nivel_fool(personagem_id)
         if diminuiu_nivel:
-            await ctx.send(f"""Nível de **{personagem}** diminuído para {nivel -1}""")
+            await canal.send(f"""Nível de **{personagem}** diminuído para {nivel -1}""")
         apagar = Database.apagar_crecimento_fool(personagem_id, nivel)
         if apagar:
-            await ctx.send(f"""Atributos de **{personagem}** resetado para os do {nivel -1}""")
+            await canal.send(f"""Atributos de **{personagem}** resetado para os do {nivel -1}""")
 
 @bot.command()
-async def subir_nivel_persona(ctx, personagem):
+async def subir_nivel_persona(ctx, personagem, canal : discord.TextChannel):
     personagem_id = Database.personagem_id(personagem)
     eh_fool = Database.eh_fool(personagem_id)
     if eh_fool == True:
@@ -1121,18 +1123,17 @@ async def subir_nivel_persona(ctx, personagem):
         atributos_aumento.add_field(name="**En**", value=f"""+{crescimento_atributo[4]}""")
         atributos_aumento.add_field(name="**Ag**", value=f"""+{crescimento_atributo[5]}""")
         atributos_aumento.add_field(name="**Lu**", value=f"""+{crescimento_atributo[6]}""")
-        await ctx.send(embed=atributos_aumento)
+        await canal.send(embed=atributos_aumento)
         nivel_skills = Database.nivel_skills(nivel, persona_id)
         if nivel_skills != False:
             skills = Database.skills(personagem_id, persona_id)
-            
             if len(skills) + len(nivel_skills) < 8:
                 for skill in nivel_skills:
                     if skill not in skills:
                         aprendeu = Database.add_skill(skill, personagem_persona_id)
                         if aprendeu == True:
                             nome_skill = Database.nome_skill(skill)
-                            await ctx.send(f"""**{Database.nome_persona(persona_id)}** aprendeu a habilidade **{nome_skill}**""")
+                            await canal.send(f"""**{Database.nome_persona(persona_id)}** aprendeu a habilidade **{nome_skill}**""")
             elif len(skills) + len(nivel_skills) > 8 and len(skills) < 8:
                 tam = len(skills)
                 while tam < 8:
@@ -1140,7 +1141,7 @@ async def subir_nivel_persona(ctx, personagem):
                         aprendeu = Database.add_skill(nivel_skills[0], personagem_persona_id)
                         if aprendeu == True:
                             nome_skill = Database.nome_skill(nivel_skills[0])
-                            await ctx.send(f"""**{Database.nome_persona(persona_id)}** aprendeu a habilidade **{nome_skill}**""")
+                            await canal.send(f"""**{Database.nome_persona(persona_id)}** aprendeu a habilidade **{nome_skill}**""")
                             del nivel_skills[i]
                             tam += 1
                 if nivel_skills != []:
@@ -1156,7 +1157,7 @@ async def subir_nivel_persona(ctx, personagem):
                         emojis_raw = ["1️⃣", "2️⃣", "3️⃣", "4️⃣", "5️⃣", "6️⃣", "7️⃣", "8️⃣"]
                         for i in range(len(nova_skills)):
                             embed.add_field(name=emojis_disc[i], value=Database.nome_skill(nova_skills[i]), inline=True)
-                        embed_msg = await ctx.send(embed=embed)
+                        embed_msg = await canal.send(embed=embed)
                         for j in range(len(nova_skills)):
                             await embed_msg.add_reaction(emoji=emojis_raw[j])
                         await embed_msg.add_reaction(emoji="❌")
@@ -1190,11 +1191,11 @@ async def subir_nivel_persona(ctx, personagem):
                                     description=f"""**{Database.nome_persona(persona_id)}** esqueceu de **{Database.nome_skill(nova_skills[ok-1])}**""",
                                     colour=discord.Colour.blue()
                                 )
-                                await ctx.send(embed=confirmacao)
+                                await canal.send(embed=confirmacao)
                             else:
                                 await ctx.send("Erro no aprendizado da habilidade")
                         else:
-                            await ctx.send(f"""**{Database.nome_persona(persona_id)}** ignorou a habilidade **{nome_skill}**""")
+                            await canal.send(f"""**{Database.nome_persona(persona_id)}** ignorou a habilidade **{nome_skill}**""")
                         nova_skills = Database.skills(personagem_id, persona_id)
             else:
                 for skill in nivel_skills:
@@ -1208,7 +1209,7 @@ async def subir_nivel_persona(ctx, personagem):
                     emojis_raw = ["1️⃣", "2️⃣", "3️⃣", "4️⃣", "5️⃣", "6️⃣", "7️⃣", "8️⃣"]
                     for i in range(len(nova_skills)):
                         embed.add_field(name=emojis_disc[i], value=Database.nome_skill(nova_skills[i]), inline=True)
-                    embed_msg = await ctx.send(embed=embed)
+                    embed_msg = await canal.send(embed=embed)
                     for j in range(len(nova_skills)):
                         await embed_msg.add_reaction(emoji=emojis_raw[j])
                     await embed_msg.add_reaction(emoji="❌")
@@ -1242,17 +1243,17 @@ async def subir_nivel_persona(ctx, personagem):
                                 description=f"""**{Database.nome_persona(persona_id)}** esqueceu de **{Database.nome_skill(nova_skills[ok-1])}**""",
                                 colour=discord.Colour.blue()
                             )
-                            await ctx.send(embed=confirmacao)
+                            await canal.send(embed=confirmacao)
                         else:
                             await ctx.send("Erro no aprendizado da habilidade")
                     else:
-                        await ctx.send(f"""**{Database.nome_persona(persona_id)}** ignorou a habilidade **{nome_skill}**""")
+                        await canal.send(f"""**{Database.nome_persona(persona_id)}** ignorou a habilidade **{nome_skill}**""")
                     nova_skills = Database.skills(personagem_id, persona_id)
     else:
         await ctx.send("Este personagem não é da Arcana Fool")
     
 @bot.command()
-async def diminuir_nivel_persona(ctx, personagem):
+async def diminuir_nivel_persona(ctx, personagem, canal : discord.TextChannel):
     personagem_id = Database.personagem_id(personagem)
     eh_fool = Database.eh_fool(personagem_id)
     if eh_fool == True:
@@ -1260,21 +1261,21 @@ async def diminuir_nivel_persona(ctx, personagem):
         nivel = Database.nivel(personagem_id, persona_id)
         diminuiu_nivel = Database.diminuir_nivel(personagem_id)
         if diminuiu_nivel:
-            await ctx.send(f"""Nível de **{Database.nome_persona(persona_id)}** diminuído para {nivel -1}""")
+            await canal.send(f"""Nível de **{Database.nome_persona(persona_id)}** diminuído para {nivel -1}""")
         personagem_persona_id = Database.personagem_persona_id(personagem_id, persona_id)
         apagar = Database.apagar_crecimento(personagem_persona_id, nivel)
         if apagar:
-            await ctx.send(f"""Atributos de **{Database.nome_persona(persona_id)}** resetado para os do {nivel -1}""")
+            await canal.send(f"""Atributos de **{Database.nome_persona(persona_id)}** resetado para os do {nivel -1}""")
         nivel_skills = Database.nivel_skills(nivel-1, persona_id)
         for skill in nivel_skills:
             desaprendeu = Database.del_skill(skill, personagem_persona_id)
             if desaprendeu:
-                await ctx.send(f"""Habilidade: **{Database.nome_skill(skill)}** foi desaprendida.""")
+                await canal.send(f"""Habilidade: **{Database.nome_skill(skill)}** foi desaprendida.""")
         else:
             await ctx.send(f"""Este personagem não é da Arcana Fool""")
 
 @bot.command()
-async def equipar_persona(ctx, personagem):
+async def equipar_persona(ctx, personagem, canal : discord.TextChannel):
     personagem_id = Database.personagem_id(personagem)
     eh_fool = Database.eh_fool(personagem_id)
     if personagem_id != False:
@@ -1293,7 +1294,7 @@ async def equipar_persona(ctx, personagem):
                 emojis_raw = ["1️⃣", "2️⃣", "3️⃣", "4️⃣", "5️⃣", "6️⃣", "7️⃣", "8️⃣"]
                 for i in range(len(personas)):
                     embed.add_field(name=emojis_disc[i], value=personas[i], inline=True)
-                embed_msg = await ctx.send(embed=embed)
+                embed_msg = await canal.send(embed=embed)
                 for j in range(len(personas)):
                     await embed_msg.add_reaction(emoji=emojis_raw[j])
                 await embed_msg.add_reaction(emoji="❌")
@@ -1336,11 +1337,11 @@ async def equipar_persona(ctx, personagem):
                             description=f"""**A Persona equipada de {personagem} agora é {personas[ok-1]}**""",
                             colour=discord.Colour.blue()
                         )
-                        await ctx.send(embed=confirmacao)
+                        await canal.send(embed=confirmacao)
                     else:
                         await ctx.send("Erro na troca de Persona.")
                 else:
-                    await ctx.send("Troca de Persona cancelada.")
+                    await canal.send("Troca de Persona cancelada.")
             else:
                 await ctx.send(f"""Você só tem uma persona, não tem o que equipar xD""")
         else:
@@ -1349,7 +1350,7 @@ async def equipar_persona(ctx, personagem):
         await ctx.send(f"""Este personagem não existe.""")
 
 @bot.command()
-async def tomar_persona(ctx, personagem, *persona):
+async def tomar_persona(ctx , canal : discord.TextChannel, personagem, *persona):
     personagem_id = Database.personagem_id(personagem)
     eh_fool = Database.eh_fool(personagem_id)
     nome = ""
@@ -1365,7 +1366,7 @@ async def tomar_persona(ctx, personagem, *persona):
                 if persona_habilitada == False:
                     nova_persona = Database.personagem_add_persona(personagem_id, persona_id)
                     if nova_persona:
-                        await ctx.send(f"""{nome} agora é bem vindo(a) ao coração de {personagem}""")
+                        await canal.send(f"""{nome} agora é bem vindo(a) ao coração de {personagem}""")
                     else:
                         await ctx.send(f"""Erro interno""")
                 else:
@@ -1374,7 +1375,7 @@ async def tomar_persona(ctx, personagem, *persona):
                     if compendium == True:
                         reativar_persona = Database.personagem_reativar_persona(personagem_id, persona_id)
                         if reativar_persona:
-                            await ctx.send(f"""{nome} agora é bem vindo(a) ao coração de {personagem} novamente""")
+                            await canal.send(f"""{nome} agora é bem vindo(a) ao coração de {personagem} novamente""")
                     else:
                         await ctx.send(f"""Você já possui essa Persona""")
             else:
@@ -1385,7 +1386,7 @@ async def tomar_persona(ctx, personagem, *persona):
         await ctx.send(f"""Este personagem não existe.""")
 
 @bot.command()
-async def soltar_persona(ctx, personagem, *persona):
+async def soltar_persona(ctx, canal : discord.TextChannel, personagem, *persona):
     personagem_id = Database.personagem_id(personagem)
     eh_fool = Database.eh_fool(personagem_id)
     nome = ""
@@ -1401,7 +1402,7 @@ async def soltar_persona(ctx, personagem, *persona):
                 if persona_habilitada != False and compendium != True:
                     persona_solta = Database.personagem_del_persona(personagem_id, persona_id)
                     if persona_solta:
-                        await ctx.send(f"""{nome} agora é não é mais bem vindo(a) ao coração de {personagem}""")
+                        await canal.send(f"""{nome} agora é não é mais bem vindo(a) ao coração de {personagem}""")
                     else:
                         await ctx.send(f"""Erro interno""")
                 else:
@@ -1414,7 +1415,7 @@ async def soltar_persona(ctx, personagem, *persona):
         await ctx.send(f"""Este personagem não existe.""")
     
 @bot.command()
-async def skills_conhecidas(ctx, personagem):
+async def skills_conhecidas(ctx, personagem, canal : discord.TextChannel):
     personagem_id = Database.personagem_id(personagem)
     persona_id = Database.persona_equipada(personagem_id)
     nome = Database.nome_persona(persona_id)
@@ -1429,10 +1430,10 @@ async def skills_conhecidas(ctx, personagem):
         description=texto,
         colour=discord.Colour.blue()
     )
-    await ctx.send(embed=embed)
+    await canal.send(embed=embed)
 
 @bot.command()
-async def aprender_skill(ctx, personagem, *skill):
+async def aprender_skill(ctx, canal : discord.TextChannel, personagem, *skill):
     nome = ""
     for palavra in skill:
         nome += palavra + " "
@@ -1452,7 +1453,7 @@ async def aprender_skill(ctx, personagem, *skill):
             if len(skills) < 8:
                 aprendeu = Database.add_skill(skill_id, personagem_persona_id)
                 if aprendeu == True:
-                    await ctx.send(f"""**{personagem}** aprendeu a habilidade **{nome_skill}**""")
+                    await canal.send(f"""**{personagem}** aprendeu a habilidade **{nome_skill}**""")
             else:
                 embed = discord.Embed(
                     title=f"""**{personagem}** aprendeu uma nova habilidade!""",
@@ -1463,7 +1464,7 @@ async def aprender_skill(ctx, personagem, *skill):
                 emojis_raw = ["1️⃣", "2️⃣", "3️⃣", "4️⃣", "5️⃣", "6️⃣", "7️⃣", "8️⃣"]
                 for i in range(len(skills)):
                     embed.add_field(name=emojis_disc[i], value=Database.nome_skill(skills[i]), inline=True)
-                embed_msg = await ctx.send(embed=embed)
+                embed_msg = await canal.send(embed=embed)
                 for j in range(len(skills)):
                     await embed_msg.add_reaction(emoji=emojis_raw[j])
                 await embed_msg.add_reaction(emoji="❌")
@@ -1497,18 +1498,18 @@ async def aprender_skill(ctx, personagem, *skill):
                             description=f"""**{personagem}** esqueceu de **{skills[ok-1]}**""",
                             colour=discord.Colour.blue()
                         )
-                        await ctx.send(embed=confirmacao)
+                        await canal.send(embed=confirmacao)
                     else:
                         await ctx.send("Erro no aprendizado da habilidade")
                 else:
-                    await ctx.send(f"""**{personagem}** ignorou a habilidade **{nome_skill}**""")
+                    await canal.send(f"""**{personagem}** ignorou a habilidade **{nome_skill}**""")
         else:
             await ctx.send(f"""**{personagem}** já conhece essa habildade.""")
     else:
         await ctx.send(f"""Esta habilidade não existe.""")
 
 @bot.command()
-async def esquecer_skill(ctx, personagem):
+async def esquecer_skill(ctx, personagem, canal : discord.TextChannel):
     personagem_id = Database.personagem_id(personagem)
     persona_id = Database.persona_equipada(personagem_id)
     nome = Database.nome_persona(persona_id)
@@ -1526,7 +1527,7 @@ async def esquecer_skill(ctx, personagem):
     emojis_raw = ["1️⃣", "2️⃣", "3️⃣", "4️⃣", "5️⃣", "6️⃣", "7️⃣", "8️⃣"]
     for i in range(len(skills)):
         embed.add_field(name=emojis_disc[i], value=skills[i], inline=True)
-    embed_msg = await ctx.send(embed=embed)
+    embed_msg = await canal.send(embed=embed)
     for j in range(len(skills)):
         await embed_msg.add_reaction(emoji=emojis_raw[j])
     await embed_msg.add_reaction(emoji="❌")
@@ -1561,11 +1562,11 @@ async def esquecer_skill(ctx, personagem):
                 description=f"""**{personagem}** esqueceu de **{skills[ok-1]}**""",
                 colour=discord.Colour.blue()
             )
-            await ctx.send(embed=confirmacao)
+            await canal.send(embed=confirmacao)
         else:
             await ctx.send("Erro no esquecimento da habilidade")
     else:
-        await ctx.send(f"""**Esquecimento cancelado**""")
+        await canal.send(f"""**Esquecimento cancelado**""")
 
 @bot.command()
 async def adicionar_horda(ctx, tipo, *personagem):
@@ -1580,6 +1581,7 @@ async def adicionar_horda(ctx, tipo, *personagem):
             horda_mult_atk.append(0)
             horda_mult_def.append(0)
             horda_mult_acc.append(0)
+            horda_mult_evs.append(0)
             horda_elem_dano.append([0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0])
             await ctx.send(f"""**{nome}** foi adicionado à horda.""")
         else:
@@ -1591,6 +1593,7 @@ async def adicionar_horda(ctx, tipo, *personagem):
             horda_mult_atk.append(0)
             horda_mult_def.append(0)
             horda_mult_acc.append(0)
+            horda_mult_evs.append(0)
             horda_elem_dano.append([0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0])
             await ctx.send(f"""**{nome}** foi adicionado à horda.""")
         else:
@@ -1606,6 +1609,7 @@ async def adicionar_party(ctx, personagem):
         party_mult_atk.append(0)
         party_mult_def.append(0)
         party_mult_acc.append(0)
+        party_mult_evs.append(0)
         party_elem_dano.append([0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0])
         await ctx.send(f"""**{personagem}** foi adicionado à Party.""")
     else:
@@ -1622,6 +1626,7 @@ async def remover_party(ctx, personagem):
                 del party_mult_atk[i]
                 del party_mult_def[i]
                 del party_mult_acc[i]
+                del party_mult_evs[i]
                 del party_elem_dano[i]
                 await ctx.send(f"""**{personagem}** foi removido da Party.""")
                 achou = 1
@@ -1645,6 +1650,7 @@ async def remover_horda(ctx, *personagem):
                 del horda_mult_atk[i]
                 del horda_mult_def[i]
                 del horda_mult_acc[i]
+                del horda_mult_evs[i]
                 del horda_elem_dano[i]
                 await ctx.send(f"""**{nome}** foi removido da horda.""")
                 achou = 1
@@ -1695,7 +1701,7 @@ async def mostrar_horda(ctx):
         await ctx.send("A horda está vazia")
 
 @bot.command()
-async def calcular_turnos(ctx):
+async def calcular_turnos(ctx, canal : discord.TextChannel):
     ordem = []
     if horda != [] and party != []:
         embed = discord.Embed(
@@ -1734,13 +1740,13 @@ async def calcular_turnos(ctx):
                     await ctx.send("Digite um número entre 0 e 100.")
             lider_id = Database.personagem_id(party[0])
             usuario = Database.discord_user(lider_id)
-            dado = await Dado.rolagem_pronta(bot, ctx, party[0], usuario, 1, 100)
+            dado = await Dado.rolagem_pronta(bot, canal, party[0], usuario, 1, 100)
             if dado <= valor_criterio:
                 ordem1 = []
                 ordem2 = []
                 quant1 = []
                 quant2 = []
-                await ctx.send(f"""O grupo tirou um dado de {dado} e conseguiu emboscar a Shadow, vocês atacarão primeiro.""")
+                await canal.send(f"""O grupo tirou um dado de {dado} e conseguiu emboscar a Shadow, vocês atacarão primeiro.""")
                 for personagem in party:
                     personagem_id = Database.personagem_id(personagem)
                     persona_id = Database.persona_equipada(personagem_id)
@@ -1771,7 +1777,7 @@ async def calcular_turnos(ctx):
             else:
                 ordem1 = []
                 quant1 = []
-                await ctx.send(f"""O grupo tirou um dado de {dado} e falhou em emboscar a shadow, vocês atacarão de acordo com a sua agilidade.""")
+                await canal.send(f"""O grupo tirou um dado de {dado} e falhou em emboscar a shadow, vocês atacarão de acordo com a sua agilidade.""")
                 for personagem in party:
                     personagem_id = Database.personagem_id(personagem)
                     persona_id = Database.persona_equipada(personagem_id)
@@ -1809,7 +1815,7 @@ async def calcular_turnos(ctx):
                 i += 1
             texto[:-1]
             embed.add_field(name="ORDEM:", value=texto, inline=False)
-            await ctx.send(embed=embed)
+            await canal.send(embed=embed)
         elif ok == 2:
             next = 0
             while next == 0:
@@ -1824,11 +1830,11 @@ async def calcular_turnos(ctx):
                     await ctx.send("Digite um número entre 0 e 100.")
             lider_id = Database.personagem_id(party[0])
             usuario = Database.discord_user(lider_id)
-            dado = await Dado.rolagem_pronta(bot, ctx, party[0], usuario, 1, 100)
+            dado = await Dado.rolagem_pronta(bot, canal, party[0], usuario, 1, 100)
             if dado <= valor_criterio:
                 ordem1 = []
                 quant1 = []
-                await ctx.send(f"""O grupo tirou um dado de {dado} e conseguiu evitar ser emboscado, vocês atacarão de acordo co ma sua agilidade.""")
+                await canal.send(f"""O grupo tirou um dado de {dado} e conseguiu evitar ser emboscado, vocês atacarão de acordo co ma sua agilidade.""")
                 for personagem in party:
                     personagem_id = Database.personagem_id(personagem)
                     persona_id = Database.persona_equipada(personagem_id)
@@ -1861,7 +1867,7 @@ async def calcular_turnos(ctx):
                 ordem2 = []
                 quant1 = []
                 quant2 = []
-                await ctx.send(f"""O grupo tirou um dado de {dado} e falhou em evitar ser emboscado, vocês atacarão por último.""")
+                await canal.send(f"""O grupo tirou um dado de {dado} e falhou em evitar ser emboscado, vocês atacarão por último.""")
                 for personagem in party:
                     personagem_id = Database.personagem_id(personagem)
                     persona_id = Database.persona_equipada(personagem_id)
@@ -1900,7 +1906,7 @@ async def calcular_turnos(ctx):
                 i += 1
             texto[:-1]
             embed.add_field(name="ORDEM:", value=texto, inline=False)
-            await ctx.send(embed=embed)
+            await canal.send(embed=embed)
         else:
             await ctx.send("Cálculo cancelado.")
     else:
@@ -1917,18 +1923,381 @@ def insertion_sort(arr, ordem):
                 j -= 1
         arr[j+1] = key 
         ordem[j+1] = key2
+    
+@bot.command()
+async def ataque_fisico(ctx, sentido, codigo1, codigo2, canal : discord.TextChannel):
+    try:
+        codigo1 = int(codigo1)
+        codigo2 = int(codigo2)
+        if sentido == "party":
+            personagem_id = Database.personagem_id(party[codigo1-1])
+            persona_id = Database.persona_equipada(personagem_id)
+            usuario = Database.discord_user(personagem_id)
+            equips = Database.itens_equipados(personagem_id)
+            meelee = equips[0]
+            atributos_atacante = Database.atributos(personagem_id, persona_id)
+            for i in range(len(atributos_atacante)):
+                    atributos_atacante[i] = atributos_atacante[i][1]
+            atributos_soma = Database.atributos_soma(personagem_id)
+            atributos_porcent = Database.atributos_porcent(personagem_id)
+            for i in range(len(atributos_atacante)):
+                a = atributos_atacante[i] + atributos_soma[i]
+                p = (atributos_porcent[i]/100) * a
+                if atributos_soma[i] > 0:
+                    atributos_atacante[i] += int(a+p)
+                else:
+                    atributos_atacante[i] += int(p)
+            if horda[codigo2-1][0] == "s":
+                shadow_id = Database.shadow_id(horda[codigo2-1][1])
+                fraquezas = Database.fraquezas(shadow_id)
+                atributos_defensor = Database.atributos_iniciais(shadow_id)
+                for i in range(len(atributos_defensor)):
+                    atributos_defensor[i] = atributos_defensor[i][1]
+                atributos_soma = Database.atributos_soma(shadow_id)
+                atributos_porcent = Database.atributos_porcent(shadow_id)
+                for i in range(len(atributos_defensor)):
+                    a = atributos_defensor[i] + atributos_soma[i]
+                    p = (atributos_porcent[i]/100) * a
+                    if atributos_soma[i] > 0:
+                        atributos_defensor[i] += int(a+p)
+                    else:
+                        atributos_defensor[i] += int(p)
+                next = 0
+                while next == 0:
+                    await ctx.send("Qual o valor critério? (0 a 100)")
+                    msg = await bot.wait_for('message')
+                    mensagem = msg.content
+                    try:
+                        var = int(mensagem)
+                        if var > 0 and var <= 100:
+                            next = 1
+                    except:
+                        await ctx.send("Digite um número entre 0 e 100.")
+                valor_criterio = var + (5*(atributos_atacante[5]//5)) - (5*(atributos_defensor[6]//5)) + (10*party_mult_acc[codigo1-1]) - (10*horda_mult_evs[codigo1-1])
+                await canal.send(f"""Você precisa tirar um valor menor que **{valor_criterio}** no dado""")
+                dado = await Dado.rolagem_pronta(bot, canal, party[codigo1-1], usuario, 1, 100)
+                if dado <= valor_criterio:
+                    valor_arma = Database.valor_item(meelee)
+                    dano = int(math.sqrt(valor_arma) * math.sqrt(atributos_atacante[2]))
+                    if party_mult_atk[codigo1-1] > 0:
+                        dano = dano + (0,3 * party_mult_atk[codigo1-1] * dano)
+                    elif party_mult_atk[codigo1-1] < 0:
+                        dano = dano - (0,3 * party_mult_atk[codigo1-1] * dano)
+                    dano_mitigado = int(dano / math.sqrt(atributos_defensor[4]*8))
+                    if horda_mult_def[codigo2-1] > 0:
+                        dano_mitigado = dano + (0,3 * horda_mult_def[codigo2-1] * dano)
+                    elif horda_mult_def[codigo2-1] < 0:
+                        dano = dano - (0,3 * horda_mult_def[codigo2-1] * dano)
+                    dano = dano - dano_mitigado
+                    if horda_elem_dano[codigo2-1][0] > 0:
+                        if horda_elem_dano[codigo2-1][0] == 1:
+                            dano = dano * 2
+                            await canal.send(f"""**{party[codigo1-1]}** causou **{dano}** de dano e derrubou **{horda[codigo2-1][1]}**!""")
+                        elif horda_elem_dano[codigo2-1][0] == 2:
+                            dano = dano / 2
+                            await canal.send(f"""**RESISTIU! {party[codigo1-1]}** causou **{dano}** de dano em **{horda[codigo2-1][1]}**!""")
+                        elif horda_elem_dano[codigo2-1][0] == 3:
+                            dano = 0
+                            await canal.send(f"""**NULIFICOU! **{horda[codigo2-1][1]}** nulificou todo o dano causado!""")
+                        elif horda_elem_dano[codigo2-1][0] == 4:
+                            await canal.send(f"""**DRENOU! **{horda[codigo2-1][1]}** se curou em **{dano}**!""")
+                        elif horda_elem_dano[codigo2-1][0] == 5:
+                            await canal.send(f"""**REFLETIU! **{horda[codigo2-1][1]}** refletiu **{dano}** de dano em **{party[codigo1-1]}**!""")
+                        else:
+                            await canal.send(f"""**{party[codigo1-1]}** causou **{dano}** de dano em **{horda[codigo2-1][1]}**!""")
+                    elif fraquezas[0] == 1:
+                        dano = dano * 2
+                        await canal.send(f"""**{party[codigo1-1]}** causou **{dano}** de dano e derrubou **{horda[codigo2-1][1]}**!""")
+                    elif fraquezas[0] == 2:
+                        dano = dano / 2
+                        await canal.send(f"""**RESISTIU! {party[codigo1-1]}** causou **{dano}** de dano em **{horda[codigo2-1][1]}**!""")
+                    elif fraquezas[0] == 3:
+                        dano = 0
+                        await canal.send(f"""**NULIFICOU! **{horda[codigo2-1][1]}** nulificou todo o dano causado!""")
+                    elif fraquezas[0] == 4:
+                        await canal.send(f"""**DRENOU! **{horda[codigo2-1][1]}** se curou em **{dano}**!""")
+                    elif fraquezas[0] == 5:
+                        await canal.send(f"""**REFLETIU! **{horda[codigo2-1][1]}** refletiu **{dano}** de dano em **{party[codigo1-1]}**!""")
+                    else:
+                        await canal.send(f"""**{party[codigo1-1]}** causou **{dano}** de dano em **{horda[codigo2-1][1]}**!""")
+                else:
+                    await canal.send(f"""**{party[codigo1-1]}** errou o ataque físico  em **{horda[codigo2-1][1]}**""")
+            else:
+                defensor_id = Database.personagem_id(party[codigo2-1])
+                d_persona_id = Database.persona_equipada(personagem_id)
+                equips_defensor = Database.itens_equipados()
+                armadura_defensor = equips[2]
+                fraquezas = Database.fraquezas(d_persona_id)
+                atributos_defensor = Database.atributos(defensor_id, d_persona_id)
+                for i in range(len(atributos_defensor)):
+                    atributos_defensor[i] = atributos_defensor[i][1]
+                atributos_soma = Database.atributos_soma(defensor_id)
+                atributos_porcent = Database.atributos_porcent(defensor_id)
+                for i in range(len(atributos_defensor)):
+                    a = atributos_defensor[i] + atributos_soma[i]
+                    p = (atributos_porcent[i]/100) * a
+                    if atributos_soma[i] > 0:
+                        atributos_defensor[i] += int(a+p)
+                    else:
+                        atributos_defensor[i] += int(p)
+                next = 0
+                while next == 0:
+                    await ctx.send("Qual o valor critério? (0 a 100)")
+                    msg = await bot.wait_for('message')
+                    mensagem = msg.content
+                    try:
+                        var = int(mensagem)
+                        if var > 0 and var <= 100:
+                            next = 1
+                    except:
+                        await ctx.send("Digite um número entre 0 e 100.")
+                valor_criterio = var + (5*(atributos_atacante[5]//5)) - (5*(atributos_defensor[6]//5)) + (10*party_mult_acc[codigo1-1]) - (10*horda_mult_evs[codigo1-1])
+                await canal.send(f"""Você precisa tirar um valor menor que **{valor_criterio}** no dado""")
+                dado = await Dado.rolagem_pronta(bot, canal, party[codigo1-1], usuario, 1, 100)
+                if dado <= valor_criterio:
+                    valor_arma = Database.valor_item(meelee)
+                    dano = int(math.sqrt(valor_arma) * math.sqrt(atributos_atacante[2]))
+                    if party_mult_atk[codigo1-1] > 0:
+                        dano = dano + (0,3 * party_mult_atk[codigo1-1] * dano)
+                    elif party_mult_atk[codigo1-1] < 0:
+                        dano = dano - (0,3 * party_mult_atk[codigo1-1] * dano)
+                    if armadura_defensor == None:
+                        valor_armadura = 0
+                    else:
+                        valor_armadura = Database.valor_item(armadura_defensor)
+                    dano_mitigado = int(dano / math.sqrt((atributos_defensor[4]*8)+valor_armadura))
+                    if horda_mult_def[codigo2-1] > 0:
+                        dano_mitigado = dano + (0,3 * horda_mult_def[codigo2-1] * dano)
+                    elif horda_mult_def[codigo2-1] < 0:
+                        dano = dano - (0,3 * horda_mult_def[codigo2-1] * dano)
+                    dano = dano - dano_mitigado
+                    if horda_elem_dano[codigo2-1][0] > 0:
+                        if horda_elem_dano[codigo2-1][0] == 1:
+                            dano = dano * 2
+                            await canal.send(f"""**{party[codigo1-1]}** causou **{dano}** de dano e derrubou **{horda[codigo2-1][1]}**!""")
+                        elif horda_elem_dano[codigo2-1][0] == 2:
+                            dano = dano / 2
+                            await canal.send(f"""**RESISTIU! {party[codigo1-1]}** causou **{dano}** de dano em **{horda[codigo2-1][1]}**!""")
+                        elif horda_elem_dano[codigo2-1][0] == 3:
+                            dano = 0
+                            await canal.send(f"""**NULIFICOU! **{horda[codigo2-1][1]}** nulificou todo o dano causado!""")
+                        elif horda_elem_dano[codigo2-1][0] == 4:
+                            await canal.send(f"""**DRENOU! **{horda[codigo2-1][1]}** se curou em **{dano}**!""")
+                        elif horda_elem_dano[codigo2-1][0] == 5:
+                            await canal.send(f"""**REFLETIU! **{horda[codigo2-1][1]}** refletiu **{dano}** de dano em **{party[codigo1-1]}**!""")
+                        else:
+                            await canal.send(f"""**{party[codigo1-1]}** causou **{dano}** de dano em **{horda[codigo2-1][1]}**!""")
+                    elif fraquezas[0] == 1:
+                        dano = dano * 2
+                        await canal.send(f"""**{party[codigo1-1]}** causou **{dano}** de dano e derrubou **{horda[codigo2-1][1]}**!""")
+                    elif fraquezas[0] == 2:
+                        dano = dano / 2
+                        await canal.send(f"""**RESISTIU! {party[codigo1-1]}** causou **{dano}** de dano em **{horda[codigo2-1][1]}**!""")
+                    elif fraquezas[0] == 3:
+                        dano = 0
+                        await canal.send(f"""**NULIFICOU! **{horda[codigo2-1][1]}** nulificou todo o dano causado!""")
+                    elif fraquezas[0] == 4:
+                        await canal.send(f"""**DRENOU! **{horda[codigo2-1][1]}** se curou em **{dano}**!""")
+                    elif fraquezas[0] == 5:
+                        await canal.send(f"""**REFLETIU! **{horda[codigo2-1][1]}** refletiu **{dano}** de dano em **{party[codigo1-1]}**!""")
+                    else:
+                        await canal.send(f"""**{party[codigo1-1]}** causou **{dano}** de dano em **{horda[codigo2-1][1]}**!""")
+                else:
+                    await ctx.send(f"""**{party[codigo1-1]}** errou o ataque físico  em **{horda[codigo2-1][1]}**""")
+        elif sentido == "horda":
+            personagem_id = Database.personagem_id(party[codigo2-1])
+            persona_id = Database.persona_equipada(personagem_id)
+            usuario = Database.discord_user(personagem_id)
+            equips = Database.itens_equipados(personagem_id)
+            fraquezas = Database.fraquezas(persona_id)
+            armadura = equips[2]
+            atributos_defensor = Database.atributos(personagem_id, persona_id)
+            for i in range(len(atributos_defensor)):
+                atributos_defensor[i] = atributos_defensor[i][1]
+            atributos_soma = Database.atributos_soma(personagem_id)
+            atributos_porcent = Database.atributos_porcent(personagem_id)
+            for i in range(len(atributos_defensor)):
+                a = atributos_defensor[i] + atributos_soma[i]
+                p = (atributos_porcent[i]/100) * a
+                if atributos_soma[i] > 0:
+                    atributos_defensor[i] += int(a+p)
+                else:
+                    atributos_defensor[i] += int(p)
+            if horda[codigo1-1][0] == "s":
+                shadow_id = Database.shadow_id(horda[codigo1-1][1])
+                atributos_atacante = Database.atributos_iniciais(shadow_id)
+                for i in range(len(atributos_atacante)):
+                    atributos_atacante[i] = atributos_atacante[i][1]
+                atributos_soma = Database.atributos_soma(shadow_id)
+                atributos_porcent = Database.atributos_porcent(shadow_id)
+                for i in range(len(atributos_atacante)):
+                    a = atributos_atacante[i] + atributos_soma[i]
+                    p = (atributos_porcent[i]/100) * a
+                    if atributos_soma[i] > 0:
+                        atributos_atacante[i] += int(a+p)
+                    else:
+                        atributos_atacante[i] += int(p)
+                next = 0
+                while next == 0:
+                    await ctx.send("Qual o valor critério? (0 a 100)")
+                    msg = await bot.wait_for('message')
+                    mensagem = msg.content
+                    try:
+                        var = int(mensagem)
+                        if var > 0 and var <= 100:
+                            next = 1
+                    except:
+                        await ctx.send("Digite um número entre 0 e 100.")
+                valor_criterio = var + (5*(atributos_atacante[5]//5)) - (5*(atributos_defensor[6]//5)) + (10*horda_mult_acc[codigo1-1])- (10*party_mult_evs[codigo1-1])
+                await canal.send(f"""Você precisa tirar um valor menor que **{valor_criterio}** no dado""")
+                dado = await Dado.rolagem_pronta(bot, canal, "Mestre", "Axuáti#9639", 1, 100)
+                if dado <= valor_criterio:
+                    dano = int(5 * math.sqrt(atributos_atacante[2]))
+                    if horda_mult_atk[codigo1-1] > 0:
+                        dano = dano + (0,3 * horda_mult_atk[codigo1-1] * dano)
+                    elif horda_mult_atk[codigo1-1] < 0:
+                        dano = dano - (0,3 * horda_mult_atk[codigo1-1] * dano)
+                    if armadura == None:
+                        valor_armadura = 0
+                    else:
+                        valor_armadura = Database.valor_item(armadura)
+                    if armadura == None:
+                        valor_armadura = 0
+                    else:
+                        valor_armadura = Database.valor_item(armadur)
+                    dano_mitigado = int(dano / math.sqrt((atributos_defensor[4]*8) + valor_armadura))
+                    if party_mult_def[codigo2-1] > 0:
+                        dano_mitigado = dano + (0,3 *party_mult_def[codigo2-1] * dano)
+                    elif party_mult_def[codigo2-1] < 0:
+                        dano = dano - (0,3 * party_mult_def[codigo2-1] * dano)
+                    dano = dano - dano_mitigado
+                    if party_elem_dano[codigo2-1][0] > 0:
+                        if party_elem_dano[codigo2-1][0] == 1:
+                            dano = dano * 2
+                            await canal.send(f"""**{horda[codigo1-1][1]}** causou **{dano}** de dano e derrubou **{party[codigo2-1]}**!""")
+                        elif party_elem_dano[codigo2-1][0] == 2:
+                            dano = dano / 2
+                            await canal.send(f"""**RESISTIU! {horda[codigo1-1][1]}** causou **{dano}** de dano em **{party[codigo2-1]}**!""")
+                        elif party_elem_dano[codigo2-1][0] == 3:
+                            dano = 0
+                            await canal.send(f"""**NULIFICOU! **{party[codigo2-1]}** nulificou todo o dano causado!""")
+                        elif party_elem_dano[codigo2-1][0] == 4:
+                            await canal.send(f"""**DRENOU! **{party[codigo2-1]}** se curou em **{dano}**!""")
+                        elif party_elem_dano[codigo2-1][0] == 5:
+                            await canal.send(f"""**REFLETIU! **{party[codigo2-1]}** refletiu **{dano}** de dano em **{horda[codigo1-1][1]}**!""")
+                        else:
+                            await canal.send(f"""**{horda[codigo1-1][1]}** causou **{dano}** de dano em **{party[codigo2-1]}**!""")
+                    elif fraquezas[0] == 1:
+                        dano = dano * 2
+                        await canal.send(f"""**{horda[codigo1-1][1]}** causou **{dano}** de dano e derrubou **{party[codigo2-1]}**!""")
+                    elif fraquezas[0] == 2:
+                        dano = dano / 2
+                        await canal.send(f"""**RESISTIU! {horda[codigo1-1][1]}** causou **{dano}** de dano em **{party[codigo2-1]}**!""")
+                    elif fraquezas[0] == 3:
+                        dano = 0
+                        await canal.send(f"""**NULIFICOU! **{party[codigo2-1]}** nulificou todo o dano causado!""")
+                    elif fraquezas[0] == 4:
+                        await canal.send(f"""**DRENOU! **{party[codigo2-1]}** se curou em **{dano}**!""")
+                    elif fraquezas[0] == 5:
+                        await canal.send(f"""**REFLETIU! **{party[codigo2-1]}** refletiu **{dano}** de dano em **{horda[codigo1-1][1]}**!""")
+                    else:
+                        await canal.send(f"""**{horda[codigo1-1][1]}** causou **{dano}** de dano em **{party[codigo2-1]}**!""")
+                else:
+                    await canal.send(f"""**{horda[codigo1-1][1]}** errou o ataque físico  em **{party[codigo2-1]}**""")
+            else:
+                atacante_id = Database.personagem_id(horda[codigo1-1])
+                a_persona_id = Database.persona_equipada(personagem_id)
+                equips_atacante = Database.itens_equipados()
+                meelee_atacante = equips[0]
+                atributos_atacante = Database.atributos(atacante_id, d_persona_id)
+                for i in range(len(atributos_atacante)):
+                    atributos_atacante[i] = atributos_atacante[i][1]
+                atributos_soma = Database.atributos_soma(atacante_id)
+                atributos_porcent = Database.atributos_porcent(atacante_id)
+                for i in range(len(atributos_atacante)):
+                    a = atributos_atacante[i] + atributos_soma[i]
+                    p = (atributos_porcent[i]/100) * a
+                    if atributos_soma[i] > 0:
+                        atributos_atacante[i] += int(a+p)
+                    else:
+                        atributos_atacante[i] += int(p)
+                next = 0
+                while next == 0:
+                    await ctx.send("Qual o valor critério? (0 a 100)")
+                    msg = await bot.wait_for('message')
+                    mensagem = msg.content
+                    try:
+                        var = int(mensagem)
+                        if var > 0 and var <= 100:
+                            next = 1
+                    except:
+                        await ctx.send("Digite um número entre 0 e 100.")
+                valor_criterio = var + (5*(atributos_atacante[5]//5)) - (5*(atributos_defensor[6]//5)) + (10*horda_mult_acc[codigo1-1])- (10*party_mult_evs[codigo1-1])
+                await canal.send(f"""Você precisa tirar um valor menor que **{valor_criterio}** no dado""")
+                dado = await Dado.rolagem_pronta(bot, canal, "Mestre", "Axuáti#9639", 1, 100)
+                if dado <= valor_criterio:
+                    valor_arma = Database.valor_item(meelee_atacante)
+                    dano = int(math.sqrt(valor_arma) * math.sqrt(atributos_atacante[2]))
+                    if horda_mult_atk[codigo1-1] > 0:
+                        dano = dano + (0,3 * horda_mult_atk[codigo1-1] * dano)
+                    elif horda_mult_atk[codigo1-1] < 0:
+                        dano = dano - (0,3 * horda_mult_atk[codigo1-1] * dano)
+                    if armadura == None:
+                        valor_armadura = 0
+                    else:
+                        valor_armadura = Database.valor_item(armadura)
+                    dano_mitigado = int(dano / math.sqrt((atributos_defensor[4]*8)+valor_armadura))
+                    if party_mult_def[codigo2-1] > 0:
+                        dano_mitigado = dano + (0,3 * party_mult_def[codigo2-1] * dano)
+                    elif party_mult_def[codigo2-1] < 0:
+                        dano = dano - (0,3 * party_mult_def[codigo2-1] * dano)
+                    dano = dano - dano_mitigado
+                    if party_elem_dano[codigo2-1][0] > 0:
+                        if party_elem_dano[codigo2-1][0] == 1:
+                            dano = dano * 2
+                            await canal.send(f"""**{horda[codigo1-1][1]}** causou **{dano}** de dano e derrubou **{party[codigo2-1]}**!""")
+                        elif party_elem_dano[codigo2-1][0] == 2:
+                            dano = dano / 2
+                            await canal.send(f"""**RESISTIU! {horda[codigo1-1][1]}** causou **{dano}** de dano em **{party[codigo2-1]}**!""")
+                        elif party_elem_dano[codigo2-1][0] == 3:
+                            dano = 0
+                            await canal.send(f"""**NULIFICOU! **{party[codigo2-1]}** nulificou todo o dano causado!""")
+                        elif party_elem_dano[codigo2-1][0] == 4:
+                            await canal.send(f"""**DRENOU! **{party[codigo2-1]}** se curou em **{dano}**!""")
+                        elif party_elem_dano[codigo2-1][0] == 5:
+                            await canal.send(f"""**REFLETIU! **{party[codigo2-1]}** refletiu **{dano}** de dano em **{horda[codigo1-1][1]}**!""")
+                        else:
+                            await canal.send(f"""**{horda[codigo1-1][1]}** causou **{dano}** de dano em **{party[codigo2-1]}**!""")
+                    elif fraquezas[0] == 1:
+                        dano = dano * 2
+                        await canal.send(f"""**{horda[codigo1-1][1]}** causou **{dano}** de dano e derrubou **{party[codigo2-1]}**!""")
+                    elif fraquezas[0] == 2:
+                        dano = dano / 2
+                        await canal.send(f"""**RESISTIU! {horda[codigo1-1][1]}** causou **{dano}** de dano em **{party[codigo2-1]}**!""")
+                    elif fraquezas[0] == 3:
+                        dano = 0
+                        await canal.send(f"""**NULIFICOU! **{party[codigo2-1]}** nulificou todo o dano causado!""")
+                    elif fraquezas[0] == 4:
+                        await canal.send(f"""**DRENOU! **{party[codigo2-1]}** se curou em **{dano}**!""")
+                    elif fraquezas[0] == 5:
+                        await canal.send(f"""**REFLETIU! **{party[codigo2-1]}** refletiu **{dano}** de dano em **{horda[codigo1-1][1]}**!""")
+                    else:
+                        await canal.send(f"""**{horda[codigo1-1][1]}** causou **{dano}** de dano em **{party[codigo2-1]}**!""")
+                else:
+                    await canal.send(f"""**{horda[codigo1-1][1]}** errou o ataque físico  em **{party[codigo2-1]}**""")
+    except:
+        await canal.send("Algo está incorreto.")
 
 @bot.command()
-async def ataque_fisico(ctx, sentido, codigo1, codigo2):
-    #try:
-    codigo1 = int(codigo1)
-    codigo2 = int(codigo2)
-    if sentido == "party":
+async def tiro(ctx, codigo1, codigo2, canal : discord.TextChannel):
+    try:
+        codigo1 = int(codigo1)
+        codigo2 = int(codigo2)
         personagem_id = Database.personagem_id(party[codigo1-1])
         persona_id = Database.persona_equipada(personagem_id)
         usuario = Database.discord_user(personagem_id)
         equips = Database.itens_equipados(personagem_id)
-        meelee = equips[0]
+        ranged = equips[1]
         atributos_atacante = Database.atributos(personagem_id, persona_id)
         for i in range(len(atributos_atacante)):
                 atributos_atacante[i] = atributos_atacante[i][1]
@@ -1956,11 +2325,22 @@ async def ataque_fisico(ctx, sentido, codigo1, codigo2):
                     atributos_defensor[i] += int(a+p)
                 else:
                     atributos_defensor[i] += int(p)
-            valor_criterio = 50 + (5*(atributos_atacante[5]//5)) - (5*(atributos_defensor[6]//5))
-            await ctx.send(f"""Você precisa tirar um valor menor que **{valor_criterio}** no dado""")
-            dado = await Dado.rolagem_pronta(bot, ctx, party[codigo1-1], usuario, 1, 100)
+            next = 0
+            while next == 0:
+                await ctx.send("Qual o valor critério? (0 a 100)")
+                msg = await bot.wait_for('message')
+                mensagem = msg.content
+                try:
+                    var = int(mensagem)
+                    if var > 0 and var <= 100:
+                        next = 1
+                except:
+                    await ctx.send("Digite um número entre 0 e 100.")
+            valor_criterio = var + (5*(atributos_atacante[5]//5)) - (5*(atributos_defensor[6]//5)) + (10*party_mult_acc[codigo1-1]) - (10*horda_mult_evs[codigo1-1])
+            await canal.send(f"""Você precisa tirar um valor menor que **{valor_criterio}** no dado""")
+            dado = await Dado.rolagem_pronta(bot, canal, party[codigo1-1], usuario, 1, 100)
             if dado <= valor_criterio:
-                valor_arma = Database.valor_item(meelee)
+                valor_arma = Database.valor_item(ranged)
                 dano = int(math.sqrt(valor_arma) * math.sqrt(atributos_atacante[2]))
                 if party_mult_atk[codigo1-1] > 0:
                     dano = dano + (0,3 * party_mult_atk[codigo1-1] * dano)
@@ -1973,38 +2353,38 @@ async def ataque_fisico(ctx, sentido, codigo1, codigo2):
                     dano = dano - (0,3 * horda_mult_def[codigo2-1] * dano)
                 dano = dano - dano_mitigado
                 if horda_elem_dano[codigo2-1][0] > 0:
-                    if orda_elem_dano[codigo2-1][0] == 1:
+                    if horda_elem_dano[codigo2-1][1] == 1:
                         dano = dano * 2
-                        await ctx.send(f"""**{party[codigo1-1]}** causou **{dano}** de dano e derrubou **{horda[codigo2-1][1]}**!""")
-                    elif orda_elem_dano[codigo2-1][0] == 2:
+                        await canal.send(f"""**{party[codigo1-1]}** causou **{dano}** de dano e derrubou **{horda[codigo2-1][1]}**!""")
+                    elif horda_elem_dano[codigo2-1][1] == 2:
                         dano = dano / 2
-                        await ctx.send(f"""**RESISTIU! {party[codigo1-1]}** causou **{dano}** de dano em **{horda[codigo2-1][1]}**!""")
-                    elif orda_elem_dano[codigo2-1][0] == 3:
+                        await canal.send(f"""**RESISTIU! {party[codigo1-1]}** causou **{dano}** de dano em **{horda[codigo2-1][1]}**!""")
+                    elif horda_elem_dano[codigo2-1][1] == 3:
                         dano = 0
-                        await ctx.send(f"""**NULIFICOU! **{horda[codigo2-1][1]}** nulificou todo o dano causado!""")
-                    elif orda_elem_dano[codigo2-1][0] == 4:
-                        await ctx.send(f"""**DRENOU! **{horda[codigo2-1][1]}** se curou em **{dano}**!""")
-                    elif orda_elem_dano[codigo2-1][0] == 5:
-                        await ctx.send(f"""**REFLETIU! **{horda[codigo2-1][1]}** refletiu **{dano}** de dano em **{party[codigo1-1]}**!""")
+                        await canal.send(f"""**NULIFICOU! **{horda[codigo2-1][1]}** nulificou todo o dano causado!""")
+                    elif horda_elem_dano[codigo2-1][1] == 4:
+                        await canal.send(f"""**DRENOU! **{horda[codigo2-1][1]}** se curou em **{dano}**!""")
+                    elif horda_elem_dano[codigo2-1][1] == 5:
+                        await canal.send(f"""**REFLETIU! **{horda[codigo2-1][1]}** refletiu **{dano}** de dano em **{party[codigo1-1]}**!""")
                     else:
-                        await ctx.send(f"""**{party[codigo1-1]}** causou **{dano}** de dano em **{horda[codigo2-1][1]}**!""")
+                        await canal.send(f"""**{party[codigo1-1]}** causou **{dano}** de dano em **{horda[codigo2-1][1]}**!""")
                 elif fraquezas[0] == 1:
                     dano = dano * 2
-                    await ctx.send(f"""**{party[codigo1-1]}** causou **{dano}** de dano e derrubou **{horda[codigo2-1][1]}**!""")
+                    await canal.send(f"""**{party[codigo1-1]}** causou **{dano}** de dano e derrubou **{horda[codigo2-1][1]}**!""")
                 elif fraquezas[0] == 2:
                     dano = dano / 2
-                    await ctx.send(f"""**RESISTIU! {party[codigo1-1]}** causou **{dano}** de dano em **{horda[codigo2-1][1]}**!""")
+                    await canal.send(f"""**RESISTIU! {party[codigo1-1]}** causou **{dano}** de dano em **{horda[codigo2-1][1]}**!""")
                 elif fraquezas[0] == 3:
                     dano = 0
-                    await ctx.send(f"""**NULIFICOU! **{horda[codigo2-1][1]}** nulificou todo o dano causado!""")
+                    await canal.send(f"""**NULIFICOU! **{horda[codigo2-1][1]}** nulificou todo o dano causado!""")
                 elif fraquezas[0] == 4:
-                    await ctx.send(f"""**DRENOU! **{horda[codigo2-1][1]}** se curou em **{dano}**!""")
+                    await canal.send(f"""**DRENOU! **{horda[codigo2-1][1]}** se curou em **{dano}**!""")
                 elif fraquezas[0] == 5:
-                    await ctx.send(f"""**REFLETIU! **{horda[codigo2-1][1]}** refletiu **{dano}** de dano em **{party[codigo1-1]}**!""")
+                    await canal.send(f"""**REFLETIU! **{horda[codigo2-1][1]}** refletiu **{dano}** de dano em **{party[codigo1-1]}**!""")
                 else:
-                    await ctx.send(f"""**{party[codigo1-1]}** causou **{dano}** de dano em **{horda[codigo2-1][1]}**!""")
+                    await canal.send(f"""**{party[codigo1-1]}** causou **{dano}** de dano em **{horda[codigo2-1][1]}**!""")
             else:
-                await ctx.send(f"""**{party[codigo1-1]}** errou o ataque físico  em **{horda[codigo2-1][1]}**""")
+                await canal.send(f"""**{party[codigo1-1]}** errou o tiro em **{horda[codigo2-1][1]}**""")
         else:
             defensor_id = Database.personagem_id(party[codigo2-1])
             d_persona_id = Database.persona_equipada(personagem_id)
@@ -2023,11 +2403,22 @@ async def ataque_fisico(ctx, sentido, codigo1, codigo2):
                     atributos_defensor[i] += int(a+p)
                 else:
                     atributos_defensor[i] += int(p)
-            valor_criterio = 50 + (5*(atributos_atacante[5]//5)) - (5*(atributos_defensor[6]//5))
-            await ctx.send(f"""Você precisa tirar um valor menor que **{valor_criterio}** no dado""")
-            dado = await Dado.rolagem_pronta(bot, ctx, party[codigo1-1], usuario, 1, 100)
+            next = 0
+            while next == 0:
+                await ctx.send("Qual o valor critério? (0 a 100)")
+                msg = await bot.wait_for('message')
+                mensagem = msg.content
+                try:
+                    var = int(mensagem)
+                    if var > 0 and var <= 100:
+                        next = 1
+                except:
+                    await ctx.send("Digite um número entre 0 e 100.")
+            valor_criterio = var + (5*(atributos_atacante[5]//5)) - (5*(atributos_defensor[6]//5)) + (10*party_mult_acc[codigo1-1]) - (10*horda_mult_evs[codigo1-1])
+            await canal.send(f"""Você precisa tirar um valor menor que **{valor_criterio}** no dado""")
+            dado = await Dado.rolagem_pronta(bot, canal, party[codigo1-1], usuario, 1, 100)
             if dado <= valor_criterio:
-                valor_arma = Database.valor_item(meelee)
+                valor_arma = Database.valor_item(ranged)
                 dano = int(math.sqrt(valor_arma) * math.sqrt(atributos_atacante[2]))
                 if party_mult_atk[codigo1-1] > 0:
                     dano = dano + (0,3 * party_mult_atk[codigo1-1] * dano)
@@ -2043,203 +2434,375 @@ async def ataque_fisico(ctx, sentido, codigo1, codigo2):
                 elif horda_mult_def[codigo2-1] < 0:
                     dano = dano - (0,3 * horda_mult_def[codigo2-1] * dano)
                 dano = dano - dano_mitigado
-                if horda_elem_dano[codigo2-1][0] > 0:
-                    if horda_elem_dano[codigo2-1][0] == 1:
+                if horda_elem_dano[codigo2-1][1] > 0:
+                    if horda_elem_dano[codigo2-1][1] == 1:
                         dano = dano * 2
-                        await ctx.send(f"""**{party[codigo1-1]}** causou **{dano}** de dano e derrubou **{horda[codigo2-1][1]}**!""")
-                    elif horda_elem_dano[codigo2-1][0] == 2:
+                        await canal.send(f"""**{party[codigo1-1]}** causou **{dano}** de dano e derrubou **{horda[codigo2-1][1]}**!""")
+                    elif horda_elem_dano[codigo2-1][1] == 2:
                         dano = dano / 2
-                        await ctx.send(f"""**RESISTIU! {party[codigo1-1]}** causou **{dano}** de dano em **{horda[codigo2-1][1]}**!""")
-                    elif horda_elem_dano[codigo2-1][0] == 3:
+                        await canal.send(f"""**RESISTIU! {party[codigo1-1]}** causou **{dano}** de dano em **{horda[codigo2-1][1]}**!""")
+                    elif horda_elem_dano[codigo2-1][1] == 3:
                         dano = 0
-                        await ctx.send(f"""**NULIFICOU! **{horda[codigo2-1][1]}** nulificou todo o dano causado!""")
-                    elif horda_elem_dano[codigo2-1][0] == 4:
-                        await ctx.send(f"""**DRENOU! **{horda[codigo2-1][1]}** se curou em **{dano}**!""")
-                    elif horda_elem_dano[codigo2-1][0] == 5:
-                        await ctx.send(f"""**REFLETIU! **{horda[codigo2-1][1]}** refletiu **{dano}** de dano em **{party[codigo1-1]}**!""")
+                        await canal.send(f"""**NULIFICOU! **{horda[codigo2-1][1]}** nulificou todo o dano causado!""")
+                    elif horda_elem_dano[codigo2-1][1] == 4:
+                        await canal.send(f"""**DRENOU! **{horda[codigo2-1][1]}** se curou em **{dano}**!""")
+                    elif horda_elem_dano[codigo2-1][1] == 5:
+                        await canal.send(f"""**REFLETIU! **{horda[codigo2-1][1]}** refletiu **{dano}** de dano em **{party[codigo1-1]}**!""")
                     else:
-                        await ctx.send(f"""**{party[codigo1-1]}** causou **{dano}** de dano em **{horda[codigo2-1][1]}**!""")
-                elif fraquezas[0] == 1:
+                        await canal.send(f"""**{party[codigo1-1]}** causou **{dano}** de dano em **{horda[codigo2-1][1]}**!""")
+                elif fraquezas[1] == 1:
                     dano = dano * 2
-                    await ctx.send(f"""**{party[codigo1-1]}** causou **{dano}** de dano e derrubou **{horda[codigo2-1][1]}**!""")
-                elif fraquezas[0] == 2:
+                    await canal.send(f"""**{party[codigo1-1]}** causou **{dano}** de dano e derrubou **{horda[codigo2-1][1]}**!""")
+                elif fraquezas[1] == 2:
                     dano = dano / 2
-                    await ctx.send(f"""**RESISTIU! {party[codigo1-1]}** causou **{dano}** de dano em **{horda[codigo2-1][1]}**!""")
-                elif fraquezas[0] == 3:
+                    await canal.send(f"""**RESISTIU! {party[codigo1-1]}** causou **{dano}** de dano em **{horda[codigo2-1][1]}**!""")
+                elif fraquezas[1] == 3:
                     dano = 0
-                    await ctx.send(f"""**NULIFICOU! **{horda[codigo2-1][1]}** nulificou todo o dano causado!""")
-                elif fraquezas[0] == 4:
-                    await ctx.send(f"""**DRENOU! **{horda[codigo2-1][1]}** se curou em **{dano}**!""")
-                elif fraquezas[0] == 5:
-                    await ctx.send(f"""**REFLETIU! **{horda[codigo2-1][1]}** refletiu **{dano}** de dano em **{party[codigo1-1]}**!""")
+                    await canal.send(f"""**NULIFICOU! **{horda[codigo2-1][1]}** nulificou todo o dano causado!""")
+                elif fraquezas[1] == 4:
+                    await canal.send(f"""**DRENOU! **{horda[codigo2-1][1]}** se curou em **{dano}**!""")
+                elif fraquezas[1] == 5:
+                    await canal.send(f"""**REFLETIU! **{horda[codigo2-1][1]}** refletiu **{dano}** de dano em **{party[codigo1-1]}**!""")
                 else:
-                    await ctx.send(f"""**{party[codigo1-1]}** causou **{dano}** de dano em **{horda[codigo2-1][1]}**!""")
+                    await canal.send(f"""**{party[codigo1-1]}** causou **{dano}** de dano em **{horda[codigo2-1][1]}**!""")
             else:
-                await ctx.send(f"""**{party[codigo1-1]}** errou o ataque físico  em **{horda[codigo2-1][1]}**""")
-    elif sentido == "horda":
-        personagem_id = Database.personagem_id(party[codigo2-1])
-        persona_id = Database.persona_equipada(personagem_id)
-        usuario = Database.discord_user(personagem_id)
-        equips = Database.itens_equipados(personagem_id)
-        fraquezas = Database.fraquezas(persona_id)
-        armadura = equips[2]
-        atributos_defensor = Database.atributos(personagem_id, persona_id)
-        for i in range(len(atributos_defensor)):
-            atributos_defensor[i] = atributos_defensor[i][1]
-        atributos_soma = Database.atributos_soma(personagem_id)
-        atributos_porcent = Database.atributos_porcent(personagem_id)
-        for i in range(len(atributos_defensor)):
-            a = atributos_defensor[i] + atributos_soma[i]
-            p = (atributos_porcent[i]/100) * a
-            if atributos_soma[i] > 0:
-                atributos_defensor[i] += int(a+p)
-            else:
-                atributos_defensor[i] += int(p)
-        if horda[codigo1-1][0] == "s":
-            shadow_id = Database.shadow_id(horda[codigo1-1][1])
-            atributos_atacante = Database.atributos_iniciais(shadow_id)
-            for i in range(len(atributos_atacante)):
-                atributos_atacante[i] = atributos_atacante[i][1]
-            atributos_soma = Database.atributos_soma(shadow_id)
-            atributos_porcent = Database.atributos_porcent(shadow_id)
-            for i in range(len(atributos_atacante)):
-                a = atributos_atacante[i] + atributos_soma[i]
-                p = (atributos_porcent[i]/100) * a
-                if atributos_soma[i] > 0:
-                    atributos_atacante[i] += int(a+p)
-                else:
-                    atributos_atacante[i] += int(p)
-            valor_criterio = 50 + (5*(atributos_atacante[5]//5)) - (5*(atributos_defensor[6]//5))
-            await ctx.send(f"""Você precisa tirar um valor menor que **{valor_criterio}** no dado""")
-            dado = await Dado.rolagem_pronta(bot, ctx, "Mestre", "Axuáti#9639", 1, 100)
-            if dado <= valor_criterio:
-                dano = int(5 * math.sqrt(atributos_atacante[2]))
-                if horda_mult_atk[codigo1-1] > 0:
-                    dano = dano + (0,3 * horda_mult_atk[codigo1-1] * dano)
-                elif horda_mult_atk[codigo1-1] < 0:
-                    dano = dano - (0,3 * horda_mult_atk[codigo1-1] * dano)
-                if armadura == None:
-                    valor_armadura = 0
-                else:
-                    valor_armadura = Database.valor_item(armadura)
-                if armadura == None:
-                    valor_armadura = 0
-                else:
-                    valor_armadura = Database.valor_item(armadur)
-                dano_mitigado = int(dano / math.sqrt((atributos_defensor[4]*8) + valor_armadura))
-                if party_mult_def[codigo2-1] > 0:
-                    dano_mitigado = dano + (0,3 *party_mult_def[codigo2-1] * dano)
-                elif party_mult_def[codigo2-1] < 0:
-                    dano = dano - (0,3 * party_mult_def[codigo2-1] * dano)
-                dano = dano - dano_mitigado
-                if party_elem_dano[codigo2-1][0] > 0:
-                    if party_elem_dano[codigo2-1][0] == 1:
-                        dano = dano * 2
-                        await ctx.send(f"""**{horda[codigo1-1][1]}** causou **{dano}** de dano e derrubou **{party[codigo2-1]}**!""")
-                    elif party_elem_dano[codigo2-1][0] == 2:
-                        dano = dano / 2
-                        await ctx.send(f"""**RESISTIU! {horda[codigo1-1][1]}** causou **{dano}** de dano em **{party[codigo2-1]}**!""")
-                    elif party_elem_dano[codigo2-1][0] == 3:
-                        dano = 0
-                        await ctx.send(f"""**NULIFICOU! **{party[codigo2-1]}** nulificou todo o dano causado!""")
-                    elif party_elem_dano[codigo2-1][0] == 4:
-                        await ctx.send(f"""**DRENOU! **{party[codigo2-1]}** se curou em **{dano}**!""")
-                    elif party_elem_dano[codigo2-1][0] == 5:
-                        await ctx.send(f"""**REFLETIU! **{party[codigo2-1]}** refletiu **{dano}** de dano em **{horda[codigo1-1][1]}**!""")
-                    else:
-                        await ctx.send(f"""**{horda[codigo1-1][1]}** causou **{dano}** de dano em **{party[codigo2-1]}**!""")
-                elif fraquezas[0] == 1:
-                    dano = dano * 2
-                    await ctx.send(f"""**{horda[codigo1-1][1]}** causou **{dano}** de dano e derrubou **{party[codigo2-1]}**!""")
-                elif fraquezas[0] == 2:
-                    dano = dano / 2
-                    await ctx.send(f"""**RESISTIU! {horda[codigo1-1][1]}** causou **{dano}** de dano em **{party[codigo2-1]}**!""")
-                elif fraquezas[0] == 3:
-                    dano = 0
-                    await ctx.send(f"""**NULIFICOU! **{party[codigo2-1]}** nulificou todo o dano causado!""")
-                elif fraquezas[0] == 4:
-                    await ctx.send(f"""**DRENOU! **{party[codigo2-1]}** se curou em **{dano}**!""")
-                elif fraquezas[0] == 5:
-                    await ctx.send(f"""**REFLETIU! **{party[codigo2-1]}** refletiu **{dano}** de dano em **{horda[codigo1-1][1]}**!""")
-                else:
-                    await ctx.send(f"""**{horda[codigo1-1][1]}** causou **{dano}** de dano em **{party[codigo2-1]}**!""")
-            else:
-                await ctx.send(f"""**{horda[codigo1-1][1]}** errou o ataque físico  em **{party[codigo2-1]}**""")
-        else:
-            atacante_id = Database.personagem_id(horda[codigo1-1])
-            a_persona_id = Database.persona_equipada(personagem_id)
-            equips_atacante = Database.itens_equipados()
-            meelee_atacante = equips[0]
-            atributos_atacante = Database.atributos(atacante_id, d_persona_id)
-            for i in range(len(atributos_atacante)):
-                atributos_atacante[i] = atributos_atacante[i][1]
-            atributos_soma = Database.atributos_soma(atacante_id)
-            atributos_porcent = Database.atributos_porcent(atacante_id)
-            for i in range(len(atributos_atacante)):
-                a = atributos_atacante[i] + atributos_soma[i]
-                p = (atributos_porcent[i]/100) * a
-                if atributos_soma[i] > 0:
-                    atributos_atacante[i] += int(a+p)
-                else:
-                    atributos_atacante[i] += int(p)
-            valor_criterio = 50 + (5*(atributos_atacante[5]//5)) - (5*(atributos_defensor[6]//5))
-            await ctx.send(f"""Você precisa tirar um valor menor que **{valor_criterio}** no dado""")
-            dado = await Dado.rolagem_pronta(bot, ctx, "Mestre", "Axuáti#9639", 1, 100)
-            if dado <= valor_criterio:
-                valor_arma = Database.valor_item(meelee_atacante)
-                dano = int(math.sqrt(valor_arma) * math.sqrt(atributos_atacante[2]))
-                if horda_mult_atk[codigo1-1] > 0:
-                    dano = dano + (0,3 * horda_mult_atk[codigo1-1] * dano)
-                elif horda_mult_atk[codigo1-1] < 0:
-                    dano = dano - (0,3 * horda_mult_atk[codigo1-1] * dano)
-                if armadura == None:
-                    valor_armadura = 0
-                else:
-                    valor_armadura = Database.valor_item(armadura)
-                dano_mitigado = int(dano / math.sqrt((atributos_defensor[4]*8)+valor_armadura))
-                if party_mult_def[codigo2-1] > 0:
-                    dano_mitigado = dano + (0,3 * party_mult_def[codigo2-1] * dano)
-                elif party_mult_def[codigo2-1] < 0:
-                    dano = dano - (0,3 * party_mult_def[codigo2-1] * dano)
-                dano = dano - dano_mitigado
-                if party_elem_dano[codigo2-1][0] > 0:
-                    if party_elem_dano[codigo2-1][0] == 1:
-                        dano = dano * 2
-                        await ctx.send(f"""**{horda[codigo1-1][1]}** causou **{dano}** de dano e derrubou **{party[codigo2-1]}**!""")
-                    elif party_elem_dano[codigo2-1][0] == 2:
-                        dano = dano / 2
-                        await ctx.send(f"""**RESISTIU! {horda[codigo1-1][1]}** causou **{dano}** de dano em **{party[codigo2-1]}**!""")
-                    elif party_elem_dano[codigo2-1][0] == 3:
-                        dano = 0
-                        await ctx.send(f"""**NULIFICOU! **{party[codigo2-1]}** nulificou todo o dano causado!""")
-                    elif party_elem_dano[codigo2-1][0] == 4:
-                        await ctx.send(f"""**DRENOU! **{party[codigo2-1]}** se curou em **{dano}**!""")
-                    elif party_elem_dano[codigo2-1][0] == 5:
-                        await ctx.send(f"""**REFLETIU! **{party[codigo2-1]}** refletiu **{dano}** de dano em **{horda[codigo1-1][1]}**!""")
-                    else:
-                        await ctx.send(f"""**{horda[codigo1-1][1]}** causou **{dano}** de dano em **{party[codigo2-1]}**!""")
-                elif fraquezas[0] == 1:
-                    dano = dano * 2
-                    await ctx.send(f"""**{horda[codigo1-1][1]}** causou **{dano}** de dano e derrubou **{party[codigo2-1]}**!""")
-                elif fraquezas[0] == 2:
-                    dano = dano / 2
-                    await ctx.send(f"""**RESISTIU! {horda[codigo1-1][1]}** causou **{dano}** de dano em **{party[codigo2-1]}**!""")
-                elif fraquezas[0] == 3:
-                    dano = 0
-                    await ctx.send(f"""**NULIFICOU! **{party[codigo2-1]}** nulificou todo o dano causado!""")
-                elif fraquezas[0] == 4:
-                    await ctx.send(f"""**DRENOU! **{party[codigo2-1]}** se curou em **{dano}**!""")
-                elif fraquezas[0] == 5:
-                    await ctx.send(f"""**REFLETIU! **{party[codigo2-1]}** refletiu **{dano}** de dano em **{horda[codigo1-1][1]}**!""")
-                else:
-                    await ctx.send(f"""**{horda[codigo1-1][1]}** causou **{dano}** de dano em **{party[codigo2-1]}**!""")
-            else:
-                await ctx.send(f"""**{horda[codigo1-1][1]}** errou o ataque físico  em **{party[codigo2-1]}**""")
-    #except:
-    #    await ctx.send("Algo está incorreto.")
+                await canal.send(f"""**{party[codigo1-1]}** errou o tiro em **{horda[codigo2-1][1]}**""")
+    except:
+        await canal.send("Algo está incorreto.")
 
 @bot.command()
-async def add_atributo(ctx, personagem, tipo, quant, atributo):
+async def habilidade(ctx, canal : discord.TextChannel, sentido, codigo1, codigo2, *habilidade):
+    try:
+        nome = ""
+        for palavra in habilidade:
+            nome += palavra + " "
+        nome = nome[:-1]
+        codigo1 = int(codigo1)
+        codigo2 = int(codigo2)
+        skill_id = Database.skill_id(nome)
+        if skill_id != False:
+            nome_skill = Database.nome_skill(skill_id)
+            if sentido == "party":
+                personagem_id = Database.personagem_id(party[codigo1-1])
+                persona_id = Database.persona_equipada(personagem_id)
+                skills = Database.skills_id(personagem_id, persona_id)
+                if skill_id in skills:
+                    intensidade = Database.intensidade(skill_id)
+                    elemento = Database.elemento(skill_id)
+                    nome_elemento = Database.nome_elemento(elemento)
+                    usuario = Database.discord_user(personagem_id)
+                    atributos_atacante = Database.atributos(personagem_id, persona_id)
+                    for i in range(len(atributos_atacante)):
+                            atributos_atacante[i] = atributos_atacante[i][1]
+                    atributos_soma = Database.atributos_soma(personagem_id)
+                    atributos_porcent = Database.atributos_porcent(personagem_id)
+                    for i in range(len(atributos_atacante)):
+                        a = atributos_atacante[i] + atributos_soma[i]
+                        p = (atributos_porcent[i]/100) * a
+                        if atributos_soma[i] > 0:
+                            atributos_atacante[i] += int(a+p)
+                        else:
+                            atributos_atacante[i] += int(p)
+                    if horda[codigo2-1][0] == "s":
+                        shadow_id = Database.shadow_id(horda[codigo2-1][1])
+                        fraquezas = Database.fraquezas(shadow_id)
+                        atributos_defensor = Database.atributos_iniciais(shadow_id)
+                        for i in range(len(atributos_defensor)):
+                            atributos_defensor[i] = atributos_defensor[i][1]
+                        atributos_soma = Database.atributos_soma(shadow_id)
+                        atributos_porcent = Database.atributos_porcent(shadow_id)
+                        for i in range(len(atributos_defensor)):
+                            a = atributos_defensor[i] + atributos_soma[i]
+                            p = (atributos_porcent[i]/100) * a
+                            if atributos_soma[i] > 0:
+                                atributos_defensor[i] += int(a+p)
+                            else:
+                                atributos_defensor[i] += int(p)
+                        next = 0
+                        while next == 0:
+                            await ctx.send("Qual o valor critério? (0 a 100)")
+                            msg = await bot.wait_for('message')
+                            mensagem = msg.content
+                            try:
+                                var = int(mensagem)
+                                if var > 0 and var <= 100:
+                                    next = 1
+                            except:
+                                await ctx.send("Digite um número entre 0 e 100.")
+                        valor_criterio = var + (5*(atributos_atacante[5]//5)) - (5*(atributos_defensor[6]//5)) + (10*party_mult_acc[codigo1-1]) - (10*horda_mult_evs[codigo1-1])
+                        await canal.send(f"""Você precisa tirar um valor menor que **{valor_criterio}** no dado""")
+                        dado = await Dado.rolagem_pronta(bot, canal, party[codigo1-1], usuario, 1, 100)
+                        if dado <= valor_criterio:
+                            if elemento < 3:
+                                if intensidade < 5:
+                                    dano = int((intensidade * 5) * math.sqrt(atributos_atacante[2]))
+                                else:
+                                    dano = int(50 * math.sqrt(atributos_atacante[2]))
+                            else:
+                                if intensidade < 5:
+                                    dano = int((intensidade * 5) + ((intensidade * 5) * (atributos_atacante[3]/30)))
+                                else:
+                                    dano = int(50 + (50 * (atributos_atacante[3]/30)))
+                            if party_mult_atk[codigo1-1] > 0:
+                                dano = dano + (0,3 * party_mult_atk[codigo1-1] * dano)
+                            elif party_mult_atk[codigo1-1] < 0:
+                                dano = dano - (0,3 * party_mult_atk[codigo1-1] * dano)
+                            dano_mitigado = int(dano / math.sqrt(atributos_defensor[4]*8))
+                            if horda_mult_def[codigo2-1] > 0:
+                                dano_mitigado = dano + (0,3 * horda_mult_def[codigo2-1] * dano)
+                            elif horda_mult_def[codigo2-1] < 0:
+                                dano = dano - (0,3 * horda_mult_def[codigo2-1] * dano)
+                            dano = dano - dano_mitigado
+                            if horda_elem_dano[codigo2-1][elemento-1] > 0:
+                                if horda_elem_dano[codigo2-1][elemento-1] == 1:
+                                    dano = dano * 2
+                                    await canal.send(f"""**{party[codigo1-1]}** causou **{dano}** de dano de **{nome_elemento}** e derrubou **{horda[codigo2-1][1]}**!""")
+                                elif horda_elem_dano[codigo2-1][elemento-1] == 2:
+                                    dano = dano / 2
+                                    await canal.send(f"""**RESISTIU! {party[codigo1-1]}** causou **{dano}** de dano de **{nome_elemento}** em **{horda[codigo2-1][1]}**!""")
+                                elif horda_elem_dano[codigo2-1][elemento-1] == 3:
+                                    dano = 0
+                                    await canal.send(f"""**NULIFICOU! **{horda[codigo2-1][1]}** nulificou todo o dano causado!""")
+                                elif horda_elem_dano[codigo2-1][elemento-1] == 4:
+                                    await canal.send(f"""**DRENOU! **{horda[codigo2-1][1]}** se curou em **{dano}**!""")
+                                elif horda_elem_dano[codigo2-1][elemento-1] == 5:
+                                    await canal.send(f"""**REFLETIU! **{horda[codigo2-1][1]}** refletiu **{dano}** de dano de **{nome_elemento}** em **{party[codigo1-1]}**!""")
+                                else:
+                                    await canal.send(f"""**{party[codigo1-1]}** causou **{dano}** de dano de **{nome_elemento}** em **{horda[codigo2-1][1]}**!""")
+                            elif fraquezas[elemento-1] == 1:
+                                dano = dano * 2
+                                await canal.send(f"""**{party[codigo1-1]}** causou **{dano}** de dano de **{nome_elemento}** e derrubou **{horda[codigo2-1][1]}**!""")
+                            elif fraquezas[elemento-1] == 2:
+                                dano = dano / 2
+                                await canal.send(f"""**RESISTIU! {party[codigo1-1]}** causou **{dano}** de dano de **{nome_elemento}** em **{horda[codigo2-1][1]}**!""")
+                            elif fraquezas[elemento-1] == 3:
+                                dano = 0
+                                await canal.send(f"""**NULIFICOU! **{horda[codigo2-1][1]}** nulificou todo o dano causado!""")
+                            elif fraquezas[elemento-1] == 4:
+                                await canal.send(f"""**DRENOU! **{horda[codigo2-1][1]}** se curou em **{dano}**!""")
+                            elif fraquezas[elemento-1] == 5:
+                                await canal.send(f"""**REFLETIU! **{horda[codigo2-1][1]}** refletiu **{dano}** de dano de **{nome_elemento}** em **{party[codigo1-1]}**!""")
+                            else:
+                                await canal.send(f"""**{party[codigo1-1]}** causou **{dano}** de dano de **{nome_elemento}** em **{horda[codigo2-1][1]}**!""")
+                        else:
+                            await canal.send(f"""**{party[codigo1-1]}** errou a habilidade **{nome_skill}** em **{horda[codigo2-1][1]}**""")
+                    else:
+                        defensor_id = Database.personagem_id(party[codigo2-1])
+                        d_persona_id = Database.persona_equipada(personagem_id)
+                        equips_defensor = Database.itens_equipados()
+                        armadura_defensor = equips[2]
+                        fraquezas = Database.fraquezas(d_persona_id)
+                        atributos_defensor = Database.atributos(defensor_id, d_persona_id)
+                        for i in range(len(atributos_defensor)):
+                            atributos_defensor[i] = atributos_defensor[i][1]
+                        atributos_soma = Database.atributos_soma(defensor_id)
+                        atributos_porcent = Database.atributos_porcent(defensor_id)
+                        for i in range(len(atributos_defensor)):
+                            a = atributos_defensor[i] + atributos_soma[i]
+                            p = (atributos_porcent[i]/100) * a
+                            if atributos_soma[i] > 0:
+                                atributos_defensor[i] += int(a+p)
+                            else:
+                                atributos_defensor[i] += int(p)
+                        next = 0
+                        while next == 0:
+                            await ctx.send("Qual o valor critério? (0 a 100)")
+                            msg = await bot.wait_for('message')
+                            mensagem = msg.content
+                            try:
+                                var = int(mensagem)
+                                if var > 0 and var <= 100:
+                                    next = 1
+                            except:
+                                await ctx.send("Digite um número entre 0 e 100.")
+                        valor_criterio = var + (5*(atributos_atacante[5]//5)) - (5*(atributos_defensor[6]//5)) + (10*party_mult_acc[codigo1-1]) - (10*horda_mult_evs[codigo1-1])
+                        await canal.send(f"""Você precisa tirar um valor menor que **{valor_criterio}** no dado""")
+                        dado = await Dado.rolagem_pronta(bot, canal, party[codigo1-1], usuario, 1, 100)
+                        if dado <= valor_criterio:
+                            if elemento < 3:
+                                if intensidade < 5:
+                                    dano = int((intensidade * 5) * math.sqrt(atributos_atacante[2]))
+                                else:
+                                    dano = int(50 * math.sqrt(atributos_atacante[2]))
+                            else:
+                                if intensidade < 5:
+                                    dano = int((intensidade * 5) + ((intensidade * 5) * (atributos_atacante[3]/30)))
+                                else:
+                                    dano = int(50 + (50 * (atributos_atacante[3]/30)))
+                            if party_mult_atk[codigo1-1] > 0:
+                                dano = dano + (0,3 * party_mult_atk[codigo1-1] * dano)
+                            elif party_mult_atk[codigo1-1] < 0:
+                                dano = dano - (0,3 * party_mult_atk[codigo1-1] * dano)
+                            valor_armadura = Database.valor_item(armadura_defensor)
+                            dano_mitigado = int(dano / math.sqrt((atributos_defensor[4]*8)+valor_armadura))
+                            if horda_mult_def[codigo2-1] > 0:
+                                dano_mitigado = dano + (0,3 * horda_mult_def[codigo2-1] * dano)
+                            elif horda_mult_def[codigo2-1] < 0:
+                                dano = dano - (0,3 * horda_mult_def[codigo2-1] * dano)
+                            dano = dano - dano_mitigado
+                            if horda_elem_dano[codigo2-1][elemento-1] > 0:
+                                if horda_elem_dano[codigo2-1][elemento-1] == 1:
+                                    dano = dano * 2
+                                    await canal.send(f"""**{party[codigo1-1]}** causou **{dano}** de dano de **{nome_elemento}** e derrubou **{horda[codigo2-1][1]}**!""")
+                                elif horda_elem_dano[codigo2-1][elemento-1] == 2:
+                                    dano = dano / 2
+                                    await canal.send(f"""**RESISTIU! {party[codigo1-1]}** causou **{dano}** de dano de **{nome_elemento}** em **{horda[codigo2-1][1]}**!""")
+                                elif horda_elem_dano[codigo2-1][elemento-1] == 3:
+                                    dano = 0
+                                    await canal.send(f"""**NULIFICOU! **{horda[codigo2-1][1]}** nulificou todo o dano causado!""")
+                                elif horda_elem_dano[codigo2-1][elemento-1] == 4:
+                                    await canal.send(f"""**DRENOU! **{horda[codigo2-1][1]}** se curou em **{dano}**!""")
+                                elif horda_elem_dano[codigo2-1][elemento-1] == 5:
+                                    await canal.send(f"""**REFLETIU! **{horda[codigo2-1][1]}** refletiu **{dano}** de dano de **{nome_elemento}** em **{party[codigo1-1]}**!""")
+                                else:
+                                    await canal.send(f"""**{party[codigo1-1]}** causou **{dano}** de dano de **{nome_elemento}** em **{horda[codigo2-1][1]}**!""")
+                            elif fraquezas[elemento-1] == 1:
+                                dano = dano * 2
+                                await canal.send(f"""**{party[codigo1-1]}** causou **{dano}** de dano de **{nome_elemento}** e derrubou **{horda[codigo2-1][1]}**!""")
+                            elif fraquezas[elemento-1] == 2:
+                                dano = dano / 2
+                                await canal.send(f"""**RESISTIU! {party[codigo1-1]}** causou **{dano}** de dano de **{nome_elemento}** em **{horda[codigo2-1][1]}**!""")
+                            elif fraquezas[elemento-1] == 3:
+                                dano = 0
+                                await canal.send(f"""**NULIFICOU! **{horda[codigo2-1][1]}** nulificou todo o dano causado!""")
+                            elif fraquezas[elemento-1] == 4:
+                                await canal.send(f"""**DRENOU! **{horda[codigo2-1][1]}** se curou em **{dano}**!""")
+                            elif fraquezas[elemento-1] == 5:
+                                await canal.send(f"""**REFLETIU! **{horda[codigo2-1][1]}** refletiu **{dano}** de dano de **{nome_elemento}** em **{party[codigo1-1]}**!""")
+                            else:
+                                await canal.send(f"""**{party[codigo1-1]}** causou **{dano}** de dano de **{nome_elemento}** em **{horda[codigo2-1][1]}**!""")
+                        else:
+                            await canal.send(f"""**{party[codigo1-1]}** errou a habilidade **{nome_skill}** em **{horda[codigo2-1][1]}**""")
+            elif sentido == "horda":
+                personagem_id = Database.personagem_id(party[codigo2-1])
+                persona_id = Database.persona_equipada(personagem_id)
+                usuario = Database.discord_user(personagem_id)
+                equips = Database.itens_equipados(personagem_id)
+                fraquezas = Database.fraquezas(persona_id)
+                armadura = equips[2]
+                atributos_defensor = Database.atributos(personagem_id, persona_id)
+                for i in range(len(atributos_defensor)):
+                    atributos_defensor[i] = atributos_defensor[i][1]
+                atributos_soma = Database.atributos_soma(personagem_id)
+                atributos_porcent = Database.atributos_porcent(personagem_id)
+                for i in range(len(atributos_defensor)):
+                    a = atributos_defensor[i] + atributos_soma[i]
+                    p = (atributos_porcent[i]/100) * a
+                    if atributos_soma[i] > 0:
+                        atributos_defensor[i] += int(a+p)
+                    else:
+                        atributos_defensor[i] += int(p)
+                if horda[codigo1-1][0] == "s":
+                    shadow_id = Database.shadow_id(horda[codigo1-1][1])
+                    atributos_atacante = Database.atributos_iniciais(shadow_id)
+                    nivel = Database.nivel_persona(shadow_id)
+                    skills = Database.skills_shadow(shadow_id, nivel)
+                else:
+                    personagem_id = Database.personagem_id(horda[codigo1-1][1])
+                    persona_id = Database.persona_equipada(personagem_id)
+                    atributos_atacante = Database.atributos_iniciais(shadow_id)
+                    skills = Database.skills_id(personagem_id, persona_id)
+                    atributos_atacante = Database.atributos(personagem_id, persona_id)
+                    for i in range(len(atributos_atacante)):
+                            atributos_atacante[i] = atributos_atacante[i][1]
+                    atributos_soma = Database.atributos_soma(personagem_id)
+                    atributos_porcent = Database.atributos_porcent(personagem_id)
+                    for i in range(len(atributos_atacante)):
+                        a = atributos_atacante[i] + atributos_soma[i]
+                        p = (atributos_porcent[i]/100) * a
+                        if atributos_soma[i] > 0:
+                            atributos_atacante[i] += int(a+p)
+                        else:
+                            atributos_atacante[i] += int(p)
+                if skill_id in skills:
+                    intensidade = Database.intensidade(skill_id)
+                    elemento = Database.elemento(skill_id)
+                    nome_elemento = Database.nome_elemento(elemento)
+                    for i in range(len(atributos_atacante)):
+                        atributos_atacante[i] = atributos_atacante[i][1]
+                    atributos_soma = Database.atributos_soma(shadow_id)
+                    atributos_porcent = Database.atributos_porcent(shadow_id)
+                    for i in range(len(atributos_atacante)):
+                        a = atributos_atacante[i] + atributos_soma[i]
+                        p = (atributos_porcent[i]/100) * a
+                        if atributos_soma[i] > 0:
+                            atributos_atacante[i] += int(a+p)
+                        else:
+                            atributos_atacante[i] += int(p)
+                    next = 0
+                    while next == 0:
+                        await ctx.send("Qual o valor critério? (0 a 100)")
+                        msg = await bot.wait_for('message')
+                        mensagem = msg.content
+                        try:
+                            var = int(mensagem)
+                            if var > 0 and var <= 100:
+                                next = 1
+                        except:
+                            await ctx.send("Digite um número entre 0 e 100.")
+                    valor_criterio = var + (5*(atributos_atacante[5]//5)) - (5*(atributos_defensor[6]//5)) + (10*horda_mult_acc[codigo1-1])- (10*party_mult_evs[codigo1-1])
+                    await canal.send(f"""Você precisa tirar um valor menor que **{valor_criterio}** no dado""")
+                    dado = await Dado.rolagem_pronta(bot, canal, "Mestre", "Axuáti#9639", 1, 100)
+                    if dado <= valor_criterio:
+                        if elemento < 3:
+                            if intensidade < 5:
+                                dano = int((intensidade * 5) * math.sqrt(atributos_atacante[2]))
+                            else:
+                                dano = int(50 * math.sqrt(atributos_atacante[2]))
+                        else:
+                            if intensidade < 5:
+                                dano = int((intensidade * 5) + ((intensidade * 5) * (atributos_atacante[3]/30)))
+                            else:
+                                dano = int(50 + (50 * (atributos_atacante[3]/30)))
+                        if horda_mult_atk[codigo1-1] > 0:
+                            dano = dano + (0,3 * horda_mult_atk[codigo1-1] * dano)
+                        elif horda_mult_atk[codigo1-1] < 0:
+                            dano = dano - (0,3 * horda_mult_atk[codigo1-1] * dano)
+                        valor_armadura = Database.valor_item(armadura)
+                        dano_mitigado = int(dano / math.sqrt((atributos_defensor[4]*8) + valor_armadura))
+                        if party_mult_def[codigo2-1] > 0:
+                            dano_mitigado = dano + (0,3 * party_mult_def[codigo2-1] * dano)
+                        elif party_mult_def[codigo2-1] < 0:
+                            dano = dano - (0,3 * party_mult_def[codigo2-1] * dano)
+                        dano = dano - dano_mitigado
+                        if party_elem_dano[codigo2-1][elemento-1] > 0:
+                            if party_elem_dano[codigo2-1][elemento-1] == 1:
+                                dano = dano * 2
+                                await canal.send(f"""**{horda[codigo1-1][1]}** causou **{dano}** de dano de **{nome_elemento}** e derrubou **{party[codigo2-1][1]}**!""")
+                            elif party_elem_dano[codigo2-1][elemento-1] == 2:
+                                dano = dano / 2
+                                await canal.send(f"""**RESISTIU! {horda[codigo1-1][1]}** causou **{dano}** de dano de **{nome_elemento}** em **{party[codigo2-1]}**!""")
+                            elif party_elem_dano[codigo2-1][elemento-1] == 3:
+                                dano = 0
+                                await canal.send(f"""**NULIFICOU! **{party[codigo2-1]}** nulificou todo o dano causado!""")
+                            elif party_elem_dano[codigo2-1][elemento-1] == 4:
+                                await canal.send(f"""**DRENOU! **{party[codigo2-1]}** se curou em **{dano}**!""")
+                            elif party_elem_dano[codigo2-1][elemento-1] == 5:
+                                await canal.send(f"""**REFLETIU! **{party[codigo2-1]}** refletiu **{dano}** de dano de **{nome_elemento}** em **{horda[codigo1-1][1]}**!""")
+                            else:
+                                await canal.send(f"""**{horda[codigo1-1][1]}** causou **{dano}** de dano de **{nome_elemento}** em **{party[codigo2-1]}**!""")
+                        elif fraquezas[elemento-1] == 1:
+                            dano = dano * 2
+                            await canal.send(f"""**{horda[codigo1-1][1]}** causou **{dano}** de dano de **{nome_elemento}** e derrubou **{party[codigo2-1]}**!""")
+                        elif fraquezas[elemento-1] == 2:
+                            dano = dano / 2
+                            await canal.send(f"""**RESISTIU! {horda[codigo1-1][1]}** causou **{dano}** de dano de **{nome_elemento}** em **{party[codigo2-1]}**!""")
+                        elif fraquezas[elemento-1] == 3:
+                            dano = 0
+                            await canal.send(f"""**NULIFICOU! **{party[codigo2-1]}** nulificou todo o dano causado!""")
+                        elif fraquezas[elemento-1] == 4:
+                            await canal.send(f"""**DRENOU! **{party[codigo2-1]}** se curou em **{dano}**!""")
+                        elif fraquezas[elemento-1] == 5:
+                            await canal.send(f"""**REFLETIU! **{party[codigo2-1]}** refletiu **{dano}** de dano de **{nome_elemento}** em **{horda[codigo1-1][1]}**!""")
+                        else:
+                            await canal.send(f"""**{horda[codigo1-1][1]}** causou **{dano}** de dano de **{nome_elemento}** em **{party[codigo2-1]}**!""")
+                    else:
+                        await canal.send(f"""**{horda[codigo1-1][1]}** errou a habilidade **{nome_skill}** em **{party[codigo2-1]}**""")
+    except:
+        await ctx.send("Algo está incorreto.")
+
+@bot.command()
+async def add_atributo(ctx, personagem, tipo, quant, atributo, canal : discord.TextChannel):
     personagem_id = Database.personagem_id(personagem)
     if personagem_id != False:
         atributo_id = Database.atributo_id(atributo)
@@ -2250,11 +2813,11 @@ async def add_atributo(ctx, personagem, tipo, quant, atributo):
                     if tipo == "n":
                         add = Database.add_atributo(personagem_id, atributo_id, quant)
                         if add:
-                            await ctx.send(f"""**{quant}** foi adicionado em **{atributo}** de **{personagem}**""")
+                            await canal.send(f"""**{quant}** foi adicionado em **{atributo}** de **{personagem}**""")
                     elif tipo == "p":
                         mod = Database.mod_atributo(personagem_id, atributo_id, quant)
                         if mod:
-                            await ctx.send(f"""**{personagem}** agora recebe aumento de **{quant}%** de **{atributo}**""")
+                            await canal.send(f"""**{personagem}** agora recebe aumento de **{quant}%** de **{atributo}**""")
                     else:
                         await ctx.send(f"""Tipo incorreto (digite p(porcentagem) ou n(normal)""")
                 else:
@@ -2265,7 +2828,7 @@ async def add_atributo(ctx, personagem, tipo, quant, atributo):
         await ctx.send(f"""Este personagem não existe.""")
 
 @bot.command()
-async def del_atributo(ctx, personagem, quant, atributo):
+async def del_atributo(ctx, personagem, quant, atributo, canal : discord.TextChannel):
     personagem_id = Database.personagem_id(personagem)
     if personagem_id != False:
         atributo_id = Database.atributo_id(atributo)
@@ -2275,7 +2838,7 @@ async def del_atributo(ctx, personagem, quant, atributo):
                 if quant > 0:
                     delete = Database.del_atributo(personagem_id, atributo_id, quant)
                     if delete:
-                        await ctx.send(f"""**{quant}** foi diminuido em **{atributo}** de **{personagem}**""")
+                        await canal.send(f"""**{quant}** foi diminuido em **{atributo}** de **{personagem}**""")
                 else:
                     await ctx.send(f"""Valor incorreto.""")
             except:
@@ -2283,6 +2846,89 @@ async def del_atributo(ctx, personagem, quant, atributo):
     else:
         await ctx.send(f"""Este personagem não existe.""")
 
+@bot.command()
+async def lider(ctx, personagem, canal : discord.TextChannel):
+    if party != []:
+        for i in range(len(party)):
+            if party[i] == personagem:
+                party.insert(0, mylist.pop(i))
+                await canal.send(f"""**{personagem}** foi denominado o líder do grupo.""")
+                break
+
+@bot.command()
+async def marcador(ctx, tipo_marcador, tipo_grupo, codigo, quant, canal : discord.TextChannel):
+    try:
+        quant = int(quant)
+        codigo = int(codigo)
+        if tipo_marcador == "atk":
+            if tipo_grupo == "party":
+                party_mult_atk[codigo-1] += quant
+                if quant > 0:
+                    await canal.send(f"""**{party[codigo-1]}** teve seu ataque aumentado em {quant}.""")
+                elif quant < 0:
+                    await canal.send(f"""**{party[codigo-1]}** teve seu ataque diminuido em {quant}.""")
+            else:
+                horda_mult_atk[codigo-1] += quant
+                if quant > 0:
+                    await canal.send(f"""**{horda[codigo-1][1]}** teve seu ataque aumentado em {quant}.""")
+                elif quant < 0:
+                    await canal.send(f"""**{horda[codigo-1][1]}** teve seu ataque diminuido em {quant}.""")
+        elif tipo_marcador == "def":
+            if tipo_grupo == "party":
+                party_mult_def[codigo-1] += quant
+                if quant > 0:
+                    await canal.send(f"""**{party[codigo-1]}** teve sua defesa aumentada em {quant}.""")
+                elif quant < 0:
+                    await canal.send(f"""**{party[codigo-1]}** teve sua defesa diminuida em {quant}.""")
+            else:
+                horda_mult_atk[codigo-1] += quant
+                if quant > 0:
+                    await canal.send(f"""**{horda[codigo-1][1]}** teve sua defesa aumentada em {quant}.""")
+                elif quant < 0:
+                    await canal.send(f"""**{horda[codigo-1][1]}** teve sua defesa diminuida em {quant}.""")
+        elif tipo_marcador == "acc":
+            if tipo_grupo == "party":
+                party_mult_acc[codigo-1] += quant
+                if quant > 0:
+                    await canal.send(f"""**{party[codigo-1]}** teve sua acurácia aumentada em {quant}.""")
+                elif quant < 0:
+                    await canal.send(f"""**{party[codigo-1]}** teve sua acurácia diminuida em {quant}.""")
+            else:
+                horda_mult_acc[codigo-1] += quant
+                if quant > 0:
+                    await canal.send(f"""**{horda[codigo-1][1]}** teve sua acurácia aumentada em {quant}.""")
+                elif quant < 0:
+                    await canal.send(f"""**{horda[codigo-1][1]}** teve sua acurácia diminuida em {quant}.""")
+        else:
+            if tipo_grupo == "party":
+                party_mult_evs[codigo-1] += quant
+                if quant > 0:
+                    await canal.send(f"""**{party[codigo-1]}** teve sua evasão aumentada em {quant}.""")
+                elif quant < 0:
+                    await canal.send(f"""**{party[codigo-1]}** teve sua evasão diminuida em {quant}.""")
+            else:
+                horda_mult_evs[codigo-1] += quant
+                if quant > 0:
+                    await canal.send(f"""**{horda[codigo-1][1]}** teve sua evasão aumentada em {quant}.""")
+                elif quant < 0:
+                    await canal.send(f"""**{horda[codigo-1][1]}** teve sua evasão diminuida em {quant}.""")
+    except:
+        await ctx.send(f"""Erro""")
+
+@bot.command()
+async def interacao(ctx, tipo_grupo, codigo, elemento, tipo_interacao, canal : discord.TextChannel):
+    try:
+        codigo = int(codigo)
+        atributo = int(atributo)
+        tipo_interacao = int(tipo_interacao)
+        if tipo_grupo == "horda":
+            horda_elem_dano[codigo-1][elemento] == tipo_interacao
+        elif tipo_grupo == "party":
+            party_elem_dano[codigo-1][elemento] == tipo_interacao
+        else:
+            await ctx.send(f"""Tipo incorreto.""")
+    except:
+        await ctx.send(f"""Erro""")
 
 def takeSecond(elem):
     return elem[1]
