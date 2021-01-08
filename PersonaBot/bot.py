@@ -33,6 +33,8 @@ horda_mult_evs = []
 party_mult_evs = []
 horda_elem_dano = []
 party_elem_dano = []
+party_mult_crit = []
+horda_mult_crit = []
 
 @bot.event
 async def on_member_join(member):
@@ -57,7 +59,7 @@ async def on_ready():
     print("Tudo Ok")
 
 @bot.command()
-async def mostrar_ficha(ctx, *persona, canal : discord.TextChannel):
+async def mostrar_ficha(ctx,  canal : discord.TextChannel, *persona):
     nome = ""
     for palavra in persona:
         nome+=palavra + " "
@@ -104,7 +106,7 @@ async def mostrar_ficha(ctx, *persona, canal : discord.TextChannel):
         await ctx.send("**Ficha não encontrada, digite novamente e corretamente.**")
     
 @bot.command()
-async def info_shadow(ctx, *shadow, canal : discord.TextChannel):
+async def info_shadow(ctx, canal : discord.TextChannel, *shadow):
     nome = ""
     for palavra in shadow:
         nome += palavra + " "
@@ -426,7 +428,7 @@ async def del_item(ctx, canal : discord.TextChannel, quant, *item):
         await ctx.send(f"""**{nome} não existe.**""")
     
 @bot.command()
-async def inventario(ctx):
+async def inventario(ctx, canal : discord.TextChannel):
     itens = Database.inventario_grupo()
     consumiveis = []
     cartas = []
@@ -534,10 +536,10 @@ async def inventario(ctx):
             texto += f"""{item} x{quant}; """
         texto = texto[:-2]
         inventario.add_field(name="Roupas", value=texto, inline=False)
-    await ctx.send(embed=inventario)
+    await canal.send(embed=inventario)
 
 @bot.command()
-async def modificar_dinheiro(ctx, quant, canal : discord.TextChannel):
+async def modificar_dinheiro(ctx, canal : discord.TextChannel, quant):
     try:
         quant = int(quant)
         dinheiro_inicial = Database.dinheiro_grupo()
@@ -551,7 +553,7 @@ async def modificar_dinheiro(ctx, quant, canal : discord.TextChannel):
         await ctx.send(f"""Valor incorreto""")
 
 @bot.command()
-async def setar_dinheiro(ctx, quant, canal : discord.TextChannel):
+async def setar_dinheiro(ctx, canal : discord.TextChannel, quant):
     try:
         quant = int(quant)
         novo_dinheiro = Database.modificar_dinheiro(quant)
@@ -563,11 +565,13 @@ async def setar_dinheiro(ctx, quant, canal : discord.TextChannel):
         await ctx.send(f"""Valor incorreto""")
     
 @bot.command()
-async def testar_rolagem(ctx):
-    dado = await Dado.rolagem_pronta(bot,ctx,"João","Freefes#9639",1,100)
+async def rolagem(ctx, canal : discord.TextChannel, personagem, dados, lados):
+    personagem_id = Database.personagem_id(personagem)
+    usuario = Database.discord_user()
+    dado = await Dado.rolagem_pronta(bot, canal, personagem, usuario, dados, lados)
 
 @bot.command()
-async def drop(ctx, *shadow, canal : discord.TextChannel):
+async def drop(ctx, canal : discord.TextChannel, *shadow):
     nome = ""
     for palavra in shadow:
         nome+=palavra + " "
@@ -642,7 +646,7 @@ async def equipar(ctx, personagem, *item, canal : discord.TextChannel):
         await ctx.send("Este personagem não existe.")
     
 @bot.command()
-async def desequipar(ctx, personagem, *item, canal : discord.TextChannel):
+async def desequipar(ctx, canal : discord.TextChannel, personagem, *item):
     nome = ""
     for palavra in item:
         nome+=palavra + " "
@@ -844,7 +848,7 @@ async def ficha(ctx, personagem):
         await ctx.send("Personagem não encontrado.")
     
 @bot.command()
-async def subir_nivel(ctx, personagem, canal : discord.TextChannel):
+async def subir_nivel(ctx, canal : discord.TextChannel, personagem):
     personagem_id = Database.personagem_id(personagem)
     eh_fool = Database.eh_fool(personagem_id)
     if eh_fool != True:
@@ -1048,7 +1052,7 @@ async def subir_nivel(ctx, personagem, canal : discord.TextChannel):
         await canal.send(embed=atributos_aumento)
 
 @bot.command()
-async def diminuir_nivel(ctx, personagem, canal : discord.TextChannel):
+async def diminuir_nivel(ctx, , canal : discord.TextChannel, personagem):
     personagem_id = Database.personagem_id(personagem)
     eh_fool = Database.eh_fool(personagem_id)
     if eh_fool == False:
@@ -1076,7 +1080,7 @@ async def diminuir_nivel(ctx, personagem, canal : discord.TextChannel):
             await canal.send(f"""Atributos de **{personagem}** resetado para os do {nivel -1}""")
 
 @bot.command()
-async def subir_nivel_persona(ctx, personagem, canal : discord.TextChannel):
+async def subir_nivel_persona(ctx, canal : discord.TextChannel, personagem):
     personagem_id = Database.personagem_id(personagem)
     eh_fool = Database.eh_fool(personagem_id)
     if eh_fool == True:
@@ -1253,7 +1257,7 @@ async def subir_nivel_persona(ctx, personagem, canal : discord.TextChannel):
         await ctx.send("Este personagem não é da Arcana Fool")
     
 @bot.command()
-async def diminuir_nivel_persona(ctx, personagem, canal : discord.TextChannel):
+async def diminuir_nivel_persona(ctx, canal : discord.TextChannel, personagem):
     personagem_id = Database.personagem_id(personagem)
     eh_fool = Database.eh_fool(personagem_id)
     if eh_fool == True:
@@ -1275,7 +1279,7 @@ async def diminuir_nivel_persona(ctx, personagem, canal : discord.TextChannel):
             await ctx.send(f"""Este personagem não é da Arcana Fool""")
 
 @bot.command()
-async def equipar_persona(ctx, personagem, canal : discord.TextChannel):
+async def equipar_persona(ctx, canal : discord.TextChannel, personagem):
     personagem_id = Database.personagem_id(personagem)
     eh_fool = Database.eh_fool(personagem_id)
     if personagem_id != False:
@@ -1415,7 +1419,7 @@ async def soltar_persona(ctx, canal : discord.TextChannel, personagem, *persona)
         await ctx.send(f"""Este personagem não existe.""")
     
 @bot.command()
-async def skills_conhecidas(ctx, personagem, canal : discord.TextChannel):
+async def skills_conhecidas(ctx, , canal : discord.TextChannel, personagem):
     personagem_id = Database.personagem_id(personagem)
     persona_id = Database.persona_equipada(personagem_id)
     nome = Database.nome_persona(persona_id)
@@ -1509,7 +1513,7 @@ async def aprender_skill(ctx, canal : discord.TextChannel, personagem, *skill):
         await ctx.send(f"""Esta habilidade não existe.""")
 
 @bot.command()
-async def esquecer_skill(ctx, personagem, canal : discord.TextChannel):
+async def esquecer_skill(ctx, , canal : discord.TextChannel, personagem):
     personagem_id = Database.personagem_id(personagem)
     persona_id = Database.persona_equipada(personagem_id)
     nome = Database.nome_persona(persona_id)
@@ -1582,6 +1586,7 @@ async def adicionar_horda(ctx, tipo, *personagem):
             horda_mult_def.append(0)
             horda_mult_acc.append(0)
             horda_mult_evs.append(0)
+            horda_mult_crit.append(0)
             horda_elem_dano.append([0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0])
             await ctx.send(f"""**{nome}** foi adicionado à horda.""")
         else:
@@ -1594,6 +1599,7 @@ async def adicionar_horda(ctx, tipo, *personagem):
             horda_mult_def.append(0)
             horda_mult_acc.append(0)
             horda_mult_evs.append(0)
+            horda_mult_crit.append(0)
             horda_elem_dano.append([0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0])
             await ctx.send(f"""**{nome}** foi adicionado à horda.""")
         else:
@@ -1610,6 +1616,7 @@ async def adicionar_party(ctx, personagem):
         party_mult_def.append(0)
         party_mult_acc.append(0)
         party_mult_evs.append(0)
+        party_mult_crit.append(0)
         party_elem_dano.append([0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0])
         await ctx.send(f"""**{personagem}** foi adicionado à Party.""")
     else:
@@ -1628,6 +1635,7 @@ async def remover_party(ctx, personagem):
                 del party_mult_acc[i]
                 del party_mult_evs[i]
                 del party_elem_dano[i]
+                del party_mult_crit[i]
                 await ctx.send(f"""**{personagem}** foi removido da Party.""")
                 achou = 1
         if achou == 0:
@@ -1652,6 +1660,7 @@ async def remover_horda(ctx, *personagem):
                 del horda_mult_acc[i]
                 del horda_mult_evs[i]
                 del horda_elem_dano[i]
+                del horda_mult_crit[i]
                 await ctx.send(f"""**{nome}** foi removido da horda.""")
                 achou = 1
         if achou == 0:
@@ -1925,7 +1934,7 @@ def insertion_sort(arr, ordem):
         ordem[j+1] = key2
     
 @bot.command()
-async def ataque_fisico(ctx, sentido, codigo1, codigo2, canal : discord.TextChannel):
+async def ataque_fisico(ctx,  canal : discord.TextChannel, sentido, codigo1, codigo2):
     try:
         codigo1 = int(codigo1)
         codigo2 = int(codigo2)
@@ -1976,9 +1985,10 @@ async def ataque_fisico(ctx, sentido, codigo1, codigo2, canal : discord.TextChan
                 valor_criterio = var + (5*(atributos_atacante[5]//5)) - (5*(atributos_defensor[6]//5)) + (10*party_mult_acc[codigo1-1]) - (10*horda_mult_evs[codigo1-1])
                 await canal.send(f"""Você precisa tirar um valor menor que **{valor_criterio}** no dado""")
                 dado = await Dado.rolagem_pronta(bot, canal, party[codigo1-1], usuario, 1, 100)
+                critico = 10 + (party_mult_crit[codigo1-1] * 10)
                 if dado <= valor_criterio:
                     valor_arma = Database.valor_item(meelee)
-                    dano = int(math.sqrt(valor_arma) * math.sqrt(atributos_atacante[2]))
+                    dano = int((math.sqrt(valor_arma) * math.sqrt(atributos_atacante[2])))
                     if party_mult_atk[codigo1-1] > 0:
                         dano = dano + (0,3 * party_mult_atk[codigo1-1] * dano)
                     elif party_mult_atk[codigo1-1] < 0:
@@ -2246,7 +2256,7 @@ async def ataque_fisico(ctx, sentido, codigo1, codigo2, canal : discord.TextChan
                         valor_armadura = 0
                     else:
                         valor_armadura = Database.valor_item(armadura)
-                    dano_mitigado = int(dano / math.sqrt((atributos_defensor[4]*8)+valor_armadura))
+                    dano_mitigado = int(math.sqrt((atributos_defensor[4]*8)+valor_armadura))
                     if party_mult_def[codigo2-1] > 0:
                         dano_mitigado = dano + (0,3 * party_mult_def[codigo2-1] * dano)
                     elif party_mult_def[codigo2-1] < 0:
@@ -2289,7 +2299,7 @@ async def ataque_fisico(ctx, sentido, codigo1, codigo2, canal : discord.TextChan
         await canal.send("Algo está incorreto.")
 
 @bot.command()
-async def tiro(ctx, codigo1, codigo2, canal : discord.TextChannel):
+async def tiro(ctx, canal : discord.TextChannel, codigo1, codigo2):
     try:
         codigo1 = int(codigo1)
         codigo2 = int(codigo2)
@@ -2346,7 +2356,7 @@ async def tiro(ctx, codigo1, codigo2, canal : discord.TextChannel):
                     dano = dano + (0,3 * party_mult_atk[codigo1-1] * dano)
                 elif party_mult_atk[codigo1-1] < 0:
                     dano = dano - (0,3 * party_mult_atk[codigo1-1] * dano)
-                dano_mitigado = int(dano / math.sqrt(atributos_defensor[4]*8))
+                dano_mitigado = int(math.sqrt(atributos_defensor[4]*8))
                 if horda_mult_def[codigo2-1] > 0:
                     dano_mitigado = dano + (0,3 * horda_mult_def[codigo2-1] * dano)
                 elif horda_mult_def[codigo2-1] < 0:
@@ -2534,20 +2544,14 @@ async def habilidade(ctx, canal : discord.TextChannel, sentido, codigo1, codigo2
                         dado = await Dado.rolagem_pronta(bot, canal, party[codigo1-1], usuario, 1, 100)
                         if dado <= valor_criterio:
                             if elemento < 3:
-                                if intensidade < 5:
-                                    dano = int((intensidade * 5) * math.sqrt(atributos_atacante[2]))
-                                else:
-                                    dano = int(50 * math.sqrt(atributos_atacante[2]))
+                                dano = int((intensidade * 10) * math.sqrt(atributos_atacante[2]))
                             else:
-                                if intensidade < 5:
-                                    dano = int((intensidade * 5) + ((intensidade * 5) * (atributos_atacante[3]/30)))
-                                else:
-                                    dano = int(50 + (50 * (atributos_atacante[3]/30)))
+                                dano = int((intensidade * 10) + ((intensidade * 10) * (atributos_atacante[3]/30)))
                             if party_mult_atk[codigo1-1] > 0:
                                 dano = dano + (0,3 * party_mult_atk[codigo1-1] * dano)
                             elif party_mult_atk[codigo1-1] < 0:
                                 dano = dano - (0,3 * party_mult_atk[codigo1-1] * dano)
-                            dano_mitigado = int(dano / math.sqrt(atributos_defensor[4]*8))
+                            dano_mitigado = int(math.sqrt(atributos_defensor[4]*8))
                             if horda_mult_def[codigo2-1] > 0:
                                 dano_mitigado = dano + (0,3 * horda_mult_def[codigo2-1] * dano)
                             elif horda_mult_def[codigo2-1] < 0:
@@ -2620,21 +2624,15 @@ async def habilidade(ctx, canal : discord.TextChannel, sentido, codigo1, codigo2
                         dado = await Dado.rolagem_pronta(bot, canal, party[codigo1-1], usuario, 1, 100)
                         if dado <= valor_criterio:
                             if elemento < 3:
-                                if intensidade < 5:
-                                    dano = int((intensidade * 5) * math.sqrt(atributos_atacante[2]))
-                                else:
-                                    dano = int(50 * math.sqrt(atributos_atacante[2]))
+                                dano = int((intensidade * 10) * math.sqrt(atributos_atacante[2]))
                             else:
-                                if intensidade < 5:
-                                    dano = int((intensidade * 5) + ((intensidade * 5) * (atributos_atacante[3]/30)))
-                                else:
-                                    dano = int(50 + (50 * (atributos_atacante[3]/30)))
+                                dano = int((intensidade * 10) + ((intensidade * 10) * (atributos_atacante[3]/30)))
                             if party_mult_atk[codigo1-1] > 0:
                                 dano = dano + (0,3 * party_mult_atk[codigo1-1] * dano)
                             elif party_mult_atk[codigo1-1] < 0:
                                 dano = dano - (0,3 * party_mult_atk[codigo1-1] * dano)
                             valor_armadura = Database.valor_item(armadura_defensor)
-                            dano_mitigado = int(dano / math.sqrt((atributos_defensor[4]*8)+valor_armadura))
+                            dano_mitigado = int(math.sqrt((atributos_defensor[4]*8)+valor_armadura))
                             if horda_mult_def[codigo2-1] > 0:
                                 dano_mitigado = dano + (0,3 * horda_mult_def[codigo2-1] * dano)
                             elif horda_mult_def[codigo2-1] < 0:
@@ -2745,21 +2743,15 @@ async def habilidade(ctx, canal : discord.TextChannel, sentido, codigo1, codigo2
                     dado = await Dado.rolagem_pronta(bot, canal, "Mestre", "Axuáti#9639", 1, 100)
                     if dado <= valor_criterio:
                         if elemento < 3:
-                            if intensidade < 5:
-                                dano = int((intensidade * 5) * math.sqrt(atributos_atacante[2]))
-                            else:
-                                dano = int(50 * math.sqrt(atributos_atacante[2]))
+                            dano = int((intensidade * 10) * math.sqrt(atributos_atacante[2]))
                         else:
-                            if intensidade < 5:
-                                dano = int((intensidade * 5) + ((intensidade * 5) * (atributos_atacante[3]/30)))
-                            else:
-                                dano = int(50 + (50 * (atributos_atacante[3]/30)))
+                            dano = int((intensidade * 10) + ((intensidade * 10) * (atributos_atacante[3]/30)))
                         if horda_mult_atk[codigo1-1] > 0:
                             dano = dano + (0,3 * horda_mult_atk[codigo1-1] * dano)
                         elif horda_mult_atk[codigo1-1] < 0:
                             dano = dano - (0,3 * horda_mult_atk[codigo1-1] * dano)
                         valor_armadura = Database.valor_item(armadura)
-                        dano_mitigado = int(dano / math.sqrt((atributos_defensor[4]*8) + valor_armadura))
+                        dano_mitigado = int(math.sqrt((atributos_defensor[4]*8) + valor_armadura))
                         if party_mult_def[codigo2-1] > 0:
                             dano_mitigado = dano + (0,3 * party_mult_def[codigo2-1] * dano)
                         elif party_mult_def[codigo2-1] < 0:
@@ -2802,7 +2794,7 @@ async def habilidade(ctx, canal : discord.TextChannel, sentido, codigo1, codigo2
         await ctx.send("Algo está incorreto.")
 
 @bot.command()
-async def add_atributo(ctx, personagem, tipo, quant, atributo, canal : discord.TextChannel):
+async def add_atributo(ctx, canal : discord.TextChannel, personagem, tipo, quant, atributo):
     personagem_id = Database.personagem_id(personagem)
     if personagem_id != False:
         atributo_id = Database.atributo_id(atributo)
@@ -2828,7 +2820,7 @@ async def add_atributo(ctx, personagem, tipo, quant, atributo, canal : discord.T
         await ctx.send(f"""Este personagem não existe.""")
 
 @bot.command()
-async def del_atributo(ctx, personagem, quant, atributo, canal : discord.TextChannel):
+async def del_atributo(ctx, canal : discord.TextChannel, personagem, quant, atributo):
     personagem_id = Database.personagem_id(personagem)
     if personagem_id != False:
         atributo_id = Database.atributo_id(atributo)
@@ -2847,7 +2839,7 @@ async def del_atributo(ctx, personagem, quant, atributo, canal : discord.TextCha
         await ctx.send(f"""Este personagem não existe.""")
 
 @bot.command()
-async def lider(ctx, personagem, canal : discord.TextChannel):
+async def lider(ctx, canal : discord.TextChannel, personagem):
     if party != []:
         for i in range(len(party)):
             if party[i] == personagem:
@@ -2856,7 +2848,7 @@ async def lider(ctx, personagem, canal : discord.TextChannel):
                 break
 
 @bot.command()
-async def marcador(ctx, tipo_marcador, tipo_grupo, codigo, quant, canal : discord.TextChannel):
+async def marcador(ctx, , canal : discord.TextChannel, tipo_marcador, tipo_grupo, codigo, quant):
     try:
         quant = int(quant)
         codigo = int(codigo)
@@ -2916,7 +2908,7 @@ async def marcador(ctx, tipo_marcador, tipo_grupo, codigo, quant, canal : discor
         await ctx.send(f"""Erro""")
 
 @bot.command()
-async def interacao(ctx, tipo_grupo, codigo, elemento, tipo_interacao, canal : discord.TextChannel):
+async def interacao(ctx, tipo_grupo, codigo, elemento, tipo_interacao):
     try:
         codigo = int(codigo)
         atributo = int(atributo)
