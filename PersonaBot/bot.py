@@ -615,7 +615,7 @@ def add_item(quant, item_id):
         add_item = Database.add_item_database(item_id, quant)
 
 @bot.command()
-async def equipar(ctx, personagem, *item, canal : discord.TextChannel):
+async def equipar(ctx, canal : discord.TextChannel, personagem, *item):
     nome = ""
     for palavra in item:
         nome+=palavra + " "
@@ -1052,7 +1052,7 @@ async def subir_nivel(ctx, canal : discord.TextChannel, personagem):
         await canal.send(embed=atributos_aumento)
 
 @bot.command()
-async def diminuir_nivel(ctx, , canal : discord.TextChannel, personagem):
+async def diminuir_nivel(ctx,  canal : discord.TextChannel, personagem):
     personagem_id = Database.personagem_id(personagem)
     eh_fool = Database.eh_fool(personagem_id)
     if eh_fool == False:
@@ -1419,7 +1419,7 @@ async def soltar_persona(ctx, canal : discord.TextChannel, personagem, *persona)
         await ctx.send(f"""Este personagem não existe.""")
     
 @bot.command()
-async def skills_conhecidas(ctx, , canal : discord.TextChannel, personagem):
+async def skills_conhecidas(ctx,  canal : discord.TextChannel, personagem):
     personagem_id = Database.personagem_id(personagem)
     persona_id = Database.persona_equipada(personagem_id)
     nome = Database.nome_persona(persona_id)
@@ -1513,7 +1513,7 @@ async def aprender_skill(ctx, canal : discord.TextChannel, personagem, *skill):
         await ctx.send(f"""Esta habilidade não existe.""")
 
 @bot.command()
-async def esquecer_skill(ctx, , canal : discord.TextChannel, personagem):
+async def esquecer_skill(ctx,  canal : discord.TextChannel, personagem):
     personagem_id = Database.personagem_id(personagem)
     persona_id = Database.persona_equipada(personagem_id)
     nome = Database.nome_persona(persona_id)
@@ -1988,7 +1988,7 @@ async def ataque_fisico(ctx,  canal : discord.TextChannel, sentido, codigo1, cod
                 critico = 10 + (party_mult_crit[codigo1-1] * 10)
                 if dado <= valor_criterio:
                     valor_arma = Database.valor_item(meelee)
-                    dano = int((math.sqrt(valor_arma) * math.sqrt(atributos_atacante[2])))
+                    dano = int(20 + (math.sqrt(valor_arma) * math.sqrt(atributos_atacante[2])))
                     if party_mult_atk[codigo1-1] > 0:
                         dano = dano + (0,3 * party_mult_atk[codigo1-1] * dano)
                     elif party_mult_atk[codigo1-1] < 0:
@@ -2029,7 +2029,11 @@ async def ataque_fisico(ctx,  canal : discord.TextChannel, sentido, codigo1, cod
                     elif fraquezas[0] == 5:
                         await canal.send(f"""**REFLETIU! **{horda[codigo2-1][1]}** refletiu **{dano}** de dano em **{party[codigo1-1]}**!""")
                     else:
-                        await canal.send(f"""**{party[codigo1-1]}** causou **{dano}** de dano em **{horda[codigo2-1][1]}**!""")
+                        if dado <= critico:
+                            dado = dano * 2
+                            await canal.send(f"""**CRÍTICO! {party[codigo1-1]}** causou **{dano}** de dano e derrubou **{horda[codigo2-1][1]}**!""")
+                        else:
+                            await canal.send(f"""**{party[codigo1-1]}** causou **{dano}** de dano em **{horda[codigo2-1][1]}**!""")
                 else:
                     await canal.send(f"""**{party[codigo1-1]}** errou o ataque físico  em **{horda[codigo2-1][1]}**""")
             else:
@@ -2064,9 +2068,10 @@ async def ataque_fisico(ctx,  canal : discord.TextChannel, sentido, codigo1, cod
                 valor_criterio = var + (5*(atributos_atacante[5]//5)) - (5*(atributos_defensor[6]//5)) + (10*party_mult_acc[codigo1-1]) - (10*horda_mult_evs[codigo1-1])
                 await canal.send(f"""Você precisa tirar um valor menor que **{valor_criterio}** no dado""")
                 dado = await Dado.rolagem_pronta(bot, canal, party[codigo1-1], usuario, 1, 100)
+                critico = 10 + (party_mult_crit[codigo1-1] * 10)
                 if dado <= valor_criterio:
                     valor_arma = Database.valor_item(meelee)
-                    dano = int(math.sqrt(valor_arma) * math.sqrt(atributos_atacante[2]))
+                    dano = int(20 + math.sqrt(valor_arma) * math.sqrt(atributos_atacante[2]))
                     if party_mult_atk[codigo1-1] > 0:
                         dano = dano + (0,3 * party_mult_atk[codigo1-1] * dano)
                     elif party_mult_atk[codigo1-1] < 0:
@@ -2111,7 +2116,11 @@ async def ataque_fisico(ctx,  canal : discord.TextChannel, sentido, codigo1, cod
                     elif fraquezas[0] == 5:
                         await canal.send(f"""**REFLETIU! **{horda[codigo2-1][1]}** refletiu **{dano}** de dano em **{party[codigo1-1]}**!""")
                     else:
-                        await canal.send(f"""**{party[codigo1-1]}** causou **{dano}** de dano em **{horda[codigo2-1][1]}**!""")
+                        if dado <= critico:
+                            dado = dano * 2
+                            await canal.send(f"""**CRÍTICO! {party[codigo1-1]}** causou **{dano}** de dano e derrubou **{horda[codigo2-1][1]}**!""")
+                        else:
+                            await canal.send(f"""**{party[codigo1-1]}** causou **{dano}** de dano em **{horda[codigo2-1][1]}**!""")
                 else:
                     await ctx.send(f"""**{party[codigo1-1]}** errou o ataque físico  em **{horda[codigo2-1][1]}**""")
         elif sentido == "horda":
@@ -2161,8 +2170,9 @@ async def ataque_fisico(ctx,  canal : discord.TextChannel, sentido, codigo1, cod
                 valor_criterio = var + (5*(atributos_atacante[5]//5)) - (5*(atributos_defensor[6]//5)) + (10*horda_mult_acc[codigo1-1])- (10*party_mult_evs[codigo1-1])
                 await canal.send(f"""Você precisa tirar um valor menor que **{valor_criterio}** no dado""")
                 dado = await Dado.rolagem_pronta(bot, canal, "Mestre", "Axuáti#9639", 1, 100)
+                critico = 10 + (party_mult_crit[codigo1-1] * 10)
                 if dado <= valor_criterio:
-                    dano = int(5 * math.sqrt(atributos_atacante[2]))
+                    dano = int(20 * math.sqrt(atributos_atacante[2]))
                     if horda_mult_atk[codigo1-1] > 0:
                         dano = dano + (0,3 * horda_mult_atk[codigo1-1] * dano)
                     elif horda_mult_atk[codigo1-1] < 0:
@@ -2211,7 +2221,11 @@ async def ataque_fisico(ctx,  canal : discord.TextChannel, sentido, codigo1, cod
                     elif fraquezas[0] == 5:
                         await canal.send(f"""**REFLETIU! **{party[codigo2-1]}** refletiu **{dano}** de dano em **{horda[codigo1-1][1]}**!""")
                     else:
-                        await canal.send(f"""**{horda[codigo1-1][1]}** causou **{dano}** de dano em **{party[codigo2-1]}**!""")
+                        if dado <= critico:
+                            dado = dano * 2
+                            await canal.send(f"""**CRÍTICO! {horda[codigo1-1][1]}** causou **{dano}** de dano e derrubou **{party[codigo2-1]}**!""")
+                        else:
+                            await canal.send(f"""**{horda[codigo1-1][1]}** causou **{dano}** de dano em **{party[codigo2-1]}**!""")
                 else:
                     await canal.send(f"""**{horda[codigo1-1][1]}** errou o ataque físico  em **{party[codigo2-1]}**""")
             else:
@@ -2245,9 +2259,10 @@ async def ataque_fisico(ctx,  canal : discord.TextChannel, sentido, codigo1, cod
                 valor_criterio = var + (5*(atributos_atacante[5]//5)) - (5*(atributos_defensor[6]//5)) + (10*horda_mult_acc[codigo1-1])- (10*party_mult_evs[codigo1-1])
                 await canal.send(f"""Você precisa tirar um valor menor que **{valor_criterio}** no dado""")
                 dado = await Dado.rolagem_pronta(bot, canal, "Mestre", "Axuáti#9639", 1, 100)
+                critico = 10 + (party_mult_crit[codigo1-1] * 10)
                 if dado <= valor_criterio:
                     valor_arma = Database.valor_item(meelee_atacante)
-                    dano = int(math.sqrt(valor_arma) * math.sqrt(atributos_atacante[2]))
+                    dano = int(20 + math.sqrt(valor_arma) * math.sqrt(atributos_atacante[2]))
                     if horda_mult_atk[codigo1-1] > 0:
                         dano = dano + (0,3 * horda_mult_atk[codigo1-1] * dano)
                     elif horda_mult_atk[codigo1-1] < 0:
@@ -2292,7 +2307,11 @@ async def ataque_fisico(ctx,  canal : discord.TextChannel, sentido, codigo1, cod
                     elif fraquezas[0] == 5:
                         await canal.send(f"""**REFLETIU! **{party[codigo2-1]}** refletiu **{dano}** de dano em **{horda[codigo1-1][1]}**!""")
                     else:
-                        await canal.send(f"""**{horda[codigo1-1][1]}** causou **{dano}** de dano em **{party[codigo2-1]}**!""")
+                        if dado <= critico:
+                            dado = dano * 2
+                            await canal.send(f"""**CRÍTICO! {horda[codigo1-1][1]}** causou **{dano}** de dano e derrubou **{party[codigo2-1]}**!""")
+                        else:
+                            await canal.send(f"""**{horda[codigo1-1][1]}** causou **{dano}** de dano em **{party[codigo2-1]}**!""")
                 else:
                     await canal.send(f"""**{horda[codigo1-1][1]}** errou o ataque físico  em **{party[codigo2-1]}**""")
     except:
@@ -2348,6 +2367,7 @@ async def tiro(ctx, canal : discord.TextChannel, codigo1, codigo2):
                     await ctx.send("Digite um número entre 0 e 100.")
             valor_criterio = var + (5*(atributos_atacante[5]//5)) - (5*(atributos_defensor[6]//5)) + (10*party_mult_acc[codigo1-1]) - (10*horda_mult_evs[codigo1-1])
             await canal.send(f"""Você precisa tirar um valor menor que **{valor_criterio}** no dado""")
+            critico = 10 + (party_mult_crit[codigo1-1] * 10)
             dado = await Dado.rolagem_pronta(bot, canal, party[codigo1-1], usuario, 1, 100)
             if dado <= valor_criterio:
                 valor_arma = Database.valor_item(ranged)
@@ -2392,7 +2412,11 @@ async def tiro(ctx, canal : discord.TextChannel, codigo1, codigo2):
                 elif fraquezas[0] == 5:
                     await canal.send(f"""**REFLETIU! **{horda[codigo2-1][1]}** refletiu **{dano}** de dano em **{party[codigo1-1]}**!""")
                 else:
-                    await canal.send(f"""**{party[codigo1-1]}** causou **{dano}** de dano em **{horda[codigo2-1][1]}**!""")
+                    if dado <= critico:
+                        dado = dano * 2
+                        await canal.send(f"""**CRÍTICO! {party[codigo1-1]}** causou **{dano}** de dano e derrubou **{horda[codigo2-1][1]}**!""")
+                    else:
+                        await canal.send(f"""**{party[codigo1-1]}** causou **{dano}** de dano em **{horda[codigo2-1][1]}**!""")
             else:
                 await canal.send(f"""**{party[codigo1-1]}** errou o tiro em **{horda[codigo2-1][1]}**""")
         else:
@@ -2427,6 +2451,7 @@ async def tiro(ctx, canal : discord.TextChannel, codigo1, codigo2):
             valor_criterio = var + (5*(atributos_atacante[5]//5)) - (5*(atributos_defensor[6]//5)) + (10*party_mult_acc[codigo1-1]) - (10*horda_mult_evs[codigo1-1])
             await canal.send(f"""Você precisa tirar um valor menor que **{valor_criterio}** no dado""")
             dado = await Dado.rolagem_pronta(bot, canal, party[codigo1-1], usuario, 1, 100)
+            critico = 10 + (party_mult_crit[codigo1-1] * 10)
             if dado <= valor_criterio:
                 valor_arma = Database.valor_item(ranged)
                 dano = int(math.sqrt(valor_arma) * math.sqrt(atributos_atacante[2]))
@@ -2474,7 +2499,11 @@ async def tiro(ctx, canal : discord.TextChannel, codigo1, codigo2):
                 elif fraquezas[1] == 5:
                     await canal.send(f"""**REFLETIU! **{horda[codigo2-1][1]}** refletiu **{dano}** de dano em **{party[codigo1-1]}**!""")
                 else:
-                    await canal.send(f"""**{party[codigo1-1]}** causou **{dano}** de dano em **{horda[codigo2-1][1]}**!""")
+                    if dado <= critico:
+                        dado = dano * 2
+                        await canal.send(f"""**CRÍTICO! {party[codigo1-1]}** causou **{dano}** de dano e derrubou **{horda[codigo2-1][1]}**!""")
+                    else:
+                        await canal.send(f"""**{party[codigo1-1]}** causou **{dano}** de dano em **{horda[codigo2-1][1]}**!""")
             else:
                 await canal.send(f"""**{party[codigo1-1]}** errou o tiro em **{horda[codigo2-1][1]}**""")
     except:
@@ -2544,9 +2573,9 @@ async def habilidade(ctx, canal : discord.TextChannel, sentido, codigo1, codigo2
                         dado = await Dado.rolagem_pronta(bot, canal, party[codigo1-1], usuario, 1, 100)
                         if dado <= valor_criterio:
                             if elemento < 3:
-                                dano = int((intensidade * 10) * math.sqrt(atributos_atacante[2]))
+                                dano = int((intensidade * 25) * math.sqrt(atributos_atacante[2]))
                             else:
-                                dano = int((intensidade * 10) + ((intensidade * 10) * (atributos_atacante[3]/30)))
+                                dano = int((intensidade * 25) + ((intensidade * 25) * (atributos_atacante[3]/30)))
                             if party_mult_atk[codigo1-1] > 0:
                                 dano = dano + (0,3 * party_mult_atk[codigo1-1] * dano)
                             elif party_mult_atk[codigo1-1] < 0:
@@ -2624,9 +2653,9 @@ async def habilidade(ctx, canal : discord.TextChannel, sentido, codigo1, codigo2
                         dado = await Dado.rolagem_pronta(bot, canal, party[codigo1-1], usuario, 1, 100)
                         if dado <= valor_criterio:
                             if elemento < 3:
-                                dano = int((intensidade * 10) * math.sqrt(atributos_atacante[2]))
+                                dano = int((intensidade * 25) * math.sqrt(atributos_atacante[2]))
                             else:
-                                dano = int((intensidade * 10) + ((intensidade * 10) * (atributos_atacante[3]/30)))
+                                dano = int((intensidade * 25) + ((intensidade * 25) * (atributos_atacante[3]/30)))
                             if party_mult_atk[codigo1-1] > 0:
                                 dano = dano + (0,3 * party_mult_atk[codigo1-1] * dano)
                             elif party_mult_atk[codigo1-1] < 0:
@@ -2743,9 +2772,9 @@ async def habilidade(ctx, canal : discord.TextChannel, sentido, codigo1, codigo2
                     dado = await Dado.rolagem_pronta(bot, canal, "Mestre", "Axuáti#9639", 1, 100)
                     if dado <= valor_criterio:
                         if elemento < 3:
-                            dano = int((intensidade * 10) * math.sqrt(atributos_atacante[2]))
+                            dano = int((intensidade * 25) * math.sqrt(atributos_atacante[2]))
                         else:
-                            dano = int((intensidade * 10) + ((intensidade * 10) * (atributos_atacante[3]/30)))
+                            dano = int((intensidade * 25) + ((intensidade * 25) * (atributos_atacante[3]/30)))
                         if horda_mult_atk[codigo1-1] > 0:
                             dano = dano + (0,3 * horda_mult_atk[codigo1-1] * dano)
                         elif horda_mult_atk[codigo1-1] < 0:
@@ -2848,7 +2877,7 @@ async def lider(ctx, canal : discord.TextChannel, personagem):
                 break
 
 @bot.command()
-async def marcador(ctx, , canal : discord.TextChannel, tipo_marcador, tipo_grupo, codigo, quant):
+async def marcador(ctx,  canal : discord.TextChannel, tipo_marcador, tipo_grupo, codigo, quant):
     try:
         quant = int(quant)
         codigo = int(codigo)
@@ -2891,7 +2920,7 @@ async def marcador(ctx, , canal : discord.TextChannel, tipo_marcador, tipo_grupo
                     await canal.send(f"""**{horda[codigo-1][1]}** teve sua acurácia aumentada em {quant}.""")
                 elif quant < 0:
                     await canal.send(f"""**{horda[codigo-1][1]}** teve sua acurácia diminuida em {quant}.""")
-        else:
+        elif marcador == "evs":
             if tipo_grupo == "party":
                 party_mult_evs[codigo-1] += quant
                 if quant > 0:
@@ -2904,6 +2933,19 @@ async def marcador(ctx, , canal : discord.TextChannel, tipo_marcador, tipo_grupo
                     await canal.send(f"""**{horda[codigo-1][1]}** teve sua evasão aumentada em {quant}.""")
                 elif quant < 0:
                     await canal.send(f"""**{horda[codigo-1][1]}** teve sua evasão diminuida em {quant}.""")
+        else:
+            if tipo_grupo == "party":
+                party_mult_crit[codigo-1] += quant
+                if quant > 0:
+                    await canal.send(f"""**{party[codigo-1]}** teve sua taxa de acerto crítico aumentada em {quant}.""")
+                elif quant < 0:
+                    await canal.send(f"""**{party[codigo-1]}** teve sua taxa de acerto crítico diminuida em {quant}.""")
+            else:
+                horda_mult_crit[codigo-1] += quant
+                if quant > 0:
+                    await canal.send(f"""**{horda[codigo-1][1]}** teve sua taxa de acerto crítico aumentada em {quant}.""")
+                elif quant < 0:
+                    await canal.send(f"""**{horda[codigo-1][1]}** teve sua taxa de acerto crítico diminuida em {quant}.""")
     except:
         await ctx.send(f"""Erro""")
 
