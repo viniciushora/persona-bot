@@ -2030,7 +2030,7 @@ async def ataque_fisico(ctx,  canal : discord.TextChannel, sentido, codigo1, cod
                         await canal.send(f"""**REFLETIU! **{horda[codigo2-1][1]}** refletiu **{dano}** de dano em **{party[codigo1-1]}**!""")
                     else:
                         if dado <= critico:
-                            dado = dano * 2
+                            dano = dano * 2
                             await canal.send(f"""**CRÍTICO! {party[codigo1-1]}** causou **{dano}** de dano e derrubou **{horda[codigo2-1][1]}**!""")
                         else:
                             await canal.send(f"""**{party[codigo1-1]}** causou **{dano}** de dano em **{horda[codigo2-1][1]}**!""")
@@ -2117,7 +2117,7 @@ async def ataque_fisico(ctx,  canal : discord.TextChannel, sentido, codigo1, cod
                         await canal.send(f"""**REFLETIU! **{horda[codigo2-1][1]}** refletiu **{dano}** de dano em **{party[codigo1-1]}**!""")
                     else:
                         if dado <= critico:
-                            dado = dano * 2
+                            dano = dano * 2
                             await canal.send(f"""**CRÍTICO! {party[codigo1-1]}** causou **{dano}** de dano e derrubou **{horda[codigo2-1][1]}**!""")
                         else:
                             await canal.send(f"""**{party[codigo1-1]}** causou **{dano}** de dano em **{horda[codigo2-1][1]}**!""")
@@ -2222,7 +2222,7 @@ async def ataque_fisico(ctx,  canal : discord.TextChannel, sentido, codigo1, cod
                         await canal.send(f"""**REFLETIU! **{party[codigo2-1]}** refletiu **{dano}** de dano em **{horda[codigo1-1][1]}**!""")
                     else:
                         if dado <= critico:
-                            dado = dano * 2
+                            dano = dano * 2
                             await canal.send(f"""**CRÍTICO! {horda[codigo1-1][1]}** causou **{dano}** de dano e derrubou **{party[codigo2-1]}**!""")
                         else:
                             await canal.send(f"""**{horda[codigo1-1][1]}** causou **{dano}** de dano em **{party[codigo2-1]}**!""")
@@ -2308,7 +2308,7 @@ async def ataque_fisico(ctx,  canal : discord.TextChannel, sentido, codigo1, cod
                         await canal.send(f"""**REFLETIU! **{party[codigo2-1]}** refletiu **{dano}** de dano em **{horda[codigo1-1][1]}**!""")
                     else:
                         if dado <= critico:
-                            dado = dano * 2
+                            dano = dano * 2
                             await canal.send(f"""**CRÍTICO! {horda[codigo1-1][1]}** causou **{dano}** de dano e derrubou **{party[codigo2-1]}**!""")
                         else:
                             await canal.send(f"""**{horda[codigo1-1][1]}** causou **{dano}** de dano em **{party[codigo2-1]}**!""")
@@ -2413,7 +2413,7 @@ async def tiro(ctx, canal : discord.TextChannel, codigo1, codigo2):
                     await canal.send(f"""**REFLETIU! **{horda[codigo2-1][1]}** refletiu **{dano}** de dano em **{party[codigo1-1]}**!""")
                 else:
                     if dado <= critico:
-                        dado = dano * 2
+                        dano = dano * 2
                         await canal.send(f"""**CRÍTICO! {party[codigo1-1]}** causou **{dano}** de dano e derrubou **{horda[codigo2-1][1]}**!""")
                     else:
                         await canal.send(f"""**{party[codigo1-1]}** causou **{dano}** de dano em **{horda[codigo2-1][1]}**!""")
@@ -2500,7 +2500,7 @@ async def tiro(ctx, canal : discord.TextChannel, codigo1, codigo2):
                     await canal.send(f"""**REFLETIU! **{horda[codigo2-1][1]}** refletiu **{dano}** de dano em **{party[codigo1-1]}**!""")
                 else:
                     if dado <= critico:
-                        dado = dano * 2
+                        dano = dano * 2
                         await canal.send(f"""**CRÍTICO! {party[codigo1-1]}** causou **{dano}** de dano e derrubou **{horda[codigo2-1][1]}**!""")
                     else:
                         await canal.send(f"""**{party[codigo1-1]}** causou **{dano}** de dano em **{horda[codigo2-1][1]}**!""")
