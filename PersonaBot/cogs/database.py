@@ -1,7 +1,11 @@
 import urllib.parse as up
 import psycopg2
+import json
 
-conn = psycopg2.connect("dbname='mkigjvup' user='mkigjvup' host='motty.db.elephantsql.com' password='s4d_bAHqGiWhyuZ8OaIMyDWPVc8lXBUE'")
+f = open('./config.json')
+data = json.load(f)
+
+conn = psycopg2.connect(f"""dbname='{data['dbname']}' user='{data['user']}' host='{data['host']}' password='{data['password']}'""")
 cur = conn.cursor()
 
 class Database:
