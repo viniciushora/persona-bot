@@ -1245,3 +1245,16 @@ where fk_persona_persona_id = %s and nivel = %s
                         return skills
                 except:
                         return False
+        
+        @staticmethod
+        def skill_vezes(skill_id):
+                try:
+                        select = """
+select vezes from habilidade
+where habilidade_id = %s
+"""
+                        cur.execute(select,(skill_id,))
+                        skill = cur.fetchone()
+                        return skill[0]
+                except:
+                        return False
