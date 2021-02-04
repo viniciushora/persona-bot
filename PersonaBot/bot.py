@@ -18,9 +18,8 @@ data = json.load(f)
 bot = commands.Bot(command_prefix=data['prefix'])
 bot.remove_command("help")
 
-global horda, party, horda_mults, party_mults
+global horda, party, horda_mult_atk, party_mult_atk, horda_mult_def, party_mult_def, horda_mult_acc, party_mult_acc, horda_mult_evs, party_mult_evs, horda_mult_dano, party_mult_dano, horda_mult_crit, party_mult_crit, canais_jogadores, canal_inimigos, canal_grupo, canal_mestre, canal_suporte
 
-servers = []
 horda = []
 party = []
 horda_mult_atk = []
@@ -35,6 +34,11 @@ horda_elem_dano = []
 party_elem_dano = []
 party_mult_crit = []
 horda_mult_crit = []
+canais_jogadores = {}
+canal_inimigos = 0
+canal_grupo = 0
+canal_mestre = 0
+canal_suporte = 0
 
 @bot.event
 async def on_member_join(member):
@@ -55,7 +59,28 @@ async def on_guild_join(guild):
 
 @bot.event
 async def on_ready():
+    global canais_jogadores, canal_grupo, canal_inimigos, canal_mestre, canal_suporte
     print('Estou funcionando como {0.user}'.format(bot))
+    try:
+        with open('canais.pickle', 'rb') as handle:
+            canais = pickle.load(handle)
+        canais_jogadores = canais["jogadores"]
+        canal_inimigos = canais["inimigos"]
+        canal_grupo = canais["grupo"]
+        canal_mestre = canais["mestre"]
+        canal_suporte = canais["suporte"]
+        print("Canais carregados")
+        print(canais_jogadores)
+        print(canal_inimigos)
+        print(canal_grupo)
+        print(canal_mestre)
+        print(canal_suporte)
+    except:
+        canais = {"jogadores": {}, "inimigos": 0, "grupo": 0, "mestre": 0, "suporte": 0}
+        with open('canais.pickle', 'wb') as handle:
+            pickle.dump(canais, handle, protocol=pickle.HIGHEST_PROTOCOL)
+        handle.close()
+        print("Canais criados pela primeira vez")
     print("Tudo Ok")
 
 @bot.command()
@@ -121,64 +146,69 @@ async def atualizar_info(ctx):
         await ctx.send("**Informação atualizada**")
     
 @bot.command()
-async def info_shadow(ctx, canal : discord.TextChannel, *shadow):
-    nome = ""
-    for palavra in shadow:
-        nome += palavra + " "
-    nome = nome[:-1]
-    with open('info.pickle', 'rb') as handle:
-        info = pickle.load(handle)
+async def info_shadow(ctx, *shadow):
+    global canal_suporte
     try:
-        ficha = Database.ficha_shadow(nome)
-        persona_id = Database.persona_id_shadow(nome)
-        nivel = Database.nivel_persona(persona_id)
-        shadow_id = ficha[0][0]
-        nome = ficha[0][1]
-        foto = ficha[0][2]
-        arcana = ficha[0][3]
-        embed = discord.Embed(
-            title=f"""**{nome}**""",
-            colour=discord.Colour.red()
-        )
-        embed.set_image(url=foto)
-        embed.add_field(name=f"""Nível base""", value=nivel, inline=False)
-        fraquezas = ['???','???','???','???','???','???','???','???','???','???','???']
-        if info[shadow_id][0] == 1:
-            fraquezas[0] = ficha[1][0][1]
-        if info[shadow_id][1] == 1:
-            fraquezas[1] = ficha[1][1][1]
-        if info[shadow_id][2] == 1:
-            fraquezas[2] = ficha[1][2][1]
-        if info[shadow_id][3] == 1:
-            fraquezas[3] = ficha[1][3][1]
-        if info[shadow_id][4] == 1:
-            fraquezas[4] = ficha[1][4][1]
-        if info[shadow_id][5] == 1:
-            fraquezas[5] = ficha[1][5][1]
-        if info[shadow_id][6] == 1:
-            fraquezas[6] = ficha[1][6][1]
-        if info[shadow_id][7] == 1:
-            fraquezas[7] = ficha[1][7][1]
-        if info[shadow_id][8] == 1:
-            fraquezas[8] = ficha[1][8][1]
-        if info[shadow_id][9] == 1:
-            fraquezas[9] = ficha[1][9][1]
-        if info[shadow_id][10] == 1:
-            fraquezas[10] = ficha[1][10][1]
-        embed.add_field(name=f"""<:phys:790320130810839101>""", value=fraquezas[0], inline=True)
-        embed.add_field(name=f"""<:gun:790320131028287488>""", value=fraquezas[1], inline=True)
-        embed.add_field(name=f"""<:fire:790320130483421245>""", value=fraquezas[2], inline=True)
-        embed.add_field(name=f"""<:ice:790320130738356224>""", value=fraquezas[3], inline=True)
-        embed.add_field(name=f"""<:elec:790320130151809047>""", value=fraquezas[4], inline=True)
-        embed.add_field(name=f"""<:wind:790320130521169922>""", value=fraquezas[5], inline=True)
-        embed.add_field(name=f"""<:psy:790320130772566046>""", value=fraquezas[6], inline=True)
-        embed.add_field(name=f"""<:nuclear:790320130584084532>""", value=fraquezas[7], inline=True)
-        embed.add_field(name=f"""<:bless:790320130746744892>""", value=fraquezas[8], inline=True)
-        embed.add_field(name=f"""<:curse:790320130387214336>""", value=fraquezas[9], inline=True)
-        embed.add_field(name=f"""<:almighty:790320130297954374>""", value=fraquezas[10], inline=True)
-        await canal.send(embed=embed)
+        canal = bot.get_channel(canal_suporte)
+        nome = ""
+        for palavra in shadow:
+            nome += palavra + " "
+        nome = nome[:-1]
+        with open('info.pickle', 'rb') as handle:
+            info = pickle.load(handle)
+        try:
+            ficha = Database.ficha_shadow(nome)
+            persona_id = Database.persona_id_shadow(nome)
+            nivel = Database.nivel_persona(persona_id)
+            shadow_id = ficha[0][0]
+            nome = ficha[0][1]
+            foto = ficha[0][2]
+            arcana = ficha[0][3]
+            embed = discord.Embed(
+                title=f"""**{nome}**""",
+                colour=discord.Colour.red()
+            )
+            embed.set_image(url=foto)
+            embed.add_field(name=f"""Nível base""", value=nivel, inline=False)
+            fraquezas = ['???','???','???','???','???','???','???','???','???','???','???']
+            if info[shadow_id][0] == 1:
+                fraquezas[0] = ficha[1][0][1]
+            if info[shadow_id][1] == 1:
+                fraquezas[1] = ficha[1][1][1]
+            if info[shadow_id][2] == 1:
+                fraquezas[2] = ficha[1][2][1]
+            if info[shadow_id][3] == 1:
+                fraquezas[3] = ficha[1][3][1]
+            if info[shadow_id][4] == 1:
+                fraquezas[4] = ficha[1][4][1]
+            if info[shadow_id][5] == 1:
+                fraquezas[5] = ficha[1][5][1]
+            if info[shadow_id][6] == 1:
+                fraquezas[6] = ficha[1][6][1]
+            if info[shadow_id][7] == 1:
+                fraquezas[7] = ficha[1][7][1]
+            if info[shadow_id][8] == 1:
+                fraquezas[8] = ficha[1][8][1]
+            if info[shadow_id][9] == 1:
+                fraquezas[9] = ficha[1][9][1]
+            if info[shadow_id][10] == 1:
+                fraquezas[10] = ficha[1][10][1]
+            embed.add_field(name=f"""<:phys:790320130810839101>""", value=fraquezas[0], inline=True)
+            embed.add_field(name=f"""<:gun:790320131028287488>""", value=fraquezas[1], inline=True)
+            embed.add_field(name=f"""<:fire:790320130483421245>""", value=fraquezas[2], inline=True)
+            embed.add_field(name=f"""<:ice:790320130738356224>""", value=fraquezas[3], inline=True)
+            embed.add_field(name=f"""<:elec:790320130151809047>""", value=fraquezas[4], inline=True)
+            embed.add_field(name=f"""<:wind:790320130521169922>""", value=fraquezas[5], inline=True)
+            embed.add_field(name=f"""<:psy:790320130772566046>""", value=fraquezas[6], inline=True)
+            embed.add_field(name=f"""<:nuclear:790320130584084532>""", value=fraquezas[7], inline=True)
+            embed.add_field(name=f"""<:bless:790320130746744892>""", value=fraquezas[8], inline=True)
+            embed.add_field(name=f"""<:curse:790320130387214336>""", value=fraquezas[9], inline=True)
+            embed.add_field(name=f"""<:almighty:790320130297954374>""", value=fraquezas[10], inline=True)
+            await canal.send(embed=embed)
+        except:
+            await ctx.send("**Shadow não encontrada, digite novamente e corretamente.**")
     except:
-        await ctx.send("**Shadow não encontrada, digite novamente e corretamente.**")
+        ctx.send("Canal do suporte ainda não registrado.")
 
 @bot.command()
 async def revelar_afinidade(ctx, *shadow):
@@ -397,230 +427,267 @@ async def esconder_afinidade(ctx, *shadow):
         handle.close()
 
 @bot.command()
-async def add_item(ctx, canal : discord.TextChannel, quant, *item):
-    quant = int(quant)
-    nome = ""
-    for palavra in item:
-        nome+=palavra + " "
-    nome = nome[:-1]
-    item_id = Database.item_id(nome)
-    if item_id != False:
-        contem_item = Database.item_no_inventario(nome)
-        if contem_item != False:
-            soma_item = Database.soma_item_database(item_id, contem_item[1], quant)
-            if soma_item:
-                await canal.send(f"""**{quant} {nome}** adicionado(s) no inventário do grupo. Quantidade atual: ({contem_item[1]+quant})""")
-        else:
-            add_item = Database.add_item_database(item_id, quant)
-            if add_item:
-                await canal.send(f"""**{quant} {nome}** adicionado(s) no inventário do grupo.""")
+async def add_item(ctx, quant, *item):
+    global canal_grupo
+    try:
+        canal = bot.get_channel(canal_grupo)
+        quant = int(quant)
+        nome = ""
+        for palavra in item:
+            nome+=palavra + " "
+        nome = nome[:-1]
+        item_id = Database.item_id(nome)
+        if item_id != False:
+            contem_item = Database.item_no_inventario(nome)
+            if contem_item != False:
+                soma_item = Database.soma_item_database(item_id, contem_item[1], quant)
+                if soma_item:
+                    await canal.send(f"""**{quant} {nome}** adicionado(s) no inventário do grupo. Quantidade atual: ({contem_item[1]+quant})""")
             else:
-                await ctx.send(f"""**Erro interno**""")
-    else:
-        await ctx.send(f"""**{nome} não existe.**""")
+                add_item = Database.add_item_database(item_id, quant)
+                if add_item:
+                    await canal.send(f"""**{quant} {nome}** adicionado(s) no inventário do grupo.""")
+                else:
+                    await ctx.send(f"""**Erro interno**""")
+        else:
+            await ctx.send(f"""**{nome} não existe.**""")
+    except:
+        await ctx.send("Canal do grupo não registrado.")
 
 @bot.command()
 async def del_item(ctx, canal : discord.TextChannel, quant, *item):
-    quant = int(quant)
-    nome = ""
-    for palavra in item:
-        nome+=palavra + " "
-    nome = nome[:-1]
-    item_id = Database.item_id(nome)
-    if item_id != False:
-        contem_item = Database.item_no_inventario(nome)
-        if contem_item != False:
-            if contem_item[1] > quant:
-                subtrai_item = Database.subtrai_item_database(item_id, contem_item[1], quant)
-                print(subtrai_item)
-                await canal.send(f"""**{quant} {nome}** removido(s) no inventário do grupo. Quantidade atual: ({contem_item[1]-quant})""")
+    global canal_grupo
+    try:
+        canal = bot.get_channel(canal_grupo)
+        quant = int(quant)
+        nome = ""
+        for palavra in item:
+            nome+=palavra + " "
+        nome = nome[:-1]
+        item_id = Database.item_id(nome)
+        if item_id != False:
+            contem_item = Database.item_no_inventario(nome)
+            if contem_item != False:
+                if contem_item[1] > quant:
+                    subtrai_item = Database.subtrai_item_database(item_id, contem_item[1], quant)
+                    print(subtrai_item)
+                    await canal.send(f"""**{quant} {nome}** removido(s) no inventário do grupo. Quantidade atual: ({contem_item[1]-quant})""")
+                else:
+                    delete_item = Database.del_item_database(item_id)
+                    await canal.send(f"""**{nome}** removido completamente do inventário do grupo.""")
             else:
-                delete_item = Database.del_item_database(item_id)
-                await canal.send(f"""**{nome}** removido completamente do inventário do grupo.""")
+                await ctx.send(f"""**{nome}** não encontrado no inventário do grupo.""")
         else:
-            await ctx.send(f"""**{nome}** não encontrado no inventário do grupo.""")
-    else:
-        await ctx.send(f"""**{nome} não existe.**""")
+            await ctx.send(f"""**{nome} não existe.**""")
+    except:
+        await ctx.send("Canal do grupo não registrado.")
     
 @bot.command()
-async def inventario(ctx, canal : discord.TextChannel):
-    itens = Database.inventario_grupo()
-    consumiveis = []
-    cartas = []
-    materiais = []
-    tesouros = []
-    essenciais = []
-    itens_chave = []
-    armas_meelee = []
-    armas_ranged = []
-    armaduras = []
-    acessorios = []
-    roupas = []
-    for item, tipo_item, quant in itens:
-        if tipo_item == "Consumíveis":
-            consumiveis.append((item,quant))
-        elif tipo_item == "Cartas de Habilidade":
-            cartas.append((item,quant))
-        elif tipo_item == "Materiais":
-            materiais.append((item,quant))
-        elif tipo_item == "Tesouros":
-            tesouros.append((item,quant))
-        elif tipo_item == "Essenciais":
-            essenciais.append((item,quant))
-        elif tipo_item == "Itens-chave":
-            itens_chave.append((item,quant))
-        elif tipo_item == "Armas Corpo-a-corpo":
-            armas_meelee.append((item,quant))
-        elif tipo_item == "Armas à distância":
-            armas_ranged.append((item,quant))
-        elif tipo_item == "Armadura":
-            armaduras.append((item,quant))
-        elif tipo_item == "Acessórios":
-            acessorios.append((item,quant))
-        else:
-            roupas.append((item,quant))
-    dinheiro = Database.dinheiro_grupo()
-    inventario = discord.Embed(
-            title=f"""**Inventário do grupo**""",
-            description=F"""Dinheiro: R$ {dinheiro}""",
-            colour=discord.Colour.blue()
-    )
-    if consumiveis != []:
-        texto = ""
-        for item, quant in consumiveis:
-            texto += f"""{item} x{quant}; """
-        texto = texto[:-2]
-        inventario.add_field(name="Consumíveis", value=texto, inline=False)
-    if cartas != []:
-        texto = ""
-        for item, quant in cartas:
-            texto += f"""{item} x{quant}; """
-        texto = texto[:-2]
-        inventario.add_field(name="Cartas de Habilidade", value=texto, inline=False)
-    if materiais != []:
-        texto = ""
-        for item, quant in materiais:
-            texto += f"""{item} x{quant}; """
-        texto = texto[:-2]
-        inventario.add_field(name="Materiais", value=texto, inline=False)
-    if tesouros != []:
-        texto = ""
-        for item, quant in tesouros:
-            texto += f"""{item} x{quant}; """
-        texto = texto[:-2]
-        inventario.add_field(name="Tesouros", value=texto, inline=False)
-    if essenciais != []:
-        texto = ""
-        for item, quant in essenciais:
-            texto += f"""{item} x{quant}; """
-        texto = texto[:-2]
-        inventario.add_field(name="Essenciais", value=texto, inline=False)
-    if itens_chave != []:
-        texto = ""
-        for item, quant in itens_chave:
-            texto += f"""{item} x{quant}; """
-        texto = texto[:-2]
-        inventario.add_field(name="Itens-chave", value=texto, inline=False)
-    if armas_meelee != []:
-        texto = ""
-        for item, quant in armas_meelee:
-            texto += f"""{item} x{quant}; """
-        texto = texto[:-2]
-        inventario.add_field(name="Armas Corpo-a-corpo", value=texto, inline=False)
-    if armas_ranged != []:
-        texto = ""
-        for item, quant in armas_ranged:
-            texto += f"""{item} x{quant}; """
-        texto = texto[:-2]
-        inventario.add_field(name="Armas à distância", value=texto, inline=False)
-    if armaduras != []:
-        texto = ""
-        for item, quant in armaduras:
-            texto += f"""{item} x{quant}; """
-        texto = texto[:-2]
-        inventario.add_field(name="Armaduras", value=texto, inline=False)
-    if acessorios != []:
-        texto = ""
-        for item, quant in acessorios:
-            texto += f"""{item} x{quant}; """
-        texto = texto[:-2]
-        inventario.add_field(name="Acessórios", value=texto, inline=False)
-    if roupas != []:
-        texto = ""
-        for item, quant in roupas:
-            texto += f"""{item} x{quant}; """
-        texto = texto[:-2]
-        inventario.add_field(name="Roupas", value=texto, inline=False)
-    await canal.send(embed=inventario)
+async def inventario(ctx):
+    global canal_grupo
+    try:
+        canal = bot.get_channel(canal_grupo)
+        itens = Database.inventario_grupo()
+        consumiveis = []
+        cartas = []
+        materiais = []
+        tesouros = []
+        essenciais = []
+        itens_chave = []
+        armas_meelee = []
+        armas_ranged = []
+        armaduras = []
+        acessorios = []
+        roupas = []
+        for item, tipo_item, quant in itens:
+            if tipo_item == "Consumíveis":
+                consumiveis.append((item,quant))
+            elif tipo_item == "Cartas de Habilidade":
+                cartas.append((item,quant))
+            elif tipo_item == "Materiais":
+                materiais.append((item,quant))
+            elif tipo_item == "Tesouros":
+                tesouros.append((item,quant))
+            elif tipo_item == "Essenciais":
+                essenciais.append((item,quant))
+            elif tipo_item == "Itens-chave":
+                itens_chave.append((item,quant))
+            elif tipo_item == "Armas Corpo-a-corpo":
+                armas_meelee.append((item,quant))
+            elif tipo_item == "Armas à distância":
+                armas_ranged.append((item,quant))
+            elif tipo_item == "Armadura":
+                armaduras.append((item,quant))
+            elif tipo_item == "Acessórios":
+                acessorios.append((item,quant))
+            else:
+                roupas.append((item,quant))
+        dinheiro = Database.dinheiro_grupo()
+        inventario = discord.Embed(
+                title=f"""**Inventário do grupo**""",
+                description=F"""Dinheiro: R$ {dinheiro}""",
+                colour=discord.Colour.blue()
+        )
+        if consumiveis != []:
+            texto = ""
+            for item, quant in consumiveis:
+                texto += f"""{item} x{quant}; """
+            texto = texto[:-2]
+            inventario.add_field(name="Consumíveis", value=texto, inline=False)
+        if cartas != []:
+            texto = ""
+            for item, quant in cartas:
+                texto += f"""{item} x{quant}; """
+            texto = texto[:-2]
+            inventario.add_field(name="Cartas de Habilidade", value=texto, inline=False)
+        if materiais != []:
+            texto = ""
+            for item, quant in materiais:
+                texto += f"""{item} x{quant}; """
+            texto = texto[:-2]
+            inventario.add_field(name="Materiais", value=texto, inline=False)
+        if tesouros != []:
+            texto = ""
+            for item, quant in tesouros:
+                texto += f"""{item} x{quant}; """
+            texto = texto[:-2]
+            inventario.add_field(name="Tesouros", value=texto, inline=False)
+        if essenciais != []:
+            texto = ""
+            for item, quant in essenciais:
+                texto += f"""{item} x{quant}; """
+            texto = texto[:-2]
+            inventario.add_field(name="Essenciais", value=texto, inline=False)
+        if itens_chave != []:
+            texto = ""
+            for item, quant in itens_chave:
+                texto += f"""{item} x{quant}; """
+            texto = texto[:-2]
+            inventario.add_field(name="Itens-chave", value=texto, inline=False)
+        if armas_meelee != []:
+            texto = ""
+            for item, quant in armas_meelee:
+                texto += f"""{item} x{quant}; """
+            texto = texto[:-2]
+            inventario.add_field(name="Armas Corpo-a-corpo", value=texto, inline=False)
+        if armas_ranged != []:
+            texto = ""
+            for item, quant in armas_ranged:
+                texto += f"""{item} x{quant}; """
+            texto = texto[:-2]
+            inventario.add_field(name="Armas à distância", value=texto, inline=False)
+        if armaduras != []:
+            texto = ""
+            for item, quant in armaduras:
+                texto += f"""{item} x{quant}; """
+            texto = texto[:-2]
+            inventario.add_field(name="Armaduras", value=texto, inline=False)
+        if acessorios != []:
+            texto = ""
+            for item, quant in acessorios:
+                texto += f"""{item} x{quant}; """
+            texto = texto[:-2]
+            inventario.add_field(name="Acessórios", value=texto, inline=False)
+        if roupas != []:
+            texto = ""
+            for item, quant in roupas:
+                texto += f"""{item} x{quant}; """
+            texto = texto[:-2]
+            inventario.add_field(name="Roupas", value=texto, inline=False)
+        await canal.send(embed=inventario)
+    except:
+        await ctx.send("Canal do grupo não registrado.")
 
 @bot.command()
-async def modificar_dinheiro(ctx, canal : discord.TextChannel, quant):
+async def modificar_dinheiro(ctx, quant):
+    global canal_grupo
     try:
-        quant = int(quant)
-        dinheiro_inicial = Database.dinheiro_grupo()
-        dinheiro_final = dinheiro_inicial + quant
-        novo_dinheiro = Database.modificar_dinheiro(dinheiro_final)
-        if novo_dinheiro:
-            await canal.send(f"""Adicionado **R$ {quant}**; (Valor anterior: **R$ {dinheiro_inicial}**). O dinheiro do grupo agora é **R$ {dinheiro_final}**""")
-        else:
-            await ctx.send(f"""Erro interno""")
+        canal = bot.get_channel(canal_grupo)
+        try:
+            quant = int(quant)
+            dinheiro_inicial = Database.dinheiro_grupo()
+            dinheiro_final = dinheiro_inicial + quant
+            novo_dinheiro = Database.modificar_dinheiro(dinheiro_final)
+            if novo_dinheiro:
+                await canal.send(f"""Adicionado **R$ {quant}**; (Valor anterior: **R$ {dinheiro_inicial}**). O dinheiro do grupo agora é **R$ {dinheiro_final}**""")
+            else:
+                await ctx.send(f"""Erro interno""")
+        except:
+            await ctx.send(f"""Valor incorreto""")
     except:
-        await ctx.send(f"""Valor incorreto""")
+        await ctx.send("Canal do grupo não registrado.")
 
 @bot.command()
-async def setar_dinheiro(ctx, canal : discord.TextChannel, quant):
+async def setar_dinheiro(ctx, quant):
+    global canal_grupo
     try:
-        quant = int(quant)
-        novo_dinheiro = Database.modificar_dinheiro(quant)
-        if novo_dinheiro:
-            await canal.send(f"""O dinheiro do grupo agora é **R$ {quant}**""")
-        else:
-            await ctx.send(f"""Erro interno""")
+        canal = bot.get_channel(canal_grupo)
+        try:
+            quant = int(quant)
+            novo_dinheiro = Database.modificar_dinheiro(quant)
+            if novo_dinheiro:
+                await canal.send(f"""O dinheiro do grupo agora é **R$ {quant}**""")
+            else:
+                await ctx.send(f"""Erro interno""")
+        except:
+            await ctx.send(f"""Valor incorreto""")
     except:
-        await ctx.send(f"""Valor incorreto""")
+        await ctx.send("Canal do grupo não registrado.")
     
 @bot.command()
-async def rolagem(ctx, canal : discord.TextChannel, personagem, dados, lados):
-    personagem_id = Database.personagem_id(personagem)
-    usuario = Database.discord_user()
-    dado = await Dado.rolagem_pronta(bot, canal, personagem, usuario, dados, lados)
+async def rolagem(ctx, personagem, dados, lados):
+    global canais_jogadores
+    try:
+        personagem_id = Database.personagem_id(personagem)
+        if personagem_id != False:
+            canal = bot.get_channel(canais_jogadores[personagem])
+            usuario = Database.discord_user()
+            dado = await Dado.rolagem_pronta(bot, canal, personagem, usuario, dados, lados)
+        else:
+            await ctx.send("Este personagem não existe.")
+    except:
+        await ctx.send("Canal do jogador não registrado ou informações do dado erradas.")
 
 @bot.command()
-async def drop(ctx, canal : discord.TextChannel, *shadow):
-    nome = ""
-    for palavra in shadow:
-        nome+=palavra + " "
-    nome = nome[:-1]
-    shadow_id = Database.shadow_id(nome)
-    drops = Database.itens_drop(shadow_id)
-    lista_drops = []
-    for item_id, chance in drops:
-        dado = random.randint(0, 100)
-        if dado <= chance:
-            add_item(1, item_id)
-            lista_drops.append(Database.nome_item(item_id))
-    dinheiro_exp = Database.dinheiro_exp(shadow_id)
-    dinheiro_inicial = dinheiro_exp[0]
-    exp = dinheiro_exp[1]
-    dinheiro1 = random.randint(dinheiro_inicial * 0.5, dinheiro_inicial)
-    dinheiro_grupo = Database.dinheiro_grupo()
-    dinheiro = dinheiro_grupo + dinheiro1
-    add_dinheiro = Database.modificar_dinheiro(dinheiro)
-    embed_drops = discord.Embed(
-            title=f"""**Drops de {nome}**""",
-            description=F"""Dinheiro: R$ {dinheiro1} ; Experiência : {exp}""",
-            colour=discord.Colour.green()
-    )
-    texto = ""
-    if lista_drops != []:
-        for drop in lista_drops:
-            texto += drop + "; "
-        texto = texto[:-2]
-    else:
-        texto = "Sem itens dropados"
-    embed_drops.add_field(name="Itens dropados", value=texto, inline=False)
-    await canal.send(embed=embed_drops)        
-
+async def drop(ctx, *shadow):
+    global canal_grupo
+    try:
+        canal = bot.get_channel(canal_grupo)
+        nome = ""
+        for palavra in shadow:
+            nome+=palavra + " "
+        nome = nome[:-1]
+        shadow_id = Database.shadow_id(nome)
+        drops = Database.itens_drop(shadow_id)
+        lista_drops = []
+        for item_id, chance in drops:
+            dado = random.randint(0, 100)
+            if dado <= chance:
+                add_item(1, item_id)
+                lista_drops.append(Database.nome_item(item_id))
+        dinheiro_exp = Database.dinheiro_exp(shadow_id)
+        dinheiro_inicial = dinheiro_exp[0]
+        exp = dinheiro_exp[1]
+        dinheiro1 = random.randint(dinheiro_inicial * 0.5, dinheiro_inicial)
+        dinheiro_grupo = Database.dinheiro_grupo()
+        dinheiro = dinheiro_grupo + dinheiro1
+        add_dinheiro = Database.modificar_dinheiro(dinheiro)
+        embed_drops = discord.Embed(
+                title=f"""**Drops de {nome}**""",
+                description=F"""Dinheiro: R$ {dinheiro1} ; Experiência : {exp}""",
+                colour=discord.Colour.green()
+        )
+        texto = ""
+        if lista_drops != []:
+            for drop in lista_drops:
+                texto += drop + "; "
+            texto = texto[:-2]
+        else:
+            texto = "Sem itens dropados"
+        embed_drops.add_field(name="Itens dropados", value=texto, inline=False)
+        await canal.send(embed=embed_drops)
+    except:
+        await ctx.send("Canal do jogador não registrado ou informações do dado erradas.") 
 
 def add_item(quant, item_id):
     contem_item = Database.item_no_inventario2(item_id)
@@ -630,70 +697,80 @@ def add_item(quant, item_id):
         add_item = Database.add_item_database(item_id, quant)
 
 @bot.command()
-async def equipar(ctx, canal : discord.TextChannel, personagem, *item):
-    nome = ""
-    for palavra in item:
-        nome+=palavra + " "
-    nome = nome[:-1]
-    personagem_id = Database.personagem_id(personagem)
-    if personagem_id != False:
-        item_id = Database.item_id(nome)
-        if item_id != False:
-            contem_item = Database.item_no_inventario(nome)
-            if contem_item != False:
-                tipo_item_id = Database.tipo_item_id(item_id)
-                equip = Database.equipar_item(personagem_id, item_id, tipo_item_id)
-                if equip == False:
-                    await canal.send("Este item não é equipável")
-                elif tipo_item_id == 7:
-                    await canal.send(f"""**{nome}** agora é a arma corpo-a-corpo equipada de **{personagem}**""")
-                elif tipo_item_id == 8:
-                    await canal.send(f"""**{nome}** agora é a arma à distância equipada de **{personagem}**""")
-                elif tipo_item_id == 9:
-                    await canal.send(f"""**{nome}** agora é a armadura equipado de **{personagem}**""")
-                else:
-                    await canal.send(f"""**{nome}** agora é o acessório equipado de **{personagem}**""")
-            else:
-                await ctx.send("Este item não está no inventário do grupo.")
-        else:
-            await ctx.send("Este item não existe.")
-    else:
-        await ctx.send("Este personagem não existe.")
-    
-@bot.command()
-async def desequipar(ctx, canal : discord.TextChannel, personagem, *item):
-    nome = ""
-    for palavra in item:
-        nome+=palavra + " "
-    nome = nome[:-1]
-    personagem_id = Database.personagem_id(personagem)
-    if personagem_id != False:
-        item_id = Database.item_id(nome)
-        if item_id != False:
-            contem_item = Database.item_no_inventario(nome)
-            if contem_item != False:
-                tipo_item_id = Database.tipo_item_id(item_id)
-                item_equipado = Database.item_equipado(personagem_id, item_id, tipo_item_id)
-                if item_equipado:
-                    desequip = Database.desequipar_item(personagem_id, tipo_item_id)
-                    if desequip == False:
+async def equipar(ctx, personagem, *item):
+    global canais_jogadores
+    try:
+        nome = ""
+        for palavra in item:
+            nome+=palavra + " "
+        nome = nome[:-1]
+        personagem_id = Database.personagem_id(personagem)
+        if personagem_id != False:
+            canal = bot.get_channel(canais_jogadores[personagem])
+            item_id = Database.item_id(nome)
+            if item_id != False:
+                contem_item = Database.item_no_inventario(nome)
+                if contem_item != False:
+                    tipo_item_id = Database.tipo_item_id(item_id)
+                    equip = Database.equipar_item(personagem_id, item_id, tipo_item_id)
+                    if equip == False:
                         await canal.send("Este item não é equipável")
                     elif tipo_item_id == 7:
-                        await canal.send(f"""**{nome}** não está mais equipado(a) como arma corpo-a-corpo de **{personagem}**""")
+                        await canal.send(f"""**{nome}** agora é a arma corpo-a-corpo equipada de **{personagem}**""")
                     elif tipo_item_id == 8:
-                        await canal.send(f"""**{nome}** não está mais equipado(a) como arma à distância equipada de **{personagem}**""")
+                        await canal.send(f"""**{nome}** agora é a arma à distância equipada de **{personagem}**""")
                     elif tipo_item_id == 9:
-                        await canal.send(f"""**{nome}** não está mais equipado(a) como armadura equipada de **{personagem}**""")
+                        await canal.send(f"""**{nome}** agora é a armadura equipado de **{personagem}**""")
                     else:
-                        await canal.send(f"""**{nome}** não está mais equipado(a) como acessório equipado de **{personagem}**""")
+                        await canal.send(f"""**{nome}** agora é o acessório equipado de **{personagem}**""")
                 else:
-                    await ctx.send("Este item não está equipado.")
+                    await ctx.send("Este item não está no inventário do grupo.")
             else:
-                await ctx.send("Este item não está no inventário do grupo.")
+                await ctx.send("Este item não existe.")
         else:
-            await ctx.send("Este item não existe.")
-    else:
-        await ctx.send("Este personagem não existe.")
+            await ctx.send("Este personagem não existe.")
+    except:
+        await ctx.send("Canal do jogador não registrado.")
+    
+@bot.command()
+async def desequipar(ctx, personagem, *item):
+    global canais_jogadores
+    try:
+        nome = ""
+        for palavra in item:
+            nome+=palavra + " "
+        nome = nome[:-1]
+        personagem_id = Database.personagem_id(personagem)
+        if personagem_id != False:
+            canal = bot.get_channel(canais_jogadores[personagem])
+            item_id = Database.item_id(nome)
+            if item_id != False:
+                contem_item = Database.item_no_inventario(nome)
+                if contem_item != False:
+                    tipo_item_id = Database.tipo_item_id(item_id)
+                    item_equipado = Database.item_equipado(personagem_id, item_id, tipo_item_id)
+                    if item_equipado:
+                        desequip = Database.desequipar_item(personagem_id, tipo_item_id)
+                        if desequip == False:
+                            await canal.send("Este item não é equipável")
+                        elif tipo_item_id == 7:
+                            await canal.send(f"""**{nome}** não está mais equipado(a) como arma corpo-a-corpo de **{personagem}**""")
+                        elif tipo_item_id == 8:
+                            await canal.send(f"""**{nome}** não está mais equipado(a) como arma à distância equipada de **{personagem}**""")
+                        elif tipo_item_id == 9:
+                            await canal.send(f"""**{nome}** não está mais equipado(a) como armadura equipada de **{personagem}**""")
+                        else:
+                            await canal.send(f"""**{nome}** não está mais equipado(a) como acessório equipado de **{personagem}**""")
+                    else:
+                        await ctx.send("Este item não está equipado.")
+                else:
+                    await ctx.send("Este item não está no inventário do grupo.")
+            else:
+                await ctx.send("Este item não existe.")
+        else:
+            await ctx.send("Este personagem não existe.")
+    except:
+        await ctx.send("Canal do jogador não registrado.")
 
 @bot.command()
 async def ficha(ctx, personagem):
@@ -869,110 +946,169 @@ async def ficha(ctx, personagem):
         await ctx.send("Personagem não encontrado.")
     
 @bot.command()
-async def subir_nivel(ctx, canal : discord.TextChannel, personagem):
-    personagem_id = Database.personagem_id(personagem)
-    eh_fool = Database.eh_fool(personagem_id)
-    emote = ["<:phys:790320130810839101>", "<:gun:790320131028287488>", "<:fire:790320130483421245>", "<:ice:790320130738356224>", "<:elec:790320130151809047>", "<:wind:790320130521169922>", "<:psy:790320130772566046>", "<:nuclear:790320130584084532>", "<:bless:790320130746744892>", "<:curse:790320130387214336>", "<:almighty:790320130297954374>", "<:ailment:790320130286551060>", "<:healing:790320130508718100>", "<:support:790320130323775518>", "<:passive:790320130780561408>", "<:navigator:798197909761556521>"]
-    if eh_fool != True:
-        persona_id = Database.persona_equipada(personagem_id)
-        subiu_nivel = Database.aumentar_nivel(personagem_id)
-        personagem_persona_id = Database.personagem_persona_id(personagem_id, persona_id)
-        nivel = Database.nivel(personagem_id, persona_id)
-        atributos = Database.atributos_iniciais(persona_id)
-        fixos = atributos[:2]
-        flex = atributos[2:]
-        crescimento_atributo = [0, 0, 0, 0, 0, 0, 0]
-        for atributo_id, quant_inicial in fixos:
-            if atributo_id == 1:
-                hp = random.randint(1,6)
-                crescimento_atributo[0] = hp
-            elif atributo_id == 2:
-                sp = random.randint(1,4)
-                crescimento_atributo[1] = sp
-        flex.sort(key=takeSecond, reverse=True)
-        nao_repetidos = list(dict.fromkeys(flex))
-        pontos = 3
-        valores_criterio = []
-        if len(nao_repetidos) == 5:
-            valores_criterio = [90, 72, 54, 36, 18]
-        elif len(nao_repetidos) == 4:
-            valores_criterio = [90, 68, 44, 22]
-        elif len(nao_repetidos) == 3:
-            valores_criterio = [90, 60, 30]
-        elif len(nao_repetidos) == 2:
-            valores_criterio = [90, 45]
-        else:
-            valores_criterio = [90]
-        while pontos > 0:
-            for atributo_id, quant_inicial in flex:
-                pos = -1
-                for i in range(len(nao_repetidos)):
-                    if quant_inicial == nao_repetidos[i]:
-                        pos = i
-                        break
-                valor_criterio = valores_criterio[pos]
-                dado = random.randint(1,100)
-                if dado < valor_criterio and pontos > 0 and crescimento_atributo[atributo_id - 1] == 0:
-                    crescimento_atributo[atributo_id - 1] = 1
-                    pontos -= 1
-                elif crescimento_atributo[atributo_id - 1] < 1:
-                    crescimento_atributo[atributo_id - 1] = 0
-        Database.aumentar_status(personagem_persona_id, nivel, crescimento_atributo)
-        atributos_aumento = discord.Embed(
-            title=f"""**SUBIU DE NÍVEL!**""",
-            description=f"""**{personagem}** alcançou o nível ({nivel})""",
-            colour=discord.Colour.green()
-        )
-        atributos_aumento.add_field(name="**HP**", value=f"""+{crescimento_atributo[0]}""")
-        atributos_aumento.add_field(name="**SP**", value=f"""+{crescimento_atributo[1]}""")
-        atributos_aumento.add_field(name="**St**", value=f"""+{crescimento_atributo[2]}""")
-        atributos_aumento.add_field(name="**Ma**", value=f"""+{crescimento_atributo[3]}""")
-        atributos_aumento.add_field(name="**En**", value=f"""+{crescimento_atributo[4]}""")
-        atributos_aumento.add_field(name="**Ag**", value=f"""+{crescimento_atributo[5]}""")
-        atributos_aumento.add_field(name="**Lu**", value=f"""+{crescimento_atributo[6]}""")
-        await canal.send(embed=atributos_aumento)
-        nivel_skills = Database.nivel_skills(nivel, persona_id)
-        if nivel_skills != False:
-            skills = Database.skills(personagem_id, persona_id)
-            skills_id = []
-            for skill in skills:
-                skills_id.append(Database.skill_id(skill))
-            if len(skills) + len(nivel_skills) < 8:
-                for skill in nivel_skills:
-                    if skill not in skills_id:
-                        aprendeu = Database.add_skill(skill, personagem_persona_id)
-                        if aprendeu == True:
+async def subir_nivel(ctx, personagem):
+    global canais_jogadores
+    try:
+        personagem_id = Database.personagem_id(personagem)
+        canal = bot.get_channel(canais_jogadores[personagem])
+        eh_fool = Database.eh_fool(personagem_id)
+        emote = ["<:phys:790320130810839101>", "<:gun:790320131028287488>", "<:fire:790320130483421245>", "<:ice:790320130738356224>", "<:elec:790320130151809047>", "<:wind:790320130521169922>", "<:psy:790320130772566046>", "<:nuclear:790320130584084532>", "<:bless:790320130746744892>", "<:curse:790320130387214336>", "<:almighty:790320130297954374>", "<:ailment:790320130286551060>", "<:healing:790320130508718100>", "<:support:790320130323775518>", "<:passive:790320130780561408>", "<:navigator:798197909761556521>"]
+        if eh_fool != True:
+            persona_id = Database.persona_equipada(personagem_id)
+            subiu_nivel = Database.aumentar_nivel(personagem_id)
+            personagem_persona_id = Database.personagem_persona_id(personagem_id, persona_id)
+            nivel = Database.nivel(personagem_id, persona_id)
+            atributos = Database.atributos_iniciais(persona_id)
+            fixos = atributos[:2]
+            flex = atributos[2:]
+            crescimento_atributo = [0, 0, 0, 0, 0, 0, 0]
+            for atributo_id, quant_inicial in fixos:
+                if atributo_id == 1:
+                    hp = random.randint(1,6)
+                    crescimento_atributo[0] = hp
+                elif atributo_id == 2:
+                    sp = random.randint(1,4)
+                    crescimento_atributo[1] = sp
+            flex.sort(key=takeSecond, reverse=True)
+            nao_repetidos = list(dict.fromkeys(flex))
+            pontos = 3
+            valores_criterio = []
+            if len(nao_repetidos) == 5:
+                valores_criterio = [90, 72, 54, 36, 18]
+            elif len(nao_repetidos) == 4:
+                valores_criterio = [90, 68, 44, 22]
+            elif len(nao_repetidos) == 3:
+                valores_criterio = [90, 60, 30]
+            elif len(nao_repetidos) == 2:
+                valores_criterio = [90, 45]
+            else:
+                valores_criterio = [90]
+            while pontos > 0:
+                for atributo_id, quant_inicial in flex:
+                    pos = -1
+                    for i in range(len(nao_repetidos)):
+                        if quant_inicial == nao_repetidos[i]:
+                            pos = i
+                            break
+                    valor_criterio = valores_criterio[pos]
+                    dado = random.randint(1,100)
+                    if dado < valor_criterio and pontos > 0 and crescimento_atributo[atributo_id - 1] == 0:
+                        crescimento_atributo[atributo_id - 1] = 1
+                        pontos -= 1
+                    elif crescimento_atributo[atributo_id - 1] < 1:
+                        crescimento_atributo[atributo_id - 1] = 0
+            Database.aumentar_status(personagem_persona_id, nivel, crescimento_atributo)
+            atributos_aumento = discord.Embed(
+                title=f"""**SUBIU DE NÍVEL!**""",
+                description=f"""**{personagem}** alcançou o nível ({nivel})""",
+                colour=discord.Colour.green()
+            )
+            atributos_aumento.add_field(name="**HP**", value=f"""+{crescimento_atributo[0]}""")
+            atributos_aumento.add_field(name="**SP**", value=f"""+{crescimento_atributo[1]}""")
+            atributos_aumento.add_field(name="**St**", value=f"""+{crescimento_atributo[2]}""")
+            atributos_aumento.add_field(name="**Ma**", value=f"""+{crescimento_atributo[3]}""")
+            atributos_aumento.add_field(name="**En**", value=f"""+{crescimento_atributo[4]}""")
+            atributos_aumento.add_field(name="**Ag**", value=f"""+{crescimento_atributo[5]}""")
+            atributos_aumento.add_field(name="**Lu**", value=f"""+{crescimento_atributo[6]}""")
+            await canal.send(embed=atributos_aumento)
+            nivel_skills = Database.nivel_skills(nivel, persona_id)
+            if nivel_skills != False:
+                skills = Database.skills(personagem_id, persona_id)
+                skills_id = []
+                for skill in skills:
+                    skills_id.append(Database.skill_id(skill))
+                if len(skills) + len(nivel_skills) < 8:
+                    for skill in nivel_skills:
+                        if skill not in skills_id:
+                            aprendeu = Database.add_skill(skill, personagem_persona_id)
+                            if aprendeu == True:
+                                nome_skill = Database.nome_skill(skill)
+                                elemento = Database.elemento(skill)
+                                await canal.send(f"""**{personagem}** aprendeu a habilidade **{nome_skill}** {emote[elemento-1]}""")
+                elif len(skills_id) + len(nivel_skills) > 8 and len(skills) < 8:
+                    tam = len(skills_id)
+                    while tam < 8:
+                        if nivel_skills[i] not in skills_id:
+                            aprendeu = Database.add_skill(nivel_skills[0], personagem_persona_id)
+                            if aprendeu == True:
+                                nome_skill = Database.nome_skill(nivel_skills[0])
+                                elemento = Database.elemento(nivel_skills[0])
+                                await canal.send(f"""**{personagem}** aprendeu a habilidade **{nome_skill}** {emote[elemento-1]}""")
+                                del nivel_skills[i]
+                                tam += 1
+                    if nivel_skills != []:
+                        nova_skills = Database.skills(personagem_id, persona_id)
+                        skills_id = []
+                        for skill in nova_skills:
+                            skills_id.append(Database.skill_id(skill))
+                        for skill in nivel_skills:
                             nome_skill = Database.nome_skill(skill)
                             elemento = Database.elemento(skill)
-                            await canal.send(f"""**{personagem}** aprendeu a habilidade **{nome_skill}** {emote[elemento-1]}""")
-            elif len(skills_id) + len(nivel_skills) > 8 and len(skills) < 8:
-                tam = len(skills_id)
-                while tam < 8:
-                    if nivel_skills[i] not in skills_id:
-                        aprendeu = Database.add_skill(nivel_skills[0], personagem_persona_id)
-                        if aprendeu == True:
-                            nome_skill = Database.nome_skill(nivel_skills[0])
-                            elemento = Database.elemento(nivel_skills[0])
-                            await canal.send(f"""**{personagem}** aprendeu a habilidade **{nome_skill}** {emote[elemento-1]}""")
-                            del nivel_skills[i]
-                            tam += 1
-                if nivel_skills != []:
+                            embed = discord.Embed(
+                                title=f"""**{personagem}** aprendeu uma nova habilidade!""",
+                                description=f"""Você já conhece habilidades demais, deseja trocar alguma por **{nome_skill}** {emote[elemento-1]}?""",
+                                colour=discord.Colour.red()
+                            )
+                            emojis_disc = [":one:", ":two:", ":three:", ":four:", ":five:", ":six:", ":seven:", ":eight:"]
+                            emojis_raw = ["1️⃣", "2️⃣", "3️⃣", "4️⃣", "5️⃣", "6️⃣", "7️⃣", "8️⃣"]
+                            for i in range(len(nova_skills)):
+                                embed.add_field(name=emojis_disc[i], value=Database.nome_skill(skills_id[i]), inline=True)
+                            embed_msg = await canal.send(embed=embed)
+                            for j in range(len(nova_skills)):
+                                await embed_msg.add_reaction(emoji=emojis_raw[j])
+                            await embed_msg.add_reaction(emoji="❌")
+                            ok = 0
+                            while ok == 0:
+                                reaction, user = await bot.wait_for('reaction_add', timeout=None)
+                                if str(reaction.emoji) == emojis_raw[0] and str(user) != "Persona Bot#0708":
+                                    ok = 1
+                                if str(reaction.emoji) == emojis_raw[1] and str(user) != "Persona Bot#0708":
+                                    ok = 2
+                                if str(reaction.emoji) == emojis_raw[2] and str(user) != "Persona Bot#0708":
+                                    ok = 3
+                                if str(reaction.emoji) == emojis_raw[3] and str(user) != "Persona Bot#0708":
+                                    ok = 4
+                                if str(reaction.emoji) == emojis_raw[4] and str(user) != "Persona Bot#0708":
+                                    ok = 5
+                                if str(reaction.emoji) == emojis_raw[5] and str(user) != "Persona Bot#0708":
+                                    ok = 6
+                                if str(reaction.emoji) == emojis_raw[6] and str(user) != "Persona Bot#0708":
+                                    ok = 7
+                                if str(reaction.emoji) == emojis_raw[6] and str(user) != "Persona Bot#0708":
+                                    ok = 8
+                                if str(reaction.emoji) == "❌" and str(user) != "Persona Bot#0708":
+                                    ok = 9
+                            await embed_msg.delete()
+                            if ok < 9:
+                                mudou = Database.mod_skill(skills_id[ok-1], skill, personagem_persona_id)
+                                if mudou:
+                                    confirmacao = discord.Embed(
+                                        title=f"""Nova habilidade aprendida: **{nome_skill}**""",
+                                        description=f"""**{personagem}** esqueceu de **{nova_skills[ok-1]}**""",
+                                        colour=discord.Colour.blue()
+                                    )
+                                    await canal.send(embed=confirmacao)
+                                else:
+                                    await ctx.send("Erro no aprendizado da habilidade")
+                            else:
+                                await canal.send(f"""**{personagem}** ignorou a habilidade **{nome_skill}**""")
+                            nova_skills = Database.skills(personagem_id, persona_id)
+                else:
                     nova_skills = Database.skills(personagem_id, persona_id)
                     skills_id = []
-                    for skill in nova_skills:
+                    for skill in skills:
                         skills_id.append(Database.skill_id(skill))
                     for skill in nivel_skills:
                         nome_skill = Database.nome_skill(skill)
-                        elemento = Database.elemento(skill)
                         embed = discord.Embed(
                             title=f"""**{personagem}** aprendeu uma nova habilidade!""",
-                            description=f"""Você já conhece habilidades demais, deseja trocar alguma por **{nome_skill}** {emote[elemento-1]}?""",
+                            description=f"""Você já conhece habilidades demais, deseja trocar alguma por **{nome_skill}**?""",
                             colour=discord.Colour.red()
                         )
                         emojis_disc = [":one:", ":two:", ":three:", ":four:", ":five:", ":six:", ":seven:", ":eight:"]
                         emojis_raw = ["1️⃣", "2️⃣", "3️⃣", "4️⃣", "5️⃣", "6️⃣", "7️⃣", "8️⃣"]
                         for i in range(len(nova_skills)):
-                            embed.add_field(name=emojis_disc[i], value=Database.nome_skill(skills_id[i]), inline=True)
+                            embed.add_field(name=emojis_disc[i], value=nova_skills[i], inline=True)
                         embed_msg = await canal.send(embed=embed)
                         for j in range(len(nova_skills)):
                             await embed_msg.add_reaction(emoji=emojis_raw[j])
@@ -1013,179 +1149,185 @@ async def subir_nivel(ctx, canal : discord.TextChannel, personagem):
                         else:
                             await canal.send(f"""**{personagem}** ignorou a habilidade **{nome_skill}**""")
                         nova_skills = Database.skills(personagem_id, persona_id)
-            else:
-                nova_skills = Database.skills(personagem_id, persona_id)
-                skills_id = []
-                for skill in skills:
-                    skills_id.append(Database.skill_id(skill))
-                for skill in nivel_skills:
-                    nome_skill = Database.nome_skill(skill)
-                    embed = discord.Embed(
-                        title=f"""**{personagem}** aprendeu uma nova habilidade!""",
-                        description=f"""Você já conhece habilidades demais, deseja trocar alguma por **{nome_skill}**?""",
-                        colour=discord.Colour.red()
-                    )
-                    emojis_disc = [":one:", ":two:", ":three:", ":four:", ":five:", ":six:", ":seven:", ":eight:"]
-                    emojis_raw = ["1️⃣", "2️⃣", "3️⃣", "4️⃣", "5️⃣", "6️⃣", "7️⃣", "8️⃣"]
-                    for i in range(len(nova_skills)):
-                        embed.add_field(name=emojis_disc[i], value=nova_skills[i], inline=True)
-                    embed_msg = await canal.send(embed=embed)
-                    for j in range(len(nova_skills)):
-                        await embed_msg.add_reaction(emoji=emojis_raw[j])
-                    await embed_msg.add_reaction(emoji="❌")
-                    ok = 0
-                    while ok == 0:
-                        reaction, user = await bot.wait_for('reaction_add', timeout=None)
-                        if str(reaction.emoji) == emojis_raw[0] and str(user) != "Persona Bot#0708":
-                            ok = 1
-                        if str(reaction.emoji) == emojis_raw[1] and str(user) != "Persona Bot#0708":
-                            ok = 2
-                        if str(reaction.emoji) == emojis_raw[2] and str(user) != "Persona Bot#0708":
-                            ok = 3
-                        if str(reaction.emoji) == emojis_raw[3] and str(user) != "Persona Bot#0708":
-                            ok = 4
-                        if str(reaction.emoji) == emojis_raw[4] and str(user) != "Persona Bot#0708":
-                            ok = 5
-                        if str(reaction.emoji) == emojis_raw[5] and str(user) != "Persona Bot#0708":
-                            ok = 6
-                        if str(reaction.emoji) == emojis_raw[6] and str(user) != "Persona Bot#0708":
-                            ok = 7
-                        if str(reaction.emoji) == emojis_raw[6] and str(user) != "Persona Bot#0708":
-                            ok = 8
-                        if str(reaction.emoji) == "❌" and str(user) != "Persona Bot#0708":
-                            ok = 9
-                    await embed_msg.delete()
-                    if ok < 9:
-                        mudou = Database.mod_skill(skills_id[ok-1], skill, personagem_persona_id)
-                        if mudou:
-                            confirmacao = discord.Embed(
-                                title=f"""Nova habilidade aprendida: **{nome_skill}**""",
-                                description=f"""**{personagem}** esqueceu de **{nova_skills[ok-1]}**""",
-                                colour=discord.Colour.blue()
-                            )
-                            await canal.send(embed=confirmacao)
-                        else:
-                            await ctx.send("Erro no aprendizado da habilidade")
-                    else:
-                        await canal.send(f"""**{personagem}** ignorou a habilidade **{nome_skill}**""")
-                    nova_skills = Database.skills(personagem_id, persona_id)
-    else:
-        subiu_nivel = Database.aumentar_nivel_fool(personagem_id)
-        nivel = Database.nivel_fool(personagem_id)
-        atributos = Database.atributos_iniciais_fool(personagem_id)
-        crescimento_atributo = [0, 0]
-        hp = random.randint(1,6)
-        crescimento_atributo[0] = random.randint(1,6)
-        crescimento_atributo[1] = random.randint(1,4)
-        Database.aumentar_status_fool(personagem_id, nivel, crescimento_atributo)
-        atributos_aumento = discord.Embed(
-            title=f"""**SUBIU DE NÍVEL!**""",
-            description=f"""**{personagem}** alcançou o nível ({nivel})""",
-            colour=discord.Colour.green()
-        )
-        atributos_aumento.add_field(name="**HP**", value=f"""+{crescimento_atributo[0]}""")
-        atributos_aumento.add_field(name="**SP**", value=f"""+{crescimento_atributo[1]}""")
-        await canal.send(embed=atributos_aumento)
+        else:
+            subiu_nivel = Database.aumentar_nivel_fool(personagem_id)
+            nivel = Database.nivel_fool(personagem_id)
+            atributos = Database.atributos_iniciais_fool(personagem_id)
+            crescimento_atributo = [0, 0]
+            hp = random.randint(1,6)
+            crescimento_atributo[0] = random.randint(1,6)
+            crescimento_atributo[1] = random.randint(1,4)
+            Database.aumentar_status_fool(personagem_id, nivel, crescimento_atributo)
+            atributos_aumento = discord.Embed(
+                title=f"""**SUBIU DE NÍVEL!**""",
+                description=f"""**{personagem}** alcançou o nível ({nivel})""",
+                colour=discord.Colour.green()
+            )
+            atributos_aumento.add_field(name="**HP**", value=f"""+{crescimento_atributo[0]}""")
+            atributos_aumento.add_field(name="**SP**", value=f"""+{crescimento_atributo[1]}""")
+            await canal.send(embed=atributos_aumento)
+    except:
+        await ctx.send("Canal do jogador não registrado.")
 
 @bot.command()
-async def diminuir_nivel(ctx,  canal : discord.TextChannel, personagem):
-    personagem_id = Database.personagem_id(personagem)
-    eh_fool = Database.eh_fool(personagem_id)
-    if eh_fool == False:
-        persona_id = Database.persona_equipada(personagem_id)
-        nivel = Database.nivel(personagem_id, persona_id)
-        diminuiu_nivel = Database.diminuir_nivel(personagem_id)
-        if diminuiu_nivel:
-            await canal.send(f"""Nível de **{personagem}** diminuído para {nivel -1}""")
-        personagem_persona_id = Database.personagem_persona_id(personagem_id, persona_id)
-        apagar = Database.apagar_crecimento(personagem_persona_id, nivel)
-        if apagar:
-            await canal.send(f"""Atributos de **{personagem}** resetado para os do {nivel -1}""")
-        nivel_skills = Database.nivel_skills(nivel, persona_id)
-        for skill in nivel_skills:
-            desaprendeu = Database.del_skill(skill, personagem_persona_id)
-            if desaprendeu:
-                await canal.send(f"""Habilidade: **{Database.nome_skill(skill)}** foi desaprendida.""")
-    else:
-        nivel = Database.nivel_fool(personagem_id)
-        diminuiu_nivel = Database.diminuir_nivel_fool(personagem_id)
-        if diminuiu_nivel:
-            await canal.send(f"""Nível de **{personagem}** diminuído para {nivel -1}""")
-        apagar = Database.apagar_crecimento_fool(personagem_id, nivel)
-        if apagar:
-            await canal.send(f"""Atributos de **{personagem}** resetado para os do {nivel -1}""")
+async def diminuir_nivel(ctx, personagem):
+    global canais_jogadores
+    try:
+        personagem_id = Database.personagem_id(personagem)
+        canal = bot.get_channel(canais_jogadores[personagem])
+        eh_fool = Database.eh_fool(personagem_id)
+        if eh_fool == False:
+            persona_id = Database.persona_equipada(personagem_id)
+            nivel = Database.nivel(personagem_id, persona_id)
+            diminuiu_nivel = Database.diminuir_nivel(personagem_id)
+            if diminuiu_nivel:
+                await canal.send(f"""Nível de **{personagem}** diminuído para {nivel -1}""")
+            personagem_persona_id = Database.personagem_persona_id(personagem_id, persona_id)
+            apagar = Database.apagar_crecimento(personagem_persona_id, nivel)
+            if apagar:
+                await canal.send(f"""Atributos de **{personagem}** resetado para os do {nivel -1}""")
+            nivel_skills = Database.nivel_skills(nivel, persona_id)
+            for skill in nivel_skills:
+                desaprendeu = Database.del_skill(skill, personagem_persona_id)
+                if desaprendeu:
+                    await canal.send(f"""Habilidade: **{Database.nome_skill(skill)}** foi desaprendida.""")
+        else:
+            nivel = Database.nivel_fool(personagem_id)
+            diminuiu_nivel = Database.diminuir_nivel_fool(personagem_id)
+            if diminuiu_nivel:
+                await canal.send(f"""Nível de **{personagem}** diminuído para {nivel -1}""")
+            apagar = Database.apagar_crecimento_fool(personagem_id, nivel)
+            if apagar:
+                await canal.send(f"""Atributos de **{personagem}** resetado para os do {nivel -1}""")
+    except:
+        await ctx.send("Canal do jogador não registrado.")
 
 @bot.command()
-async def subir_nivel_persona(ctx, canal : discord.TextChannel, personagem):
-    personagem_id = Database.personagem_id(personagem)
-    eh_fool = Database.eh_fool(personagem_id)
-    if eh_fool == True:
-        persona_id = Database.persona_equipada(personagem_id)
-        subiu_nivel = Database.aumentar_nivel(personagem_id)
-        personagem_persona_id = Database.personagem_persona_id(personagem_id, persona_id)
-        nivel = Database.nivel(personagem_id, persona_id)
-        atributos = Database.atributos_iniciais(persona_id)
-        fixos = atributos[:2]
-        flex = atributos[2:]
-        crescimento_atributo = [0, 0, 0, 0, 0, 0, 0]
-        for atributo_id, quant_inicial in fixos:
-            if atributo_id == 1:
-                hp = random.randint(1,6)
-                crescimento_atributo[0] = hp
-            elif atributo_id == 2:
-                sp = random.randint(1,4)
-                crescimento_atributo[1] = sp
-        flex.sort(key=takeSecond, reverse=True)
-        pontos = 3
-        while pontos > 0:
-            for atributo_id, quant_inicial in flex:
-                valor_criterio = 0
-                if quant_inicial == 3:
-                    valor_criterio = 90
-                elif quant_inicial == 2:
-                    valor_criterio = 60
-                elif quant_inicial == 1:
-                    valor_criterio = 30
-                dado = random.randint(1,100)
-                if dado < valor_criterio and pontos > 0 and crescimento_atributo[atributo_id - 1] == 0:
-                    crescimento_atributo[atributo_id - 1] = 1
-                    pontos -= 1
-                elif crescimento_atributo[atributo_id - 1] < 1:
-                    crescimento_atributo[atributo_id - 1] = 0
-        Database.aumentar_status_fool_persona(personagem_persona_id, nivel, crescimento_atributo)
-        atributos_aumento = discord.Embed(
-            title=f"""**PERSONA SUBIU DE NÍVEL!**""",
-            description=f"""**{Database.nome_persona(persona_id)}** alcançou o nível ({nivel})""",
-            colour=discord.Colour.green()
-        )
-        atributos_aumento.add_field(name="**St**", value=f"""+{crescimento_atributo[2]}""")
-        atributos_aumento.add_field(name="**Ma**", value=f"""+{crescimento_atributo[3]}""")
-        atributos_aumento.add_field(name="**En**", value=f"""+{crescimento_atributo[4]}""")
-        atributos_aumento.add_field(name="**Ag**", value=f"""+{crescimento_atributo[5]}""")
-        atributos_aumento.add_field(name="**Lu**", value=f"""+{crescimento_atributo[6]}""")
-        await canal.send(embed=atributos_aumento)
-        nivel_skills = Database.nivel_skills(nivel, persona_id)
-        if nivel_skills != False:
-            skills = Database.skills(personagem_id, persona_id)
-            if len(skills) + len(nivel_skills) < 8:
-                for skill in nivel_skills:
-                    if skill not in skills:
-                        aprendeu = Database.add_skill(skill, personagem_persona_id)
-                        if aprendeu == True:
+async def subir_nivel_persona(ctx, personagem):
+    global canais_jogadores
+    try:
+        personagem_id = Database.personagem_id(personagem)
+        canal = bot.get_channel(canais_jogadores[personagem])
+        eh_fool = Database.eh_fool(personagem_id)
+        if eh_fool == True:
+            persona_id = Database.persona_equipada(personagem_id)
+            subiu_nivel = Database.aumentar_nivel(personagem_id)
+            personagem_persona_id = Database.personagem_persona_id(personagem_id, persona_id)
+            nivel = Database.nivel(personagem_id, persona_id)
+            atributos = Database.atributos_iniciais(persona_id)
+            fixos = atributos[:2]
+            flex = atributos[2:]
+            crescimento_atributo = [0, 0, 0, 0, 0, 0, 0]
+            for atributo_id, quant_inicial in fixos:
+                if atributo_id == 1:
+                    hp = random.randint(1,6)
+                    crescimento_atributo[0] = hp
+                elif atributo_id == 2:
+                    sp = random.randint(1,4)
+                    crescimento_atributo[1] = sp
+            flex.sort(key=takeSecond, reverse=True)
+            pontos = 3
+            while pontos > 0:
+                for atributo_id, quant_inicial in flex:
+                    valor_criterio = 0
+                    if quant_inicial == 3:
+                        valor_criterio = 90
+                    elif quant_inicial == 2:
+                        valor_criterio = 60
+                    elif quant_inicial == 1:
+                        valor_criterio = 30
+                    dado = random.randint(1,100)
+                    if dado < valor_criterio and pontos > 0 and crescimento_atributo[atributo_id - 1] == 0:
+                        crescimento_atributo[atributo_id - 1] = 1
+                        pontos -= 1
+                    elif crescimento_atributo[atributo_id - 1] < 1:
+                        crescimento_atributo[atributo_id - 1] = 0
+            Database.aumentar_status_fool_persona(personagem_persona_id, nivel, crescimento_atributo)
+            atributos_aumento = discord.Embed(
+                title=f"""**PERSONA SUBIU DE NÍVEL!**""",
+                description=f"""**{Database.nome_persona(persona_id)}** alcançou o nível ({nivel})""",
+                colour=discord.Colour.green()
+            )
+            atributos_aumento.add_field(name="**St**", value=f"""+{crescimento_atributo[2]}""")
+            atributos_aumento.add_field(name="**Ma**", value=f"""+{crescimento_atributo[3]}""")
+            atributos_aumento.add_field(name="**En**", value=f"""+{crescimento_atributo[4]}""")
+            atributos_aumento.add_field(name="**Ag**", value=f"""+{crescimento_atributo[5]}""")
+            atributos_aumento.add_field(name="**Lu**", value=f"""+{crescimento_atributo[6]}""")
+            await canal.send(embed=atributos_aumento)
+            nivel_skills = Database.nivel_skills(nivel, persona_id)
+            if nivel_skills != False:
+                skills = Database.skills(personagem_id, persona_id)
+                if len(skills) + len(nivel_skills) < 8:
+                    for skill in nivel_skills:
+                        if skill not in skills:
+                            aprendeu = Database.add_skill(skill, personagem_persona_id)
+                            if aprendeu == True:
+                                nome_skill = Database.nome_skill(skill)
+                                await canal.send(f"""**{Database.nome_persona(persona_id)}** aprendeu a habilidade **{nome_skill}**""")
+                elif len(skills) + len(nivel_skills) > 8 and len(skills) < 8:
+                    tam = len(skills)
+                    while tam < 8:
+                        if nivel_skills[i] not in skills:
+                            aprendeu = Database.add_skill(nivel_skills[0], personagem_persona_id)
+                            if aprendeu == True:
+                                nome_skill = Database.nome_skill(nivel_skills[0])
+                                await canal.send(f"""**{Database.nome_persona(persona_id)}** aprendeu a habilidade **{nome_skill}**""")
+                                del nivel_skills[i]
+                                tam += 1
+                    if nivel_skills != []:
+                        nova_skills = Database.skills(personagem_id, persona_id)
+                        for skill in nivel_skills:
                             nome_skill = Database.nome_skill(skill)
-                            await canal.send(f"""**{Database.nome_persona(persona_id)}** aprendeu a habilidade **{nome_skill}**""")
-            elif len(skills) + len(nivel_skills) > 8 and len(skills) < 8:
-                tam = len(skills)
-                while tam < 8:
-                    if nivel_skills[i] not in skills:
-                        aprendeu = Database.add_skill(nivel_skills[0], personagem_persona_id)
-                        if aprendeu == True:
-                            nome_skill = Database.nome_skill(nivel_skills[0])
-                            await canal.send(f"""**{Database.nome_persona(persona_id)}** aprendeu a habilidade **{nome_skill}**""")
-                            del nivel_skills[i]
-                            tam += 1
-                if nivel_skills != []:
-                    nova_skills = Database.skills(personagem_id, persona_id)
+                            embed = discord.Embed(
+                                title=f"""**{Database.nome_persona(persona_id)}** aprendeu uma nova habilidade!""",
+                                description=f"""Você já conhece habilidades demais, deseja trocar alguma por **{nome_skill}**?""",
+                                colour=discord.Colour.red()
+                            )
+                            emojis_disc = [":one:", ":two:", ":three:", ":four:", ":five:", ":six:", ":seven:", ":eight:"]
+                            emojis_raw = ["1️⃣", "2️⃣", "3️⃣", "4️⃣", "5️⃣", "6️⃣", "7️⃣", "8️⃣"]
+                            for i in range(len(nova_skills)):
+                                embed.add_field(name=emojis_disc[i], value=Database.nome_skill(nova_skills[i]), inline=True)
+                            embed_msg = await canal.send(embed=embed)
+                            for j in range(len(nova_skills)):
+                                await embed_msg.add_reaction(emoji=emojis_raw[j])
+                            await embed_msg.add_reaction(emoji="❌")
+                            ok = 0
+                            while ok == 0:
+                                reaction, user = await bot.wait_for('reaction_add', timeout=None)
+                                if str(reaction.emoji) == emojis_raw[0] and str(user) != "Persona Bot#0708":
+                                    ok = 1
+                                if str(reaction.emoji) == emojis_raw[1] and str(user) != "Persona Bot#0708":
+                                    ok = 2
+                                if str(reaction.emoji) == emojis_raw[2] and str(user) != "Persona Bot#0708":
+                                    ok = 3
+                                if str(reaction.emoji) == emojis_raw[3] and str(user) != "Persona Bot#0708":
+                                    ok = 4
+                                if str(reaction.emoji) == emojis_raw[4] and str(user) != "Persona Bot#0708":
+                                    ok = 5
+                                if str(reaction.emoji) == emojis_raw[5] and str(user) != "Persona Bot#0708":
+                                    ok = 6
+                                if str(reaction.emoji) == emojis_raw[6] and str(user) != "Persona Bot#0708":
+                                    ok = 7
+                                if str(reaction.emoji) == emojis_raw[6] and str(user) != "Persona Bot#0708":
+                                    ok = 8
+                                if str(reaction.emoji) == "❌" and str(user) != "Persona Bot#0708":
+                                    ok = 9
+                            await embed_msg.delete()
+                            if ok < 9:
+                                mudou = Database.mod_skill(nova_skills[ok-1], skill, personagem_persona_id)
+                                if mudou:
+                                    confirmacao = discord.Embed(
+                                        title=f"""Nova habilidade aprendida: **{nome_skill}**""",
+                                        description=f"""**{Database.nome_persona(persona_id)}** esqueceu de **{Database.nome_skill(nova_skills[ok-1])}**""",
+                                        colour=discord.Colour.blue()
+                                    )
+                                    await canal.send(embed=confirmacao)
+                                else:
+                                    await ctx.send("Erro no aprendizado da habilidade")
+                            else:
+                                await canal.send(f"""**{Database.nome_persona(persona_id)}** ignorou a habilidade **{nome_skill}**""")
+                            nova_skills = Database.skills(personagem_id, persona_id)
+                else:
                     for skill in nivel_skills:
                         nome_skill = Database.nome_skill(skill)
                         embed = discord.Embed(
@@ -1237,20 +1379,257 @@ async def subir_nivel_persona(ctx, canal : discord.TextChannel, personagem):
                         else:
                             await canal.send(f"""**{Database.nome_persona(persona_id)}** ignorou a habilidade **{nome_skill}**""")
                         nova_skills = Database.skills(personagem_id, persona_id)
+        else:
+            await ctx.send("Este personagem não é da Arcana Fool")
+    except:
+        await ctx.send("Canal do jogador não registrado.")
+    
+@bot.command()
+async def diminuir_nivel_persona(ctx, personagem):
+    global canais_jogadores
+    try:
+        personagem_id = Database.personagem_id(personagem)
+        canal = bot.get_channel(canais_jogadores[personagem])
+        eh_fool = Database.eh_fool(personagem_id)
+        if eh_fool == True:
+            persona_id = Database.persona_equipada(personagem_id)
+            nivel = Database.nivel(personagem_id, persona_id)
+            diminuiu_nivel = Database.diminuir_nivel(personagem_id)
+            if diminuiu_nivel:
+                await canal.send(f"""Nível de **{Database.nome_persona(persona_id)}** diminuído para {nivel -1}""")
+            personagem_persona_id = Database.personagem_persona_id(personagem_id, persona_id)
+            apagar = Database.apagar_crecimento(personagem_persona_id, nivel)
+            if apagar:
+                await canal.send(f"""Atributos de **{Database.nome_persona(persona_id)}** resetado para os do {nivel -1}""")
+            nivel_skills = Database.nivel_skills(nivel-1, persona_id)
+            for skill in nivel_skills:
+                desaprendeu = Database.del_skill(skill, personagem_persona_id)
+                if desaprendeu:
+                    await canal.send(f"""Habilidade: **{Database.nome_skill(skill)}** foi desaprendida.""")
             else:
-                for skill in nivel_skills:
-                    nome_skill = Database.nome_skill(skill)
+                await ctx.send(f"""Este personagem não é da Arcana Fool""")
+    except:
+        await ctx.send("Canal do jogador não registrado.")
+
+@bot.command()
+async def equipar_persona(ctx, personagem):
+    global canais_jogadores
+    try:
+        personagem_id = Database.personagem_id(personagem)
+        eh_fool = Database.eh_fool(personagem_id)
+        if personagem_id != False:
+            canal = bot.get_channel(canais_jogadores[personagem])
+            if eh_fool == True:
+                personas = Database.lista_personas(personagem_id)
+                persona_id = Database.persona_equipada(personagem_id)
+                persona_nome = Database.nome_persona(persona_id)
+                personas.remove(persona_nome)
+                if personas != []:
                     embed = discord.Embed(
-                        title=f"""**{Database.nome_persona(persona_id)}** aprendeu uma nova habilidade!""",
+                    title=f"""**Troca de Persona**""",
+                    description=f"""Reaja com a opção da Persona que deseja equipar""",
+                    colour=discord.Colour.red()
+                    )
+                    emojis_disc = [":one:", ":two:", ":three:", ":four:", ":five:", ":six:", ":seven:", ":eight:"]
+                    emojis_raw = ["1️⃣", "2️⃣", "3️⃣", "4️⃣", "5️⃣", "6️⃣", "7️⃣", "8️⃣"]
+                    for i in range(len(personas)):
+                        embed.add_field(name=emojis_disc[i], value=personas[i], inline=True)
+                    embed_msg = await canal.send(embed=embed)
+                    for j in range(len(personas)):
+                        await embed_msg.add_reaction(emoji=emojis_raw[j])
+                    await embed_msg.add_reaction(emoji="❌")
+                    ok = 0
+                    while ok == 0:
+                        reaction, user = await bot.wait_for('reaction_add', timeout=None)
+                        if str(reaction.emoji) == emojis_raw[0] and str(user) != "Persona Bot#0708":
+                            persona_l_id = personas[0]
+                            ok = 1
+                        if str(reaction.emoji) == emojis_raw[1] and str(user) != "Persona Bot#0708":
+                            persona_l_id = personas[1]
+                            ok = 2
+                        if str(reaction.emoji) == emojis_raw[2] and str(user) != "Persona Bot#0708":
+                            persona_l_id = personas[2]
+                            ok = 3
+                        if str(reaction.emoji) == emojis_raw[3] and str(user) != "Persona Bot#0708":
+                            persona_l_id = personas[3]
+                            ok = 4
+                        if str(reaction.emoji) == emojis_raw[4] and str(user) != "Persona Bot#0708":
+                            persona_l_id = personas[4]
+                            ok = 5
+                        if str(reaction.emoji) == emojis_raw[5] and str(user) != "Persona Bot#0708":
+                            persona_l_id = personas[5]
+                            ok = 6
+                        if str(reaction.emoji) == emojis_raw[6] and str(user) != "Persona Bot#0708":
+                            persona_l_id = personas[6]
+                            ok = 7
+                        if str(reaction.emoji) == emojis_raw[7] and str(user) != "Persona Bot#0708":
+                            persona_l_id = personas[7]
+                            ok = 8
+                        if str(reaction.emoji) == "❌" and str(user) != "Persona Bot#0708":
+                            ok = 9
+                    await embed_msg.delete()
+                    if ok < 9:
+                        p_id = Database.persona_id(personas[ok-1])
+                        equipou_persona = Database.equipar_persona(personagem_id, p_id)
+                        if equipou_persona:
+                            confirmacao = discord.Embed(
+                                title="Persona equipada atualizada",
+                                description=f"""**A Persona equipada de {personagem} agora é {personas[ok-1]}**""",
+                                colour=discord.Colour.blue()
+                            )
+                            await canal.send(embed=confirmacao)
+                        else:
+                            await ctx.send("Erro na troca de Persona.")
+                    else:
+                        await canal.send("Troca de Persona cancelada.")
+                else:
+                    await ctx.send(f"""Você só tem uma persona, não tem o que equipar xD""")
+            else:
+                await ctx.send(f"""Este personagem não possui Arcana Fool""")
+        else:
+            await ctx.send(f"""Este personagem não existe.""")
+    except:
+        await ctx.send("Canal do jogador não registrado.")
+
+@bot.command()
+async def tomar_persona(ctx , personagem, *persona):
+    global canais_jogadores
+    try:
+        personagem_id = Database.personagem_id(personagem)
+        canal = bot.get_channel(canais_jogadores[personagem])
+        eh_fool = Database.eh_fool(personagem_id)
+        nome = ""
+        for palavra in persona:
+            nome+=palavra + " "
+        nome = nome[:-1]
+        persona_id = Database.persona_id(nome)
+        if personagem_id != False:
+            if persona_id != False:
+                if eh_fool == True:
+                    persona_habilitada = Database.personagem_persona_id(personagem_id, persona_id)
+                    print(persona_habilitada)
+                    if persona_habilitada == False:
+                        nova_persona = Database.personagem_add_persona(personagem_id, persona_id)
+                        if nova_persona:
+                            await canal.send(f"""{nome} agora é bem vindo(a) ao coração de {personagem}""")
+                        else:
+                            await ctx.send(f"""Erro interno""")
+                    else:
+                        compendium = Database.compendium(persona_habilitada)
+                        print(compendium)
+                        if compendium == True:
+                            reativar_persona = Database.personagem_reativar_persona(personagem_id, persona_id)
+                            if reativar_persona:
+                                await canal.send(f"""{nome} agora é bem vindo(a) ao coração de {personagem} novamente""")
+                        else:
+                            await ctx.send(f"""Você já possui essa Persona""")
+                else:
+                    await ctx.send(f"""Este personagem não possui Arcana Fool""")
+            else:
+                await ctx.send(f"""Esta Persona não existe""")
+        else:
+            await ctx.send(f"""Este personagem não existe.""")
+    except:
+        await ctx.send("Canal do jogador não registrado.")
+
+@bot.command()
+async def soltar_persona(ctx, personagem, *persona):
+    global canais_jogadores
+    try:
+        personagem_id = Database.personagem_id(personagem)
+        canal = bot.get_channel(canais_jogadores[personagem])
+        eh_fool = Database.eh_fool(personagem_id)
+        nome = ""
+        for palavra in persona:
+            nome+=palavra + " "
+        nome = nome[:-1]
+        persona_id = Database.persona_id(nome)
+        if personagem_id != False:
+            if persona_id != False:
+                if eh_fool == True:
+                    persona_habilitada = Database.personagem_persona_id(personagem_id, persona_id)
+                    compendium = Database.compendium(persona_habilitada)
+                    if persona_habilitada != False and compendium != True:
+                        persona_solta = Database.personagem_del_persona(personagem_id, persona_id)
+                        if persona_solta:
+                            await canal.send(f"""{nome} agora é não é mais bem vindo(a) ao coração de {personagem}""")
+                        else:
+                            await ctx.send(f"""Erro interno""")
+                    else:
+                        await ctx.send(f"""Você não possui essa Persona""")
+                else:
+                    await ctx.send(f"""Este personagem não possui Arcana Fool""")
+            else:
+                await ctx.send(f"""Esta Persona não existe""")
+        else:
+            await ctx.send(f"""Este personagem não existe.""")
+    except:
+        await ctx.send("Canal do jogador não registrado.")
+    
+@bot.command()
+async def skills_conhecidas(ctx, personagem):
+    global canais_jogadores
+    try:
+        personagem_id = Database.personagem_id(personagem)
+        canal = bot.get_channel(canais_jogadores[personagem])
+        persona_id = Database.persona_equipada(personagem_id)
+        nome = Database.nome_persona(persona_id)
+        nivel = Database.nivel(personagem_id, persona_id)
+        skills = Database.skills_conhecidas(nivel, persona_id)
+        texto = ""
+        emote = ["<:phys:790320130810839101>", "<:gun:790320131028287488>", "<:fire:790320130483421245>", "<:ice:790320130738356224>", "<:elec:790320130151809047>", "<:wind:790320130521169922>", "<:psy:790320130772566046>", "<:nuclear:790320130584084532>", "<:bless:790320130746744892>", "<:curse:790320130387214336>", "<:almighty:790320130297954374>", "<:ailment:790320130286551060>", "<:healing:790320130508718100>", "<:support:790320130323775518>", "<:passive:790320130780561408>", "<:navigator:798197909761556521>"]
+        for skill in skills:
+            nome_skill = Database.nome_skill(skill)
+            skill_id = Database.skill_id(nome_skill)
+            elemento = Database.elemento(skill_id)
+            texto += f"""{nome_skill} {emote[elemento-1]}\n"""
+        texto = texto[:-1]
+        embed = discord.Embed(
+            title=f"""Habilidades conhecidas de **{nome}**""",
+            description=texto,
+            colour=discord.Colour.blue()
+        )
+        await canal.send(embed=embed)
+    except:
+        await ctx.send("Canal do jogador não registrado.")
+
+@bot.command()
+async def aprender_skill(ctx, personagem, *skill):
+    global canais_jogadores
+    try:
+        nome = ""
+        for palavra in skill:
+            nome += palavra + " "
+        nome = nome[:-1]
+        personagem_id = Database.personagem_id(personagem)
+        canal = bot.get_channel(canais_jogadores[personagem])
+        persona_id = Database.persona_equipada(personagem_id)
+        nome = Database.nome_persona(persona_id)
+        personagem_persona_id = Database.personagem_persona_id(personagem_id, persona_id)
+        skills = Database.skills(personagem_id, persona_id)
+        skill_id = Database.skill_id(skill)
+        skills_id = []
+        for skill in skills:
+            skills_id.append(Database.skill_id(skill))
+        if skill_id != False:
+            nome_skill = Database.nome_skill(skill_id)
+            if skill_id not in skills:
+                if len(skills) < 8:
+                    aprendeu = Database.add_skill(skill_id, personagem_persona_id)
+                    if aprendeu == True:
+                        await canal.send(f"""**{personagem}** aprendeu a habilidade **{nome_skill}**""")
+                else:
+                    embed = discord.Embed(
+                        title=f"""**{personagem}** aprendeu uma nova habilidade!""",
                         description=f"""Você já conhece habilidades demais, deseja trocar alguma por **{nome_skill}**?""",
                         colour=discord.Colour.red()
                     )
                     emojis_disc = [":one:", ":two:", ":three:", ":four:", ":five:", ":six:", ":seven:", ":eight:"]
                     emojis_raw = ["1️⃣", "2️⃣", "3️⃣", "4️⃣", "5️⃣", "6️⃣", "7️⃣", "8️⃣"]
-                    for i in range(len(nova_skills)):
-                        embed.add_field(name=emojis_disc[i], value=Database.nome_skill(nova_skills[i]), inline=True)
+                    for i in range(len(skills)):
+                        embed.add_field(name=emojis_disc[i], value=Database.nome_skill(skills[i]), inline=True)
                     embed_msg = await canal.send(embed=embed)
-                    for j in range(len(nova_skills)):
+                    for j in range(len(skills)):
                         await embed_msg.add_reaction(emoji=emojis_raw[j])
                     await embed_msg.add_reaction(emoji="❌")
                     ok = 0
@@ -1276,344 +1655,93 @@ async def subir_nivel_persona(ctx, canal : discord.TextChannel, personagem):
                             ok = 9
                     await embed_msg.delete()
                     if ok < 9:
-                        mudou = Database.mod_skill(nova_skills[ok-1], skill, personagem_persona_id)
+                        mudou = Database.mod_skill(skills_id[ok-1], skill_id, personagem_persona_id)
                         if mudou:
                             confirmacao = discord.Embed(
                                 title=f"""Nova habilidade aprendida: **{nome_skill}**""",
-                                description=f"""**{Database.nome_persona(persona_id)}** esqueceu de **{Database.nome_skill(nova_skills[ok-1])}**""",
+                                description=f"""**{personagem}** esqueceu de **{skills[ok-1]}**""",
                                 colour=discord.Colour.blue()
                             )
                             await canal.send(embed=confirmacao)
                         else:
                             await ctx.send("Erro no aprendizado da habilidade")
                     else:
-                        await canal.send(f"""**{Database.nome_persona(persona_id)}** ignorou a habilidade **{nome_skill}**""")
-                    nova_skills = Database.skills(personagem_id, persona_id)
-    else:
-        await ctx.send("Este personagem não é da Arcana Fool")
-    
+                        await canal.send(f"""**{personagem}** ignorou a habilidade **{nome_skill}**""")
+            else:
+                await ctx.send(f"""**{personagem}** já conhece essa habildade.""")
+        else:
+            await ctx.send(f"""Esta habilidade não existe.""")
+    except:
+        await ctx.send("Canal do jogador não registrado.")
+
 @bot.command()
-async def diminuir_nivel_persona(ctx, canal : discord.TextChannel, personagem):
-    personagem_id = Database.personagem_id(personagem)
-    eh_fool = Database.eh_fool(personagem_id)
-    if eh_fool == True:
+async def esquecer_skill(ctx, personagem):
+    global canais_jogadores
+    try:
+        personagem_id = Database.personagem_id(personagem)
+        canal = bot.get_channel(canais_jogadores[personagem])
         persona_id = Database.persona_equipada(personagem_id)
-        nivel = Database.nivel(personagem_id, persona_id)
-        diminuiu_nivel = Database.diminuir_nivel(personagem_id)
-        if diminuiu_nivel:
-            await canal.send(f"""Nível de **{Database.nome_persona(persona_id)}** diminuído para {nivel -1}""")
+        nome = Database.nome_persona(persona_id)
         personagem_persona_id = Database.personagem_persona_id(personagem_id, persona_id)
-        apagar = Database.apagar_crecimento(personagem_persona_id, nivel)
-        if apagar:
-            await canal.send(f"""Atributos de **{Database.nome_persona(persona_id)}** resetado para os do {nivel -1}""")
-        nivel_skills = Database.nivel_skills(nivel-1, persona_id)
-        for skill in nivel_skills:
-            desaprendeu = Database.del_skill(skill, personagem_persona_id)
-            if desaprendeu:
-                await canal.send(f"""Habilidade: **{Database.nome_skill(skill)}** foi desaprendida.""")
-        else:
-            await ctx.send(f"""Este personagem não é da Arcana Fool""")
-
-@bot.command()
-async def equipar_persona(ctx, canal : discord.TextChannel, personagem):
-    personagem_id = Database.personagem_id(personagem)
-    eh_fool = Database.eh_fool(personagem_id)
-    if personagem_id != False:
-        if eh_fool == True:
-            personas = Database.lista_personas(personagem_id)
-            persona_id = Database.persona_equipada(personagem_id)
-            persona_nome = Database.nome_persona(persona_id)
-            personas.remove(persona_nome)
-            if personas != []:
-                embed = discord.Embed(
-                title=f"""**Troca de Persona**""",
-                description=f"""Reaja com a opção da Persona que deseja equipar""",
-                colour=discord.Colour.red()
+        skills = Database.skills(personagem_id, persona_id)
+        skills_id = []
+        for skill in skills:
+            skills_id.append(Database.skill_id(skill))
+        embed = discord.Embed(
+            title=f"""**{personagem}** deseja esquecer uma habilidade!""",
+            description=f"""Reaja com a opção da habilidade que deseja esquecer.""",
+            colour=discord.Colour.red()
+        )
+        emojis_disc = [":one:", ":two:", ":three:", ":four:", ":five:", ":six:", ":seven:", ":eight:"]
+        emojis_raw = ["1️⃣", "2️⃣", "3️⃣", "4️⃣", "5️⃣", "6️⃣", "7️⃣", "8️⃣"]
+        for i in range(len(skills)):
+            embed.add_field(name=emojis_disc[i], value=skills[i], inline=True)
+        embed_msg = await canal.send(embed=embed)
+        for j in range(len(skills)):
+            await embed_msg.add_reaction(emoji=emojis_raw[j])
+        await embed_msg.add_reaction(emoji="❌")
+        ok = 0
+        while ok == 0:
+            reaction, user = await bot.wait_for('reaction_add', timeout=None)
+            if str(reaction.emoji) == emojis_raw[0] and str(user) != "Persona Bot#0708":
+                ok = 1
+            if str(reaction.emoji) == emojis_raw[1] and str(user) != "Persona Bot#0708":
+                ok = 2
+            if str(reaction.emoji) == emojis_raw[2] and str(user) != "Persona Bot#0708":
+                ok = 3
+            if str(reaction.emoji) == emojis_raw[3] and str(user) != "Persona Bot#0708":
+                ok = 4
+            if str(reaction.emoji) == emojis_raw[4] and str(user) != "Persona Bot#0708":
+                ok = 5
+            if str(reaction.emoji) == emojis_raw[5] and str(user) != "Persona Bot#0708":
+                ok = 6
+            if str(reaction.emoji) == emojis_raw[6] and str(user) != "Persona Bot#0708":
+                ok = 7
+            if str(reaction.emoji) == emojis_raw[6] and str(user) != "Persona Bot#0708":
+                ok = 8
+            if str(reaction.emoji) == "❌" and str(user) != "Persona Bot#0708":
+                ok = 9
+        await embed_msg.delete()
+        if ok < 9:
+            deletou = Database.del_skill(skills_id[ok-1], personagem_persona_id)
+            print(deletou)
+            if deletou:
+                confirmacao = discord.Embed(
+                    title=f"""Habilidade esquecida: **{nome_skill}**""",
+                    description=f"""**{personagem}** esqueceu de **{skills[ok-1]}**""",
+                    colour=discord.Colour.blue()
                 )
-                emojis_disc = [":one:", ":two:", ":three:", ":four:", ":five:", ":six:", ":seven:", ":eight:"]
-                emojis_raw = ["1️⃣", "2️⃣", "3️⃣", "4️⃣", "5️⃣", "6️⃣", "7️⃣", "8️⃣"]
-                for i in range(len(personas)):
-                    embed.add_field(name=emojis_disc[i], value=personas[i], inline=True)
-                embed_msg = await canal.send(embed=embed)
-                for j in range(len(personas)):
-                    await embed_msg.add_reaction(emoji=emojis_raw[j])
-                await embed_msg.add_reaction(emoji="❌")
-                ok = 0
-                while ok == 0:
-                    reaction, user = await bot.wait_for('reaction_add', timeout=None)
-                    if str(reaction.emoji) == emojis_raw[0] and str(user) != "Persona Bot#0708":
-                        persona_l_id = personas[0]
-                        ok = 1
-                    if str(reaction.emoji) == emojis_raw[1] and str(user) != "Persona Bot#0708":
-                        persona_l_id = personas[1]
-                        ok = 2
-                    if str(reaction.emoji) == emojis_raw[2] and str(user) != "Persona Bot#0708":
-                        persona_l_id = personas[2]
-                        ok = 3
-                    if str(reaction.emoji) == emojis_raw[3] and str(user) != "Persona Bot#0708":
-                        persona_l_id = personas[3]
-                        ok = 4
-                    if str(reaction.emoji) == emojis_raw[4] and str(user) != "Persona Bot#0708":
-                        persona_l_id = personas[4]
-                        ok = 5
-                    if str(reaction.emoji) == emojis_raw[5] and str(user) != "Persona Bot#0708":
-                        persona_l_id = personas[5]
-                        ok = 6
-                    if str(reaction.emoji) == emojis_raw[6] and str(user) != "Persona Bot#0708":
-                        persona_l_id = personas[6]
-                        ok = 7
-                    if str(reaction.emoji) == emojis_raw[7] and str(user) != "Persona Bot#0708":
-                        persona_l_id = personas[7]
-                        ok = 8
-                    if str(reaction.emoji) == "❌" and str(user) != "Persona Bot#0708":
-                        ok = 9
-                await embed_msg.delete()
-                if ok < 9:
-                    p_id = Database.persona_id(personas[ok-1])
-                    equipou_persona = Database.equipar_persona(personagem_id, p_id)
-                    if equipou_persona:
-                        confirmacao = discord.Embed(
-                            title="Persona equipada atualizada",
-                            description=f"""**A Persona equipada de {personagem} agora é {personas[ok-1]}**""",
-                            colour=discord.Colour.blue()
-                        )
-                        await canal.send(embed=confirmacao)
-                    else:
-                        await ctx.send("Erro na troca de Persona.")
-                else:
-                    await canal.send("Troca de Persona cancelada.")
+                await canal.send(embed=confirmacao)
             else:
-                await ctx.send(f"""Você só tem uma persona, não tem o que equipar xD""")
+                await ctx.send("Erro no esquecimento da habilidade")
         else:
-            await ctx.send(f"""Este personagem não possui Arcana Fool""")
-    else:
-        await ctx.send(f"""Este personagem não existe.""")
-
-@bot.command()
-async def tomar_persona(ctx , canal : discord.TextChannel, personagem, *persona):
-    personagem_id = Database.personagem_id(personagem)
-    eh_fool = Database.eh_fool(personagem_id)
-    nome = ""
-    for palavra in persona:
-        nome+=palavra + " "
-    nome = nome[:-1]
-    persona_id = Database.persona_id(nome)
-    if personagem_id != False:
-        if persona_id != False:
-            if eh_fool == True:
-                persona_habilitada = Database.personagem_persona_id(personagem_id, persona_id)
-                print(persona_habilitada)
-                if persona_habilitada == False:
-                    nova_persona = Database.personagem_add_persona(personagem_id, persona_id)
-                    if nova_persona:
-                        await canal.send(f"""{nome} agora é bem vindo(a) ao coração de {personagem}""")
-                    else:
-                        await ctx.send(f"""Erro interno""")
-                else:
-                    compendium = Database.compendium(persona_habilitada)
-                    print(compendium)
-                    if compendium == True:
-                        reativar_persona = Database.personagem_reativar_persona(personagem_id, persona_id)
-                        if reativar_persona:
-                            await canal.send(f"""{nome} agora é bem vindo(a) ao coração de {personagem} novamente""")
-                    else:
-                        await ctx.send(f"""Você já possui essa Persona""")
-            else:
-                await ctx.send(f"""Este personagem não possui Arcana Fool""")
-        else:
-            await ctx.send(f"""Esta Persona não existe""")
-    else:
-        await ctx.send(f"""Este personagem não existe.""")
-
-@bot.command()
-async def soltar_persona(ctx, canal : discord.TextChannel, personagem, *persona):
-    personagem_id = Database.personagem_id(personagem)
-    eh_fool = Database.eh_fool(personagem_id)
-    nome = ""
-    for palavra in persona:
-        nome+=palavra + " "
-    nome = nome[:-1]
-    persona_id = Database.persona_id(nome)
-    if personagem_id != False:
-        if persona_id != False:
-            if eh_fool == True:
-                persona_habilitada = Database.personagem_persona_id(personagem_id, persona_id)
-                compendium = Database.compendium(persona_habilitada)
-                if persona_habilitada != False and compendium != True:
-                    persona_solta = Database.personagem_del_persona(personagem_id, persona_id)
-                    if persona_solta:
-                        await canal.send(f"""{nome} agora é não é mais bem vindo(a) ao coração de {personagem}""")
-                    else:
-                        await ctx.send(f"""Erro interno""")
-                else:
-                    await ctx.send(f"""Você não possui essa Persona""")
-            else:
-                await ctx.send(f"""Este personagem não possui Arcana Fool""")
-        else:
-            await ctx.send(f"""Esta Persona não existe""")
-    else:
-        await ctx.send(f"""Este personagem não existe.""")
-    
-@bot.command()
-async def skills_conhecidas(ctx,  canal : discord.TextChannel, personagem):
-    personagem_id = Database.personagem_id(personagem)
-    persona_id = Database.persona_equipada(personagem_id)
-    nome = Database.nome_persona(persona_id)
-    nivel = Database.nivel(personagem_id, persona_id)
-    skills = Database.skills_conhecidas(nivel, persona_id)
-    texto = ""
-    emote = ["<:phys:790320130810839101>", "<:gun:790320131028287488>", "<:fire:790320130483421245>", "<:ice:790320130738356224>", "<:elec:790320130151809047>", "<:wind:790320130521169922>", "<:psy:790320130772566046>", "<:nuclear:790320130584084532>", "<:bless:790320130746744892>", "<:curse:790320130387214336>", "<:almighty:790320130297954374>", "<:ailment:790320130286551060>", "<:healing:790320130508718100>", "<:support:790320130323775518>", "<:passive:790320130780561408>", "<:navigator:798197909761556521>"]
-    for skill in skills:
-        nome_skill = Database.nome_skill(skill)
-        skill_id = Database.skill_id(nome_skill)
-        elemento = Database.elemento(skill_id)
-        texto += f"""{nome_skill} {emote[elemento-1]}\n"""
-    texto = texto[:-1]
-    embed = discord.Embed(
-        title=f"""Habilidades conhecidas de **{nome}**""",
-        description=texto,
-        colour=discord.Colour.blue()
-    )
-    await canal.send(embed=embed)
-
-@bot.command()
-async def aprender_skill(ctx, canal : discord.TextChannel, personagem, *skill):
-    nome = ""
-    for palavra in skill:
-        nome += palavra + " "
-    nome = nome[:-1]
-    personagem_id = Database.personagem_id(personagem)
-    persona_id = Database.persona_equipada(personagem_id)
-    nome = Database.nome_persona(persona_id)
-    personagem_persona_id = Database.personagem_persona_id(personagem_id, persona_id)
-    skills = Database.skills(personagem_id, persona_id)
-    skill_id = Database.skill_id(skill)
-    skills_id = []
-    for skill in skills:
-        skills_id.append(Database.skill_id(skill))
-    if skill_id != False:
-        nome_skill = Database.nome_skill(skill_id)
-        if skill_id not in skills:
-            if len(skills) < 8:
-                aprendeu = Database.add_skill(skill_id, personagem_persona_id)
-                if aprendeu == True:
-                    await canal.send(f"""**{personagem}** aprendeu a habilidade **{nome_skill}**""")
-            else:
-                embed = discord.Embed(
-                    title=f"""**{personagem}** aprendeu uma nova habilidade!""",
-                    description=f"""Você já conhece habilidades demais, deseja trocar alguma por **{nome_skill}**?""",
-                    colour=discord.Colour.red()
-                )
-                emojis_disc = [":one:", ":two:", ":three:", ":four:", ":five:", ":six:", ":seven:", ":eight:"]
-                emojis_raw = ["1️⃣", "2️⃣", "3️⃣", "4️⃣", "5️⃣", "6️⃣", "7️⃣", "8️⃣"]
-                for i in range(len(skills)):
-                    embed.add_field(name=emojis_disc[i], value=Database.nome_skill(skills[i]), inline=True)
-                embed_msg = await canal.send(embed=embed)
-                for j in range(len(skills)):
-                    await embed_msg.add_reaction(emoji=emojis_raw[j])
-                await embed_msg.add_reaction(emoji="❌")
-                ok = 0
-                while ok == 0:
-                    reaction, user = await bot.wait_for('reaction_add', timeout=None)
-                    if str(reaction.emoji) == emojis_raw[0] and str(user) != "Persona Bot#0708":
-                        ok = 1
-                    if str(reaction.emoji) == emojis_raw[1] and str(user) != "Persona Bot#0708":
-                        ok = 2
-                    if str(reaction.emoji) == emojis_raw[2] and str(user) != "Persona Bot#0708":
-                        ok = 3
-                    if str(reaction.emoji) == emojis_raw[3] and str(user) != "Persona Bot#0708":
-                        ok = 4
-                    if str(reaction.emoji) == emojis_raw[4] and str(user) != "Persona Bot#0708":
-                        ok = 5
-                    if str(reaction.emoji) == emojis_raw[5] and str(user) != "Persona Bot#0708":
-                        ok = 6
-                    if str(reaction.emoji) == emojis_raw[6] and str(user) != "Persona Bot#0708":
-                        ok = 7
-                    if str(reaction.emoji) == emojis_raw[6] and str(user) != "Persona Bot#0708":
-                        ok = 8
-                    if str(reaction.emoji) == "❌" and str(user) != "Persona Bot#0708":
-                        ok = 9
-                await embed_msg.delete()
-                if ok < 9:
-                    mudou = Database.mod_skill(skills_id[ok-1], skill_id, personagem_persona_id)
-                    if mudou:
-                        confirmacao = discord.Embed(
-                            title=f"""Nova habilidade aprendida: **{nome_skill}**""",
-                            description=f"""**{personagem}** esqueceu de **{skills[ok-1]}**""",
-                            colour=discord.Colour.blue()
-                        )
-                        await canal.send(embed=confirmacao)
-                    else:
-                        await ctx.send("Erro no aprendizado da habilidade")
-                else:
-                    await canal.send(f"""**{personagem}** ignorou a habilidade **{nome_skill}**""")
-        else:
-            await ctx.send(f"""**{personagem}** já conhece essa habildade.""")
-    else:
-        await ctx.send(f"""Esta habilidade não existe.""")
-
-@bot.command()
-async def esquecer_skill(ctx,  canal : discord.TextChannel, personagem):
-    personagem_id = Database.personagem_id(personagem)
-    persona_id = Database.persona_equipada(personagem_id)
-    nome = Database.nome_persona(persona_id)
-    personagem_persona_id = Database.personagem_persona_id(personagem_id, persona_id)
-    skills = Database.skills(personagem_id, persona_id)
-    skills_id = []
-    for skill in skills:
-        skills_id.append(Database.skill_id(skill))
-    embed = discord.Embed(
-        title=f"""**{personagem}** deseja esquecer uma habilidade!""",
-        description=f"""Reaja com a opção da habilidade que deseja esquecer.""",
-        colour=discord.Colour.red()
-    )
-    emojis_disc = [":one:", ":two:", ":three:", ":four:", ":five:", ":six:", ":seven:", ":eight:"]
-    emojis_raw = ["1️⃣", "2️⃣", "3️⃣", "4️⃣", "5️⃣", "6️⃣", "7️⃣", "8️⃣"]
-    for i in range(len(skills)):
-        embed.add_field(name=emojis_disc[i], value=skills[i], inline=True)
-    embed_msg = await canal.send(embed=embed)
-    for j in range(len(skills)):
-        await embed_msg.add_reaction(emoji=emojis_raw[j])
-    await embed_msg.add_reaction(emoji="❌")
-    ok = 0
-    while ok == 0:
-        reaction, user = await bot.wait_for('reaction_add', timeout=None)
-        if str(reaction.emoji) == emojis_raw[0] and str(user) != "Persona Bot#0708":
-            ok = 1
-        if str(reaction.emoji) == emojis_raw[1] and str(user) != "Persona Bot#0708":
-            ok = 2
-        if str(reaction.emoji) == emojis_raw[2] and str(user) != "Persona Bot#0708":
-            ok = 3
-        if str(reaction.emoji) == emojis_raw[3] and str(user) != "Persona Bot#0708":
-            ok = 4
-        if str(reaction.emoji) == emojis_raw[4] and str(user) != "Persona Bot#0708":
-            ok = 5
-        if str(reaction.emoji) == emojis_raw[5] and str(user) != "Persona Bot#0708":
-            ok = 6
-        if str(reaction.emoji) == emojis_raw[6] and str(user) != "Persona Bot#0708":
-            ok = 7
-        if str(reaction.emoji) == emojis_raw[6] and str(user) != "Persona Bot#0708":
-            ok = 8
-        if str(reaction.emoji) == "❌" and str(user) != "Persona Bot#0708":
-            ok = 9
-    await embed_msg.delete()
-    if ok < 9:
-        deletou = Database.del_skill(skills_id[ok-1], personagem_persona_id)
-        print(deletou)
-        if deletou:
-            confirmacao = discord.Embed(
-                title=f"""Habilidade esquecida: **{nome_skill}**""",
-                description=f"""**{personagem}** esqueceu de **{skills[ok-1]}**""",
-                colour=discord.Colour.blue()
-            )
-            await canal.send(embed=confirmacao)
-        else:
-            await ctx.send("Erro no esquecimento da habilidade")
-    else:
-        await canal.send(f"""**Esquecimento cancelado**""")
+            await canal.send(f"""**Esquecimento cancelado**""")
+    except:
+        await ctx.send("Canal do jogador não registrado.")
 
 @bot.command()
 async def adicionar_horda(ctx, tipo, *personagem):
+    global horda, horda_mult_atk, horda_mult_def, horda_mult_acc, horda_mult_evs, horda_mult_crit, horda_elem_dano
     nome = ""
     for palavra in personagem:
         nome += palavra + " "
@@ -1649,6 +1777,7 @@ async def adicionar_horda(ctx, tipo, *personagem):
 
 @bot.command()
 async def adicionar_party(ctx, personagem):
+    global party, party_mult_atk, party_mult_def, party_mult_acc, party_mult_evs, party_mult_crit, party_elem_dano
     personagem_id = Database.personagem_id(personagem)
     if personagem_id != False:
         party.append(personagem)
@@ -1664,6 +1793,7 @@ async def adicionar_party(ctx, personagem):
 
 @bot.command()
 async def remover_party(ctx, personagem):
+    global party, party_mult_atk, party_mult_def, party_mult_acc, party_mult_evs, party_mult_crit, party_elem_dano
     if party != []:
         achou = 0
         i = 0
@@ -1685,6 +1815,7 @@ async def remover_party(ctx, personagem):
 
 @bot.command()
 async def remover_horda(ctx, *personagem):
+    global horda, horda_mult_atk, horda_mult_def, horda_mult_acc, horda_mult_evs, horda_mult_crit, horda_elem_dano
     nome = ""
     for palavra in personagem:
         nome += palavra + " "
@@ -1710,6 +1841,7 @@ async def remover_horda(ctx, *personagem):
 
 @bot.command()
 async def mostrar_party(ctx):
+    global party
     if party != []:
         embed = discord.Embed(
             title=f"""**PARTY**""",
@@ -1728,6 +1860,7 @@ async def mostrar_party(ctx):
     
 @bot.command()
 async def mostrar_horda(ctx):
+    global horda
     if horda != []:
         embed = discord.Embed(
             title=f"""**HORDA**""",
@@ -1751,215 +1884,220 @@ async def mostrar_horda(ctx):
 
 @bot.command()
 async def calcular_turnos(ctx, canal : discord.TextChannel):
-    ordem = []
-    if horda != [] and party != []:
-        embed = discord.Embed(
-            title=f"""Qual a forma de interação pós combate?""",
-            description=f"""Reaja com a opção desejada""",
-            colour=discord.Colour.blue()
-        )
-        embed.add_field(name=":one:", value="Emboscada", inline=False)
-        embed.add_field(name=":two:", value="Disputa", inline=False)
-        embed_msg = await ctx.send(embed=embed)
-        emojis_raw = ["1️⃣", "2️⃣"]
-        for i in range(2):
-            await embed_msg.add_reaction(emoji=emojis_raw[i])
-        await embed_msg.add_reaction(emoji="❌")
-        ok = 0
-        while ok == 0:
-            reaction, user = await bot.wait_for('reaction_add', timeout=None)
-            if str(reaction.emoji) == emojis_raw[0] and str(user) != "Persona Bot#0708":
-                ok = 1
-            if str(reaction.emoji) == emojis_raw[1] and str(user) != "Persona Bot#0708":
-                ok = 2
-            if str(reaction.emoji) == "❌" and str(user) != "Persona Bot#0708":
-                ok = 3
-        await embed_msg.delete()
-        if ok == 1:
-            next = 0
-            while next == 0:
-                await ctx.send("**EMBOSCADA**: Qual o valor critério? (0 a 100)")
-                msg = await bot.wait_for('message')
-                mensagem = msg.content
-                try:
-                    valor_criterio = int(mensagem)
-                    if valor_criterio > 0 and valor_criterio <= 100:
-                        next = 1
-                except:
-                    await ctx.send("Digite um número entre 0 e 100.")
-            lider_id = Database.personagem_id(party[0])
-            usuario = Database.discord_user(lider_id)
-            dado = await Dado.rolagem_pronta(bot, canal, party[0], usuario, 1, 100)
-            if dado <= valor_criterio:
-                ordem1 = []
-                ordem2 = []
-                quant1 = []
-                quant2 = []
-                await canal.send(f"""O grupo tirou um dado de {dado} e conseguiu emboscar a Shadow, vocês atacarão primeiro.""")
-                for personagem in party:
-                    personagem_id = Database.personagem_id(personagem)
-                    persona_id = Database.persona_equipada(personagem_id)
-                    atributos = Database.atributos(personagem_id, persona_id)
-                    agilidade = atributos[5]
-                    ordem1.append(personagem)
-                    quant1.append(agilidade)
-                insertion_sort(quant1, ordem1)
-                for tipo, char in horda:
-                    if tipo == "s":
-                        shadow_id = Database.shadow_id(char)
-                        atributos = Database.atributos_iniciais(shadow_id)
-                        agilidade = 0
-                        for atributo_id, valor in atributos:
-                            if atributo_id == 6:
-                                agilidade = valor
-                                ordem2.append(char)
-                                quant2.append(agilidade)
-                    else:
-                        personagem_id = Database.personagem_id(char)
-                        persona_id = Database.persona_equipada(personagem_id)
-                        atributos = Database.atributos(personagem_id, persona_id)
-                        agilidade = atributos[5]
-                        ordem2.append(personagem_id)
-                        quant2.append(agilidade)
-                insertion_sort(quant2, ordem2)
-                ordem = ordem1 + ordem2
-            else:
-                ordem1 = []
-                quant1 = []
-                await canal.send(f"""O grupo tirou um dado de {dado} e falhou em emboscar a shadow, vocês atacarão de acordo com a sua agilidade.""")
-                for personagem in party:
-                    personagem_id = Database.personagem_id(personagem)
-                    persona_id = Database.persona_equipada(personagem_id)
-                    atributos = Database.atributos(personagem_id, persona_id)
-                    agilidade = atributos[5]
-                    ordem1.append(personagem)
-                    quant1.append(agilidade)
-                for tipo, char in horda:
-                    if tipo == "s":
-                        shadow_id = Database.shadow_id(char)
-                        atributos = Database.atributos_iniciais(shadow_id)
-                        agilidade = 0
-                        for atributo_id, valor in atributos:
-                            if atributo_id == 6:
-                                agilidade = valor
-                                ordem2.append(char)
-                                quant2.append(agilidade)
-                    else:
-                        personagem_id = Database.personagem_id(char)
-                        persona_id = Database.persona_equipada(personagem_id)
-                        atributos = Database.atributos(personagem_id, persona_id)
-                        agilidade = atributos[5]
-                        ordem1.append(personagem_id)
-                        quant1.append(agilidade)
-                insertion_sort(quant1, ordem1)
-                ordem = ordem1
+    global canal_grupo
+    try:
+        canal = bot.get_channel(canal_grupo)
+        ordem = []
+        if horda != [] and party != []:
             embed = discord.Embed(
-                title=f"""**Ordem de turnos*""",
+                title=f"""Qual a forma de interação pós combate?""",
+                description=f"""Reaja com a opção desejada""",
                 colour=discord.Colour.blue()
             )
-            texto = ""
-            i = 1
-            for elem in ordem:
-                texto += f"""{i}. {elem}\n"""
-                i += 1
-            texto[:-1]
-            embed.add_field(name="ORDEM:", value=texto, inline=False)
-            await canal.send(embed=embed)
-        elif ok == 2:
-            next = 0
-            while next == 0:
-                await ctx.send("**DISPUTA**: Qual o valor critério? (0 a 100)")
-                msg = await bot.wait_for('message')
-                mensagem = msg.content
-                try:
-                    valor_criterio = int(mensagem)
-                    if valor_criterio > 0 and valor_criterio <= 100:
-                        next = 1
-                except:
-                    await ctx.send("Digite um número entre 0 e 100.")
-            lider_id = Database.personagem_id(party[0])
-            usuario = Database.discord_user(lider_id)
-            dado = await Dado.rolagem_pronta(bot, canal, party[0], usuario, 1, 100)
-            if dado <= valor_criterio:
-                ordem1 = []
-                quant1 = []
-                await canal.send(f"""O grupo tirou um dado de {dado} e conseguiu evitar ser emboscado, vocês atacarão de acordo co ma sua agilidade.""")
-                for personagem in party:
-                    personagem_id = Database.personagem_id(personagem)
-                    persona_id = Database.persona_equipada(personagem_id)
-                    atributos = Database.atributos(personagem_id, persona_id)
-                    agilidade = atributos[5]
-                    ordem1.append(personagem)
-                    quant1.append(agilidade)
-                insertion_sort(quant1, ordem1)
-                for tipo, char in horda:
-                    if tipo == "s":
-                        shadow_id = Database.shadow_id(char)
-                        atributos = Database.atributos_iniciais(shadow_id)
-                        agilidade = 0
-                        for atributo_id, valor in atributos:
-                            if atributo_id == 6:
-                                agilidade = valor
-                                ordem1.append(char)
-                                quant1.append(agilidade)
-                    else:
-                        personagem_id = Database.personagem_id(char)
+            embed.add_field(name=":one:", value="Emboscada", inline=False)
+            embed.add_field(name=":two:", value="Disputa", inline=False)
+            embed_msg = await ctx.send(embed=embed)
+            emojis_raw = ["1️⃣", "2️⃣"]
+            for i in range(2):
+                await embed_msg.add_reaction(emoji=emojis_raw[i])
+            await embed_msg.add_reaction(emoji="❌")
+            ok = 0
+            while ok == 0:
+                reaction, user = await bot.wait_for('reaction_add', timeout=None)
+                if str(reaction.emoji) == emojis_raw[0] and str(user) != "Persona Bot#0708":
+                    ok = 1
+                if str(reaction.emoji) == emojis_raw[1] and str(user) != "Persona Bot#0708":
+                    ok = 2
+                if str(reaction.emoji) == "❌" and str(user) != "Persona Bot#0708":
+                    ok = 3
+            await embed_msg.delete()
+            if ok == 1:
+                next = 0
+                while next == 0:
+                    await ctx.send("**EMBOSCADA**: Qual o valor critério? (0 a 100)")
+                    msg = await bot.wait_for('message')
+                    mensagem = msg.content
+                    try:
+                        valor_criterio = int(mensagem)
+                        if valor_criterio > 0 and valor_criterio <= 100:
+                            next = 1
+                    except:
+                        await ctx.send("Digite um número entre 0 e 100.")
+                lider_id = Database.personagem_id(party[0])
+                usuario = Database.discord_user(lider_id)
+                dado = await Dado.rolagem_pronta(bot, canal, party[0], usuario, 1, 100)
+                if dado <= valor_criterio:
+                    ordem1 = []
+                    ordem2 = []
+                    quant1 = []
+                    quant2 = []
+                    await canal.send(f"""O grupo tirou um dado de {dado} e conseguiu emboscar a Shadow, vocês atacarão primeiro.""")
+                    for personagem in party:
+                        personagem_id = Database.personagem_id(personagem)
                         persona_id = Database.persona_equipada(personagem_id)
                         atributos = Database.atributos(personagem_id, persona_id)
                         agilidade = atributos[5]
-                        ordem1.append(personagem_id)
+                        ordem1.append(personagem)
                         quant1.append(agilidade)
-                insertion_sort(quant1, ordem1)
-                ordem = ordem1
-            else:
-                ordem1 = []
-                ordem2 = []
-                quant1 = []
-                quant2 = []
-                await canal.send(f"""O grupo tirou um dado de {dado} e falhou em evitar ser emboscado, vocês atacarão por último.""")
-                for personagem in party:
-                    personagem_id = Database.personagem_id(personagem)
-                    persona_id = Database.persona_equipada(personagem_id)
-                    atributos = Database.atributos(personagem_id, persona_id)
-                    agilidade = atributos[5]
-                    ordem1.append(personagem)
-                    quant1.append(agilidade)
-                insertion_sort(quant1, ordem1)
-                for tipo, char in horda:
-                    if tipo == "s":
-                        shadow_id = Database.shadow_id(char)
-                        atributos = Database.atributos_iniciais(shadow_id)
-                        agilidade = 0
-                        for atributo_id, valor in atributos:
-                            if atributo_id == 6:
-                                agilidade = valor
-                                ordem2.append(char)
-                                quant2.append(agilidade)
-                    else:
-                        personagem_id = Database.personagem_id(char)
+                    insertion_sort(quant1, ordem1)
+                    for tipo, char in horda:
+                        if tipo == "s":
+                            shadow_id = Database.shadow_id(char)
+                            atributos = Database.atributos_iniciais(shadow_id)
+                            agilidade = 0
+                            for atributo_id, valor in atributos:
+                                if atributo_id == 6:
+                                    agilidade = valor
+                                    ordem2.append(char)
+                                    quant2.append(agilidade)
+                        else:
+                            personagem_id = Database.personagem_id(char)
+                            persona_id = Database.persona_equipada(personagem_id)
+                            atributos = Database.atributos(personagem_id, persona_id)
+                            agilidade = atributos[5]
+                            ordem2.append(personagem_id)
+                            quant2.append(agilidade)
+                    insertion_sort(quant2, ordem2)
+                    ordem = ordem1 + ordem2
+                else:
+                    ordem1 = []
+                    quant1 = []
+                    await canal.send(f"""O grupo tirou um dado de {dado} e falhou em emboscar a shadow, vocês atacarão de acordo com a sua agilidade.""")
+                    for personagem in party:
+                        personagem_id = Database.personagem_id(personagem)
                         persona_id = Database.persona_equipada(personagem_id)
                         atributos = Database.atributos(personagem_id, persona_id)
                         agilidade = atributos[5]
-                        ordem2.append(personagem_id)
-                        quant2.append(agilidade)
-                insertion_sort(quant2, ordem2)
-                ordem = ordem2 + ordem1
-            embed = discord.Embed(
-                title=f"""**Ordem de turnos**""",
-                colour=discord.Colour.blue()
-            )
-            texto = ""
-            i = 1
-            for elem in ordem:
-                texto += f"""{i}. {elem}\n"""
-                i += 1
-            texto[:-1]
-            embed.add_field(name="ORDEM:", value=texto, inline=False)
-            await canal.send(embed=embed)
+                        ordem1.append(personagem)
+                        quant1.append(agilidade)
+                    for tipo, char in horda:
+                        if tipo == "s":
+                            shadow_id = Database.shadow_id(char)
+                            atributos = Database.atributos_iniciais(shadow_id)
+                            agilidade = 0
+                            for atributo_id, valor in atributos:
+                                if atributo_id == 6:
+                                    agilidade = valor
+                                    ordem2.append(char)
+                                    quant2.append(agilidade)
+                        else:
+                            personagem_id = Database.personagem_id(char)
+                            persona_id = Database.persona_equipada(personagem_id)
+                            atributos = Database.atributos(personagem_id, persona_id)
+                            agilidade = atributos[5]
+                            ordem1.append(personagem_id)
+                            quant1.append(agilidade)
+                    insertion_sort(quant1, ordem1)
+                    ordem = ordem1
+                embed = discord.Embed(
+                    title=f"""**Ordem de turnos*""",
+                    colour=discord.Colour.blue()
+                )
+                texto = ""
+                i = 1
+                for elem in ordem:
+                    texto += f"""{i}. {elem}\n"""
+                    i += 1
+                texto[:-1]
+                embed.add_field(name="ORDEM:", value=texto, inline=False)
+                await canal.send(embed=embed)
+            elif ok == 2:
+                next = 0
+                while next == 0:
+                    await ctx.send("**DISPUTA**: Qual o valor critério? (0 a 100)")
+                    msg = await bot.wait_for('message')
+                    mensagem = msg.content
+                    try:
+                        valor_criterio = int(mensagem)
+                        if valor_criterio > 0 and valor_criterio <= 100:
+                            next = 1
+                    except:
+                        await ctx.send("Digite um número entre 0 e 100.")
+                lider_id = Database.personagem_id(party[0])
+                usuario = Database.discord_user(lider_id)
+                dado = await Dado.rolagem_pronta(bot, canal, party[0], usuario, 1, 100)
+                if dado <= valor_criterio:
+                    ordem1 = []
+                    quant1 = []
+                    await canal.send(f"""O grupo tirou um dado de {dado} e conseguiu evitar ser emboscado, vocês atacarão de acordo co ma sua agilidade.""")
+                    for personagem in party:
+                        personagem_id = Database.personagem_id(personagem)
+                        persona_id = Database.persona_equipada(personagem_id)
+                        atributos = Database.atributos(personagem_id, persona_id)
+                        agilidade = atributos[5]
+                        ordem1.append(personagem)
+                        quant1.append(agilidade)
+                    insertion_sort(quant1, ordem1)
+                    for tipo, char in horda:
+                        if tipo == "s":
+                            shadow_id = Database.shadow_id(char)
+                            atributos = Database.atributos_iniciais(shadow_id)
+                            agilidade = 0
+                            for atributo_id, valor in atributos:
+                                if atributo_id == 6:
+                                    agilidade = valor
+                                    ordem1.append(char)
+                                    quant1.append(agilidade)
+                        else:
+                            personagem_id = Database.personagem_id(char)
+                            persona_id = Database.persona_equipada(personagem_id)
+                            atributos = Database.atributos(personagem_id, persona_id)
+                            agilidade = atributos[5]
+                            ordem1.append(personagem_id)
+                            quant1.append(agilidade)
+                    insertion_sort(quant1, ordem1)
+                    ordem = ordem1
+                else:
+                    ordem1 = []
+                    ordem2 = []
+                    quant1 = []
+                    quant2 = []
+                    await canal.send(f"""O grupo tirou um dado de {dado} e falhou em evitar ser emboscado, vocês atacarão por último.""")
+                    for personagem in party:
+                        personagem_id = Database.personagem_id(personagem)
+                        persona_id = Database.persona_equipada(personagem_id)
+                        atributos = Database.atributos(personagem_id, persona_id)
+                        agilidade = atributos[5]
+                        ordem1.append(personagem)
+                        quant1.append(agilidade)
+                    insertion_sort(quant1, ordem1)
+                    for tipo, char in horda:
+                        if tipo == "s":
+                            shadow_id = Database.shadow_id(char)
+                            atributos = Database.atributos_iniciais(shadow_id)
+                            agilidade = 0
+                            for atributo_id, valor in atributos:
+                                if atributo_id == 6:
+                                    agilidade = valor
+                                    ordem2.append(char)
+                                    quant2.append(agilidade)
+                        else:
+                            personagem_id = Database.personagem_id(char)
+                            persona_id = Database.persona_equipada(personagem_id)
+                            atributos = Database.atributos(personagem_id, persona_id)
+                            agilidade = atributos[5]
+                            ordem2.append(personagem_id)
+                            quant2.append(agilidade)
+                    insertion_sort(quant2, ordem2)
+                    ordem = ordem2 + ordem1
+                embed = discord.Embed(
+                    title=f"""**Ordem de turnos**""",
+                    colour=discord.Colour.blue()
+                )
+                texto = ""
+                i = 1
+                for elem in ordem:
+                    texto += f"""{i}. {elem}\n"""
+                    i += 1
+                texto[:-1]
+                embed.add_field(name="ORDEM:", value=texto, inline=False)
+                await canal.send(embed=embed)
+            else:
+                await ctx.send("Cálculo cancelado.")
         else:
-            await ctx.send("Cálculo cancelado.")
-    else:
-        await ctx.send("Sem requisitos mínimos para iniciar um combate.")
+            await ctx.send("Sem requisitos mínimos para iniciar um combate.")
+    except:
+        await ctx.send("Canal do grupo não está registrado.")
 
 def insertion_sort(arr, ordem): 
     for i in range(1, len(arr)): 
@@ -1975,6 +2113,7 @@ def insertion_sort(arr, ordem):
     
 @bot.command()
 async def ataque_fisico(ctx,  canal : discord.TextChannel, sentido, codigo1, codigo2):
+    global horda, horda_mult_atk, horda_mult_def, horda_mult_acc, horda_mult_evs, horda_mult_crit, horda_elem_dano, party, party_mult_atk, party_mult_def, party_mult_acc, party_mult_evs, party_mult_crit, party_elem_dano
     try:
         codigo1 = int(codigo1)
         codigo2 = int(codigo2)
@@ -2359,6 +2498,7 @@ async def ataque_fisico(ctx,  canal : discord.TextChannel, sentido, codigo1, cod
 
 @bot.command()
 async def tiro(ctx, canal : discord.TextChannel, codigo1, codigo2):
+    global horda, horda_mult_atk, horda_mult_def, horda_mult_acc, horda_mult_evs, horda_mult_crit, horda_elem_dano, party, party_mult_atk, party_mult_def, party_mult_acc, party_mult_evs, party_mult_crit, party_elem_dano
     try:
         codigo1 = int(codigo1)
         codigo2 = int(codigo2)
@@ -2551,6 +2691,7 @@ async def tiro(ctx, canal : discord.TextChannel, codigo1, codigo2):
 
 @bot.command()
 async def habilidade(ctx, canal : discord.TextChannel, sentido, codigo1, codigo2, *habilidade):
+    global horda, horda_mult_atk, horda_mult_def, horda_mult_acc, horda_mult_evs, horda_mult_crit, horda_elem_dano, party, party_mult_atk, party_mult_def, party_mult_acc, party_mult_evs, party_mult_crit, party_elem_dano
     try:
         nome = ""
         for palavra in habilidade:
@@ -2904,6 +3045,7 @@ async def del_atributo(ctx, canal : discord.TextChannel, personagem, quant, atri
 
 @bot.command()
 async def lider(ctx, canal : discord.TextChannel, personagem):
+    global party
     if party != []:
         for i in range(len(party)):
             if party[i] == personagem:
@@ -2913,6 +3055,7 @@ async def lider(ctx, canal : discord.TextChannel, personagem):
 
 @bot.command()
 async def marcador(ctx,  canal : discord.TextChannel, tipo_marcador, tipo_grupo, codigo, quant):
+    global party_mult_atk, party_mult_crit, party_mult_dano, party_mult_def, party_mult_evs, horda_mult_acc, horda_mult_atk, horda_mult_crit, horda_mult_def, horda_mult_evs
     try:
         quant = int(quant)
         codigo = int(codigo)
@@ -2986,6 +3129,7 @@ async def marcador(ctx,  canal : discord.TextChannel, tipo_marcador, tipo_grupo,
 
 @bot.command()
 async def interacao(ctx, tipo_grupo, codigo, elemento, tipo_interacao):
+    global party_elem_dano, horda_elem_dano
     try:
         codigo = int(codigo)
         atributo = int(atributo)
@@ -2998,6 +3142,102 @@ async def interacao(ctx, tipo_grupo, codigo, elemento, tipo_interacao):
             await ctx.send(f"""Tipo incorreto.""")
     except:
         await ctx.send(f"""Erro""")
+
+@bot.command()
+async def mod_canal_jogador(ctx, personagem, canal : discord.TextChannel):
+    global canais_jogadores
+    personagem_id = Database.personagem_id(personagem)
+    if personagem_id != False:
+        canais_jogadores[personagem] = canal.id
+        await ctx.send(f"""O canal de **{personagem}** agora é o <#{canal.id}>""")
+        canais = {"jogadores": canais_jogadores, "inimigos": canal_inimigos, "grupo": canal_grupo, "mestre": canal_mestre, "suporte": canal_suporte}
+        with open('canais.pickle', 'wb') as handle:
+            pickle.dump(canais, handle, protocol=pickle.HIGHEST_PROTOCOL)
+        handle.close()
+    else:
+        await ctx.send("Este personagem não existe.")
+
+@bot.command()
+async def mod_canal_grupo(ctx, canal : discord.TextChannel):
+    global canal_grupo
+    try:
+        canal_grupo = canal.id
+        await ctx.send(f"""O canal do grupo agora é o <#{canal.id}>""")
+        canais = {"jogadores": canais_jogadores, "inimigos": canal_inimigos, "grupo": canal_grupo, "mestre": canal_mestre, "suporte": canal_suporte}
+        with open('canais.pickle', 'wb') as handle:
+            pickle.dump(canais, handle, protocol=pickle.HIGHEST_PROTOCOL)
+        handle.close()
+    except:
+        await ctx.send("Canal incorreto.")
+        
+@bot.command()
+async def mod_canal_inimigos(ctx, canal : discord.TextChannel):
+    global canal_inimigos
+    try:
+        canal_inimigos = canal.id
+        await ctx.send(f"""O canal dos inimigos agora é o <#{canal.id}>""")
+        canais = {"jogadores": canais_jogadores, "inimigos": canal_inimigos, "grupo": canal_grupo, "mestre": canal_mestre, "suporte": canal_suporte}
+        with open('canais.pickle', 'wb') as handle:
+            pickle.dump(canais, handle, protocol=pickle.HIGHEST_PROTOCOL)
+        handle.close()
+    except:
+        await ctx.send("Canal incorreto.")
+
+@bot.command()
+async def mod_canal_mestre(ctx, canal : discord.TextChannel):
+    global canal_mestre
+    try:
+        canal_mestre = canal.id
+        await ctx.send(f"""O canal do mestre agora é o <#{canal.id}>""")
+        canais = {"jogadores": canais_jogadores, "inimigos": canal_inimigos, "grupo": canal_grupo, "mestre": canal_mestre, "suporte": canal_suporte}
+        with open('canais.pickle', 'wb') as handle:
+            pickle.dump(canais, handle, protocol=pickle.HIGHEST_PROTOCOL)
+        handle.close()
+    except:
+        await ctx.send("Canal incorreto.")
+    
+@bot.command()
+async def mod_canal_suporte(ctx, canal : discord.TextChannel):
+    global canal_suporte
+    try:
+        canal_suporte = canal.id
+        await ctx.send(f"""O canal do suporte agora é o <#{canal.id}>""")
+        canais = {"jogadores": canais_jogadores, "inimigos": canal_inimigos, "grupo": canal_grupo, "mestre": canal_mestre, "suporte": canal_suporte}
+        with open('canais.pickle', 'wb') as handle:
+            pickle.dump(canais, handle, protocol=pickle.HIGHEST_PROTOCOL)
+        handle.close()
+    except:
+        await ctx.send("Canal incorreto.")
+
+@bot.command()
+async def canais(ctx):
+    global canais_jogadores, canal_grupo, canal_inimigos, canal_mestre, canal_suporte
+    i = 0
+    embed = discord.Embed(
+        title="Lista dos canais",
+        colour=discord.Colour.blue()
+    )
+    if canais_jogadores != {}:
+        i += 1
+        texto = ""
+        for jogador in canais_jogadores:
+            texto += f"""**{jogador}**: <#{canais_jogadores[jogador]}>\n"""
+        texto = texto[:-1]
+        embed.add_field(name="Jogadores", value=texto, inline=False)
+    if canal_grupo != 0:
+        i += 1
+        embed.add_field(name="Grupo", value=f"""<#{canal_grupo}>""", inline=False)
+    if canal_inimigos != 0:
+        i += 1
+        embed.add_field(name="Inimigos", value=f"""<#{canal_inimigos}>""", inline=False)
+    if canal_mestre != 0:
+        i += 1
+        embed.add_field(name="Mestre", value=f"""<#{canal_mestre}>""", inline=False)
+    if canal_suporte != 0:
+        i += 1
+        embed.add_field(name="Suporte", value=f"""<#{canal_suporte}>""", inline=False)
+    if i > 0:
+        await ctx.send(embed=embed)
 
 def takeSecond(elem):
     return elem[1]
