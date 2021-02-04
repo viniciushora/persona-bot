@@ -1883,7 +1883,7 @@ async def mostrar_horda(ctx):
         await ctx.send("A horda está vazia")
 
 @bot.command()
-async def calcular_turnos(ctx, canal : discord.TextChannel):
+async def calcular_turnos(ctx):
     global canal_grupo
     try:
         canal = bot.get_channel(canal_grupo)
@@ -2112,13 +2112,64 @@ def insertion_sort(arr, ordem):
         ordem[j+1] = key2
     
 @bot.command()
-async def ataque_fisico(ctx,  canal : discord.TextChannel, sentido, codigo1, codigo2):
-    global horda, horda_mult_atk, horda_mult_def, horda_mult_acc, horda_mult_evs, horda_mult_crit, horda_elem_dano, party, party_mult_atk, party_mult_def, party_mult_acc, party_mult_evs, party_mult_crit, party_elem_dano
+async def ataque_fisico(ctx):
+    global canais_jogadores, canal_inimigos, horda, horda_mult_atk, horda_mult_def, horda_mult_acc, horda_mult_evs, horda_mult_crit, horda_elem_dano, party, party_mult_atk, party_mult_def, party_mult_acc, party_mult_evs, party_mult_crit, party_elem_dano
     try:
-        codigo1 = int(codigo1)
-        codigo2 = int(codigo2)
-        if sentido == "party":
-            personagem_id = Database.personagem_id(party[codigo1-1])
+        embed = discord.Embed(
+            title=f"""Quem vai atacar?""",
+            description=f"""Reaja com a opção desejada""",
+            colour=discord.Colour.blue()
+        )
+        embed.add_field(name=":one:", value="Party", inline=False)
+        embed.add_field(name=":two:", value="Horda", inline=False)
+        embed_msg = await ctx.send(embed=embed)
+        emojis_raw = ["1️⃣", "2️⃣"]
+        for i in range(2):
+            await embed_msg.add_reaction(emoji=emojis_raw[i])
+        await embed_msg.add_reaction(emoji="❌")
+        ok = 0
+        while ok == 0:
+            reaction, user = await bot.wait_for('reaction_add', timeout=None)
+            if str(reaction.emoji) == emojis_raw[0] and str(user) != "Persona Bot#0708":
+                ok = 1
+            if str(reaction.emoji) == emojis_raw[1] and str(user) != "Persona Bot#0708":
+                ok = 2
+            if str(reaction.emoji) == "❌" and str(user) != "Persona Bot#0708":
+                ok = 3
+        await embed_msg.delete()
+        if ok == 1:
+            embed = discord.Embed(
+                title=f"""Qual personagem da Party irá atacar?""",
+                description=f"""Reaja com a opção desejada""",
+                colour=discord.Colour.blue()
+            )
+            emojis_raw = ["1️⃣", "2️⃣", "3️⃣", "4️⃣", "5️⃣"]
+            emojis_disc = [":one:", ":two:", ":three:", ":four:", ":five:"]
+            for j in range(len(party)):
+                embed.add_field(name=emojis_disc[j], value=party[j], inline=False)
+            embed_msg = await ctx.send(embed=embed)
+            for i in range(len(party)):
+                await embed_msg.add_reaction(emoji=emojis_raw[i])
+            await embed_msg.add_reaction(emoji="❌")
+            ok1 = 0
+            while ok1 == 0:
+                reaction, user = await bot.wait_for('reaction_add', timeout=None)
+                if str(reaction.emoji) == emojis_raw[0] and str(user) != "Persona Bot#0708":
+                    ok1 = 1
+                if str(reaction.emoji) == emojis_raw[1] and str(user) != "Persona Bot#0708":
+                    ok1 = 2
+                if str(reaction.emoji) == emojis_raw[2] and str(user) != "Persona Bot#0708":
+                    ok1 = 3
+                if str(reaction.emoji) == emojis_raw[3] and str(user) != "Persona Bot#0708":
+                    ok1 = 4
+                if str(reaction.emoji) == emojis_raw[4] and str(user) != "Persona Bot#0708":
+                    ok1 = 5
+                if str(reaction.emoji) == "❌" and str(user) != "Persona Bot#0708":
+                    ok1 = 6
+            await embed_msg.delete()
+            nome_party = party[ok1-1]
+            canal = bot.get_channel(canais_jogadores[party[ok1-1]])
+            personagem_id = Database.personagem_id(party[ok1-1])
             persona_id = Database.persona_equipada(personagem_id)
             usuario = Database.discord_user(personagem_id)
             equips = Database.itens_equipados(personagem_id)
@@ -2135,21 +2186,43 @@ async def ataque_fisico(ctx,  canal : discord.TextChannel, sentido, codigo1, cod
                     atributos_atacante[i] += int(a+p)
                 else:
                     atributos_atacante[i] += int(p)
-            if horda[codigo2-1][0] == "s":
-                shadow_id = Database.shadow_id(horda[codigo2-1][1])
+            embed = discord.Embed(
+                title=f"""Quem da horda será atacado?""",
+                description=f"""Reaja com a opção desejada""",
+                colour=discord.Colour.blue()
+            )
+            emojis_raw = ["1️⃣", "2️⃣", "3️⃣", "4️⃣", "5️⃣"]
+            emojis_disc = [":one:", ":two:", ":three:", ":four:", ":five:"]
+            for j in range(len(horda)):
+                embed.add_field(name=emojis_disc[j], value=horda[j][1], inline=False)
+            embed_msg = await ctx.send(embed=embed)
+            for i in range(len(horda)):
+                await embed_msg.add_reaction(emoji=emojis_raw[i])
+            await embed_msg.add_reaction(emoji="❌")
+            ok2 = 0
+            while ok2 == 0:
+                reaction, user = await bot.wait_for('reaction_add', timeout=None)
+                if str(reaction.emoji) == emojis_raw[0] and str(user) != "Persona Bot#0708":
+                    ok2 = 1
+                if str(reaction.emoji) == emojis_raw[1] and str(user) != "Persona Bot#0708":
+                    ok2 = 2
+                if str(reaction.emoji) == emojis_raw[2] and str(user) != "Persona Bot#0708":
+                    ok2 = 3
+                if str(reaction.emoji) == emojis_raw[3] and str(user) != "Persona Bot#0708":
+                    ok2 = 4
+                if str(reaction.emoji) == emojis_raw[4] and str(user) != "Persona Bot#0708":
+                    ok2 = 5
+                if str(reaction.emoji) == "❌" and str(user) != "Persona Bot#0708":
+                    ok2 = 6
+            await embed_msg.delete()
+            nome_horda = horda[ok2-1][1]
+            if horda[ok2-1][0] == "s":
+                shadow_id = Database.shadow_id(horda[ok2-1][1])
                 fraquezas = Database.fraquezas(shadow_id)
                 atributos_defensor = Database.atributos_iniciais(shadow_id)
                 for i in range(len(atributos_defensor)):
                     atributos_defensor[i] = atributos_defensor[i][1]
-                atributos_soma = Database.atributos_soma(shadow_id)
                 atributos_porcent = Database.atributos_porcent(shadow_id)
-                for i in range(len(atributos_defensor)):
-                    a = atributos_defensor[i] + atributos_soma[i]
-                    p = (atributos_porcent[i]/100) * a
-                    if atributos_soma[i] > 0:
-                        atributos_defensor[i] += int(a+p)
-                    else:
-                        atributos_defensor[i] += int(p)
                 next = 0
                 while next == 0:
                     await ctx.send("Qual o valor critério? (0 a 100)")
@@ -2161,62 +2234,62 @@ async def ataque_fisico(ctx,  canal : discord.TextChannel, sentido, codigo1, cod
                             next = 1
                     except:
                         await ctx.send("Digite um número entre 0 e 100.")
-                valor_criterio = var + (5*(atributos_atacante[5]//5)) - (5*(atributos_defensor[6]//5)) + (10*party_mult_acc[codigo1-1]) - (10*horda_mult_evs[codigo1-1])
+                valor_criterio = var + (5*(atributos_atacante[5]//5)) - (5*(atributos_defensor[6]//5)) + (10*party_mult_acc[ok1-1]) - (10*horda_mult_evs[ok2-1])
                 await canal.send(f"""Você precisa tirar um valor menor que **{valor_criterio}** no dado""")
-                dado = await Dado.rolagem_pronta(bot, canal, party[codigo1-1], usuario, 1, 100)
-                critico = 10 + (party_mult_crit[codigo1-1] * 10)
+                dado = await Dado.rolagem_pronta(bot, canal, party[ok1-1], usuario, 1, 100)
+                critico = 10 + (party_mult_crit[ok1-1] * 10)
                 if dado <= valor_criterio:
                     valor_arma = Database.valor_item(meelee)
                     dano = int(20 + (math.sqrt(valor_arma) * math.sqrt(atributos_atacante[2])))
-                    if party_mult_atk[codigo1-1] > 0:
-                        dano = dano + (0,3 * party_mult_atk[codigo1-1] * dano)
-                    elif party_mult_atk[codigo1-1] < 0:
-                        dano = dano - (0,3 * party_mult_atk[codigo1-1] * dano)
+                    if party_mult_atk[ok1-1] > 0:
+                        dano = dano + (0,3 * party_mult_atk[ok1-1] * dano)
+                    elif party_mult_atk[ok1-1] < 0:
+                        dano = dano - (0,3 * party_mult_atk[ok1-1] * dano)
                     dano_mitigado = int(dano / math.sqrt(atributos_defensor[4]*8))
-                    if horda_mult_def[codigo2-1] > 0:
-                        dano_mitigado = dano + (0,3 * horda_mult_def[codigo2-1] * dano)
-                    elif horda_mult_def[codigo2-1] < 0:
-                        dano = dano - (0,3 * horda_mult_def[codigo2-1] * dano)
+                    if horda_mult_def[ok2-1] > 0:
+                        dano_mitigado = dano + (0,3 * horda_mult_def[ok2-1] * dano)
+                    elif horda_mult_def[ok2-1] < 0:
+                        dano = dano - (0,3 * horda_mult_def[ok2-1] * dano)
                     dano = dano - dano_mitigado
-                    if horda_elem_dano[codigo2-1][0] > 0:
-                        if horda_elem_dano[codigo2-1][0] == 1:
+                    if horda_elem_dano[ok2-1][0] > 0:
+                        if horda_elem_dano[ok2-1][0] == 1:
                             dano = dano * 2
-                            await canal.send(f"""**{party[codigo1-1]}** causou **{dano}** de dano e derrubou **{horda[codigo2-1][1]}**!""")
-                        elif horda_elem_dano[codigo2-1][0] == 2:
+                            await canal.send(f"""**{nome_party}** causou **{dano}** de dano e derrubou **{nome_horda}**!""")
+                        elif horda_elem_dano[ok2-1][0] == 2:
                             dano = dano / 2
-                            await canal.send(f"""**RESISTIU! {party[codigo1-1]}** causou **{dano}** de dano em **{horda[codigo2-1][1]}**!""")
-                        elif horda_elem_dano[codigo2-1][0] == 3:
+                            await canal.send(f"""**RESISTIU! {nome_party}** causou **{dano}** de dano em **{nome_horda}**!""")
+                        elif horda_elem_dano[ok2-1][0] == 3:
                             dano = 0
-                            await canal.send(f"""**NULIFICOU! **{horda[codigo2-1][1]}** nulificou todo o dano causado!""")
-                        elif horda_elem_dano[codigo2-1][0] == 4:
-                            await canal.send(f"""**DRENOU! **{horda[codigo2-1][1]}** se curou em **{dano}**!""")
-                        elif horda_elem_dano[codigo2-1][0] == 5:
-                            await canal.send(f"""**REFLETIU! **{horda[codigo2-1][1]}** refletiu **{dano}** de dano em **{party[codigo1-1]}**!""")
+                            await canal.send(f"""**NULIFICOU! **{nome_horda}** nulificou todo o dano causado!""")
+                        elif horda_elem_dano[ok2-1][0] == 4:
+                            await canal.send(f"""**DRENOU! **{nome_horda}** se curou em **{dano}**!""")
+                        elif horda_elem_dano[ok2-1][0] == 5:
+                            await canal.send(f"""**REFLETIU! **{nome_horda}** refletiu **{dano}** de dano em **{nome_party}**!""")
                         else:
-                            await canal.send(f"""**{party[codigo1-1]}** causou **{dano}** de dano em **{horda[codigo2-1][1]}**!""")
+                            await canal.send(f"""**{nome_party}** causou **{dano}** de dano em **{nome_horda}**!""")
                     elif fraquezas[0] == 1:
                         dano = dano * 2
-                        await canal.send(f"""**{party[codigo1-1]}** causou **{dano}** de dano e derrubou **{horda[codigo2-1][1]}**!""")
+                        await canal.send(f"""**{nome_party}** causou **{dano}** de dano e derrubou **{nome_horda}**!""")
                     elif fraquezas[0] == 2:
                         dano = dano / 2
-                        await canal.send(f"""**RESISTIU! {party[codigo1-1]}** causou **{dano}** de dano em **{horda[codigo2-1][1]}**!""")
+                        await canal.send(f"""**RESISTIU! {nome_party}** causou **{dano}** de dano em **{nome_horda}**!""")
                     elif fraquezas[0] == 3:
                         dano = 0
-                        await canal.send(f"""**NULIFICOU! **{horda[codigo2-1][1]}** nulificou todo o dano causado!""")
+                        await canal.send(f"""**NULIFICOU! **{nome_horda}** nulificou todo o dano causado!""")
                     elif fraquezas[0] == 4:
-                        await canal.send(f"""**DRENOU! **{horda[codigo2-1][1]}** se curou em **{dano}**!""")
+                        await canal.send(f"""**DRENOU! **{nome_horda}** se curou em **{dano}**!""")
                     elif fraquezas[0] == 5:
-                        await canal.send(f"""**REFLETIU! **{horda[codigo2-1][1]}** refletiu **{dano}** de dano em **{party[codigo1-1]}**!""")
+                        await canal.send(f"""**REFLETIU! **{nome_horda}** refletiu **{dano}** de dano em **{nome_party}**!""")
                     else:
                         if dado <= critico:
                             dano = dano * 2
-                            await canal.send(f"""**CRÍTICO! {party[codigo1-1]}** causou **{dano}** de dano e derrubou **{horda[codigo2-1][1]}**!""")
+                            await canal.send(f"""**CRÍTICO! {nome_party}** causou **{dano}** de dano e derrubou **{nome_horda}**!""")
                         else:
-                            await canal.send(f"""**{party[codigo1-1]}** causou **{dano}** de dano em **{horda[codigo2-1][1]}**!""")
+                            await canal.send(f"""**{nome_party}** causou **{dano}** de dano em **{nome_horda}**!""")
                 else:
-                    await canal.send(f"""**{party[codigo1-1]}** errou o ataque físico  em **{horda[codigo2-1][1]}**""")
+                    await canal.send(f"""**{nome_party}** errou o ataque físico  em **{nome_horda}**""")
             else:
-                defensor_id = Database.personagem_id(party[codigo2-1])
+                defensor_id = Database.personagem_id(horda[ok2-1][1])
                 d_persona_id = Database.persona_equipada(personagem_id)
                 equips_defensor = Database.itens_equipados()
                 armadura_defensor = equips[2]
@@ -2244,66 +2317,127 @@ async def ataque_fisico(ctx,  canal : discord.TextChannel, sentido, codigo1, cod
                             next = 1
                     except:
                         await ctx.send("Digite um número entre 0 e 100.")
-                valor_criterio = var + (5*(atributos_atacante[5]//5)) - (5*(atributos_defensor[6]//5)) + (10*party_mult_acc[codigo1-1]) - (10*horda_mult_evs[codigo1-1])
+                valor_criterio = var + (5*(atributos_atacante[5]//5)) - (5*(atributos_defensor[6]//5)) + (10*party_mult_acc[ok1-1]) - (10*horda_mult_evs[ok2-1])
                 await canal.send(f"""Você precisa tirar um valor menor que **{valor_criterio}** no dado""")
-                dado = await Dado.rolagem_pronta(bot, canal, party[codigo1-1], usuario, 1, 100)
-                critico = 10 + (party_mult_crit[codigo1-1] * 10)
+                dado = await Dado.rolagem_pronta(bot, canal, party[ok1-1], usuario, 1, 100)
+                critico = 10 + (party_mult_crit[ok1-1] * 10)
                 if dado <= valor_criterio:
                     valor_arma = Database.valor_item(meelee)
                     dano = int(20 + math.sqrt(valor_arma) * math.sqrt(atributos_atacante[2]))
-                    if party_mult_atk[codigo1-1] > 0:
-                        dano = dano + (0,3 * party_mult_atk[codigo1-1] * dano)
-                    elif party_mult_atk[codigo1-1] < 0:
-                        dano = dano - (0,3 * party_mult_atk[codigo1-1] * dano)
+                    if party_mult_atk[ok1-1] > 0:
+                        dano = dano + (0,3 * party_mult_atk[ok1-1] * dano)
+                    elif party_mult_atk[ok1-1] < 0:
+                        dano = dano - (0,3 * party_mult_atk[ok1-1] * dano)
                     if armadura_defensor == None:
                         valor_armadura = 0
                     else:
                         valor_armadura = Database.valor_item(armadura_defensor)
                     dano_mitigado = int(dano / math.sqrt((atributos_defensor[4]*8)+valor_armadura))
-                    if horda_mult_def[codigo2-1] > 0:
-                        dano_mitigado = dano + (0,3 * horda_mult_def[codigo2-1] * dano)
-                    elif horda_mult_def[codigo2-1] < 0:
-                        dano = dano - (0,3 * horda_mult_def[codigo2-1] * dano)
+                    if horda_mult_def[ok2-1] > 0:
+                        dano_mitigado = dano + (0,3 * horda_mult_def[ok2-1] * dano)
+                    elif horda_mult_def[ok2-1] < 0:
+                        dano = dano - (0,3 * horda_mult_def[ok2-1] * dano)
                     dano = dano - dano_mitigado
-                    if horda_elem_dano[codigo2-1][0] > 0:
-                        if horda_elem_dano[codigo2-1][0] == 1:
+                    if horda_elem_dano[ok2-1][0] > 0:
+                        if horda_elem_dano[ok2-1][0] == 1:
                             dano = dano * 2
-                            await canal.send(f"""**{party[codigo1-1]}** causou **{dano}** de dano e derrubou **{horda[codigo2-1][1]}**!""")
-                        elif horda_elem_dano[codigo2-1][0] == 2:
+                            await canal.send(f"""**{nome_party}** causou **{dano}** de dano e derrubou **{nome_horda}**!""")
+                        elif horda_elem_dano[ok2-1][0] == 2:
                             dano = dano / 2
-                            await canal.send(f"""**RESISTIU! {party[codigo1-1]}** causou **{dano}** de dano em **{horda[codigo2-1][1]}**!""")
-                        elif horda_elem_dano[codigo2-1][0] == 3:
+                            await canal.send(f"""**RESISTIU! {nome_party}** causou **{dano}** de dano em **{nome_horda}**!""")
+                        elif horda_elem_dano[ok2-1][0] == 3:
                             dano = 0
-                            await canal.send(f"""**NULIFICOU! **{horda[codigo2-1][1]}** nulificou todo o dano causado!""")
-                        elif horda_elem_dano[codigo2-1][0] == 4:
-                            await canal.send(f"""**DRENOU! **{horda[codigo2-1][1]}** se curou em **{dano}**!""")
-                        elif horda_elem_dano[codigo2-1][0] == 5:
-                            await canal.send(f"""**REFLETIU! **{horda[codigo2-1][1]}** refletiu **{dano}** de dano em **{party[codigo1-1]}**!""")
+                            await canal.send(f"""**NULIFICOU! **{nome_horda}** nulificou todo o dano causado!""")
+                        elif horda_elem_dano[ok2-1][0] == 4:
+                            await canal.send(f"""**DRENOU! **{nome_horda}** se curou em **{dano}**!""")
+                        elif horda_elem_dano[ok2-1][0] == 5:
+                            await canal.send(f"""**REFLETIU! **{nome_horda}** refletiu **{dano}** de dano em **{nome_party}**!""")
                         else:
-                            await canal.send(f"""**{party[codigo1-1]}** causou **{dano}** de dano em **{horda[codigo2-1][1]}**!""")
+                            await canal.send(f"""**{nome_party}** causou **{dano}** de dano em **{nome_horda}**!""")
                     elif fraquezas[0] == 1:
                         dano = dano * 2
-                        await canal.send(f"""**{party[codigo1-1]}** causou **{dano}** de dano e derrubou **{horda[codigo2-1][1]}**!""")
+                        await canal.send(f"""**{nome_party}** causou **{dano}** de dano e derrubou **{nome_horda}**!""")
                     elif fraquezas[0] == 2:
                         dano = dano / 2
-                        await canal.send(f"""**RESISTIU! {party[codigo1-1]}** causou **{dano}** de dano em **{horda[codigo2-1][1]}**!""")
+                        await canal.send(f"""**RESISTIU! {nome_party}** causou **{dano}** de dano em **{nome_horda}**!""")
                     elif fraquezas[0] == 3:
                         dano = 0
-                        await canal.send(f"""**NULIFICOU! **{horda[codigo2-1][1]}** nulificou todo o dano causado!""")
+                        await canal.send(f"""**NULIFICOU! **{nome_horda}** nulificou todo o dano causado!""")
                     elif fraquezas[0] == 4:
-                        await canal.send(f"""**DRENOU! **{horda[codigo2-1][1]}** se curou em **{dano}**!""")
+                        await canal.send(f"""**DRENOU! **{nome_horda}** se curou em **{dano}**!""")
                     elif fraquezas[0] == 5:
-                        await canal.send(f"""**REFLETIU! **{horda[codigo2-1][1]}** refletiu **{dano}** de dano em **{party[codigo1-1]}**!""")
+                        await canal.send(f"""**REFLETIU! **{nome_horda}** refletiu **{dano}** de dano em **{nome_party}**!""")
                     else:
                         if dado <= critico:
                             dano = dano * 2
-                            await canal.send(f"""**CRÍTICO! {party[codigo1-1]}** causou **{dano}** de dano e derrubou **{horda[codigo2-1][1]}**!""")
+                            await canal.send(f"""**CRÍTICO! {nome_party}** causou **{dano}** de dano e derrubou **{nome_horda}**!""")
                         else:
-                            await canal.send(f"""**{party[codigo1-1]}** causou **{dano}** de dano em **{horda[codigo2-1][1]}**!""")
+                            await canal.send(f"""**{nome_party}** causou **{dano}** de dano em **{nome_horda}**!""")
                 else:
-                    await ctx.send(f"""**{party[codigo1-1]}** errou o ataque físico  em **{horda[codigo2-1][1]}**""")
-        elif sentido == "horda":
-            personagem_id = Database.personagem_id(party[codigo2-1])
+                    await ctx.send(f"""**{nome_party}** errou o ataque físico  em **{nome_horda}**""")
+        elif ok == 2:
+            canal = bot.get_channel(canal_inimigos)
+            embed = discord.Embed(
+                title=f"""Quem da horda será atacado?""",
+                description=f"""Reaja com a opção desejada""",
+                colour=discord.Colour.blue()
+            )
+            emojis_raw = ["1️⃣", "2️⃣", "3️⃣", "4️⃣", "5️⃣"]
+            emojis_disc = [":one:", ":two:", ":three:", ":four:", ":five:"]
+            for j in range(len(horda)):
+                embed.add_field(name=emojis_disc[j], value=horda[j][1], inline=False)
+            embed_msg = await ctx.send(embed=embed)
+            for i in range(len(horda)):
+                await embed_msg.add_reaction(emoji=emojis_raw[i])
+            await embed_msg.add_reaction(emoji="❌")
+            ok1 = 0
+            while ok1 == 0:
+                reaction, user = await bot.wait_for('reaction_add', timeout=None)
+                if str(reaction.emoji) == emojis_raw[0] and str(user) != "Persona Bot#0708":
+                    ok1 = 1
+                if str(reaction.emoji) == emojis_raw[1] and str(user) != "Persona Bot#0708":
+                    ok1 = 2
+                if str(reaction.emoji) == emojis_raw[2] and str(user) != "Persona Bot#0708":
+                    ok1 = 3
+                if str(reaction.emoji) == emojis_raw[3] and str(user) != "Persona Bot#0708":
+                    ok1 = 4
+                if str(reaction.emoji) == emojis_raw[4] and str(user) != "Persona Bot#0708":
+                    ok1 = 5
+                if str(reaction.emoji) == "❌" and str(user) != "Persona Bot#0708":
+                    ok1 = 6
+            await embed_msg.delete()
+            nome_horda = horda[ok1-1][1]
+            embed = discord.Embed(
+                title=f"""Qual personagem da Party irá atacar?""",
+                description=f"""Reaja com a opção desejada""",
+                colour=discord.Colour.blue()
+            )
+            emojis_raw = ["1️⃣", "2️⃣", "3️⃣", "4️⃣", "5️⃣"]
+            emojis_disc = [":one:", ":two:", ":three:", ":four:", ":five:"]
+            for j in range(len(party)):
+                embed.add_field(name=emojis_disc[j], value=party[j], inline=False)
+            embed_msg = await ctx.send(embed=embed)
+            for i in range(len(party)):
+                await embed_msg.add_reaction(emoji=emojis_raw[i])
+            await embed_msg.add_reaction(emoji="❌")
+            ok2 = 0
+            while ok2 == 0:
+                reaction, user = await bot.wait_for('reaction_add', timeout=None)
+                if str(reaction.emoji) == emojis_raw[0] and str(user) != "Persona Bot#0708":
+                    ok2 = 1
+                if str(reaction.emoji) == emojis_raw[1] and str(user) != "Persona Bot#0708":
+                    ok2 = 2
+                if str(reaction.emoji) == emojis_raw[2] and str(user) != "Persona Bot#0708":
+                    ok2 = 3
+                if str(reaction.emoji) == emojis_raw[3] and str(user) != "Persona Bot#0708":
+                    ok2 = 4
+                if str(reaction.emoji) == emojis_raw[4] and str(user) != "Persona Bot#0708":
+                    ok2 = 5
+                if str(reaction.emoji) == "❌" and str(user) != "Persona Bot#0708":
+                    ok2 = 6
+            await embed_msg.delete()
+            nome_party = party[ok2-1]
+            personagem_id = Database.personagem_id(party[ok2-1])
             persona_id = Database.persona_equipada(personagem_id)
             usuario = Database.discord_user(personagem_id)
             equips = Database.itens_equipados(personagem_id)
@@ -2321,20 +2455,11 @@ async def ataque_fisico(ctx,  canal : discord.TextChannel, sentido, codigo1, cod
                     atributos_defensor[i] += int(a+p)
                 else:
                     atributos_defensor[i] += int(p)
-            if horda[codigo1-1][0] == "s":
-                shadow_id = Database.shadow_id(horda[codigo1-1][1])
+            if horda[ok1-1][0] == "s":
+                shadow_id = Database.shadow_id(horda[ok1-1][1])
                 atributos_atacante = Database.atributos_iniciais(shadow_id)
                 for i in range(len(atributos_atacante)):
                     atributos_atacante[i] = atributos_atacante[i][1]
-                atributos_soma = Database.atributos_soma(shadow_id)
-                atributos_porcent = Database.atributos_porcent(shadow_id)
-                for i in range(len(atributos_atacante)):
-                    a = atributos_atacante[i] + atributos_soma[i]
-                    p = (atributos_porcent[i]/100) * a
-                    if atributos_soma[i] > 0:
-                        atributos_atacante[i] += int(a+p)
-                    else:
-                        atributos_atacante[i] += int(p)
                 next = 0
                 while next == 0:
                     await ctx.send("Qual o valor critério? (0 a 100)")
@@ -2346,16 +2471,16 @@ async def ataque_fisico(ctx,  canal : discord.TextChannel, sentido, codigo1, cod
                             next = 1
                     except:
                         await ctx.send("Digite um número entre 0 e 100.")
-                valor_criterio = var + (5*(atributos_atacante[5]//5)) - (5*(atributos_defensor[6]//5)) + (10*horda_mult_acc[codigo1-1])- (10*party_mult_evs[codigo1-1])
+                valor_criterio = var + (5*(atributos_atacante[5]//5)) - (5*(atributos_defensor[6]//5)) + (10*horda_mult_acc[ok1-1])- (10*party_mult_evs[ok2-1])
                 await canal.send(f"""Você precisa tirar um valor menor que **{valor_criterio}** no dado""")
                 dado = await Dado.rolagem_pronta(bot, canal, "Mestre", "Axuáti#9639", 1, 100)
-                critico = 10 + (party_mult_crit[codigo1-1] * 10)
+                critico = 10 + (horda_mult_crit[ok1-1] * 10)
                 if dado <= valor_criterio:
                     dano = int(20 * math.sqrt(atributos_atacante[2]))
-                    if horda_mult_atk[codigo1-1] > 0:
-                        dano = dano + (0,3 * horda_mult_atk[codigo1-1] * dano)
-                    elif horda_mult_atk[codigo1-1] < 0:
-                        dano = dano - (0,3 * horda_mult_atk[codigo1-1] * dano)
+                    if horda_mult_atk[ok1-1] > 0:
+                        dano = dano + (0,3 * horda_mult_atk[ok1-1] * dano)
+                    elif horda_mult_atk[ok1-1] < 0:
+                        dano = dano - (0,3 * horda_mult_atk[ok1-1] * dano)
                     if armadura == None:
                         valor_armadura = 0
                     else:
@@ -2365,50 +2490,50 @@ async def ataque_fisico(ctx,  canal : discord.TextChannel, sentido, codigo1, cod
                     else:
                         valor_armadura = Database.valor_item(armadur)
                     dano_mitigado = int(dano / math.sqrt((atributos_defensor[4]*8) + valor_armadura))
-                    if party_mult_def[codigo2-1] > 0:
-                        dano_mitigado = dano + (0,3 *party_mult_def[codigo2-1] * dano)
-                    elif party_mult_def[codigo2-1] < 0:
-                        dano = dano - (0,3 * party_mult_def[codigo2-1] * dano)
+                    if party_mult_def[ok2-1] > 0:
+                        dano_mitigado = dano + (0,3 *party_mult_def[ok2-1] * dano)
+                    elif party_mult_def[ok2-1] < 0:
+                        dano = dano - (0,3 * party_mult_def[ok2-1] * dano)
                     dano = dano - dano_mitigado
-                    if party_elem_dano[codigo2-1][0] > 0:
-                        if party_elem_dano[codigo2-1][0] == 1:
+                    if party_elem_dano[ok2-1][0] > 0:
+                        if party_elem_dano[ok2-1][0] == 1:
                             dano = dano * 2
-                            await canal.send(f"""**{horda[codigo1-1][1]}** causou **{dano}** de dano e derrubou **{party[codigo2-1]}**!""")
-                        elif party_elem_dano[codigo2-1][0] == 2:
+                            await canal.send(f"""**{nome_horda}** causou **{dano}** de dano e derrubou **{nome_party}**!""")
+                        elif party_elem_dano[ok2-1][0] == 2:
                             dano = dano / 2
-                            await canal.send(f"""**RESISTIU! {horda[codigo1-1][1]}** causou **{dano}** de dano em **{party[codigo2-1]}**!""")
-                        elif party_elem_dano[codigo2-1][0] == 3:
+                            await canal.send(f"""**RESISTIU! {nome_horda}** causou **{dano}** de dano em **{nome_party}**!""")
+                        elif party_elem_dano[ok2-1][0] == 3:
                             dano = 0
-                            await canal.send(f"""**NULIFICOU! **{party[codigo2-1]}** nulificou todo o dano causado!""")
-                        elif party_elem_dano[codigo2-1][0] == 4:
-                            await canal.send(f"""**DRENOU! **{party[codigo2-1]}** se curou em **{dano}**!""")
-                        elif party_elem_dano[codigo2-1][0] == 5:
-                            await canal.send(f"""**REFLETIU! **{party[codigo2-1]}** refletiu **{dano}** de dano em **{horda[codigo1-1][1]}**!""")
+                            await canal.send(f"""**NULIFICOU! **{nome_party}** nulificou todo o dano causado!""")
+                        elif party_elem_dano[ok2-1][0] == 4:
+                            await canal.send(f"""**DRENOU! **{nome_party}** se curou em **{dano}**!""")
+                        elif party_elem_dano[ok2-1][0] == 5:
+                            await canal.send(f"""**REFLETIU! **{nome_party}** refletiu **{dano}** de dano em **{nome_horda}**!""")
                         else:
-                            await canal.send(f"""**{horda[codigo1-1][1]}** causou **{dano}** de dano em **{party[codigo2-1]}**!""")
+                            await canal.send(f"""**{nome_horda}** causou **{dano}** de dano em **{nome_party}**!""")
                     elif fraquezas[0] == 1:
                         dano = dano * 2
-                        await canal.send(f"""**{horda[codigo1-1][1]}** causou **{dano}** de dano e derrubou **{party[codigo2-1]}**!""")
+                        await canal.send(f"""**{nome_horda}** causou **{dano}** de dano e derrubou **{nome_party}**!""")
                     elif fraquezas[0] == 2:
                         dano = dano / 2
-                        await canal.send(f"""**RESISTIU! {horda[codigo1-1][1]}** causou **{dano}** de dano em **{party[codigo2-1]}**!""")
+                        await canal.send(f"""**RESISTIU! {nome_horda}** causou **{dano}** de dano em **{nome_party}**!""")
                     elif fraquezas[0] == 3:
                         dano = 0
-                        await canal.send(f"""**NULIFICOU! **{party[codigo2-1]}** nulificou todo o dano causado!""")
+                        await canal.send(f"""**NULIFICOU! **{nome_party}** nulificou todo o dano causado!""")
                     elif fraquezas[0] == 4:
-                        await canal.send(f"""**DRENOU! **{party[codigo2-1]}** se curou em **{dano}**!""")
+                        await canal.send(f"""**DRENOU! **{nome_party}** se curou em **{dano}**!""")
                     elif fraquezas[0] == 5:
-                        await canal.send(f"""**REFLETIU! **{party[codigo2-1]}** refletiu **{dano}** de dano em **{horda[codigo1-1][1]}**!""")
+                        await canal.send(f"""**REFLETIU! **{nome_party}** refletiu **{dano}** de dano em **{nome_horda}**!""")
                     else:
                         if dado <= critico:
                             dano = dano * 2
-                            await canal.send(f"""**CRÍTICO! {horda[codigo1-1][1]}** causou **{dano}** de dano e derrubou **{party[codigo2-1]}**!""")
+                            await canal.send(f"""**CRÍTICO! {nome_horda}** causou **{dano}** de dano e derrubou **{nome_party}**!""")
                         else:
-                            await canal.send(f"""**{horda[codigo1-1][1]}** causou **{dano}** de dano em **{party[codigo2-1]}**!""")
+                            await canal.send(f"""**{nome_horda}** causou **{dano}** de dano em **{nome_party}**!""")
                 else:
-                    await canal.send(f"""**{horda[codigo1-1][1]}** errou o ataque físico  em **{party[codigo2-1]}**""")
+                    await canal.send(f"""**{nome_horda}** errou o ataque físico  em **{nome_party}**""")
             else:
-                atacante_id = Database.personagem_id(horda[codigo1-1])
+                atacante_id = Database.personagem_id(horda[ok1-1])
                 a_persona_id = Database.persona_equipada(personagem_id)
                 equips_atacante = Database.itens_equipados()
                 meelee_atacante = equips[0]
@@ -2435,74 +2560,105 @@ async def ataque_fisico(ctx,  canal : discord.TextChannel, sentido, codigo1, cod
                             next = 1
                     except:
                         await ctx.send("Digite um número entre 0 e 100.")
-                valor_criterio = var + (5*(atributos_atacante[5]//5)) - (5*(atributos_defensor[6]//5)) + (10*horda_mult_acc[codigo1-1])- (10*party_mult_evs[codigo1-1])
+                valor_criterio = var + (5*(atributos_atacante[5]//5)) - (5*(atributos_defensor[6]//5)) + (10*horda_mult_acc[ok1-1])- (10*party_mult_evs[ok2-1])
                 await canal.send(f"""Você precisa tirar um valor menor que **{valor_criterio}** no dado""")
                 dado = await Dado.rolagem_pronta(bot, canal, "Mestre", "Axuáti#9639", 1, 100)
-                critico = 10 + (party_mult_crit[codigo1-1] * 10)
+                critico = 10 + (horda_mult_crit[ok1-1] * 10)
                 if dado <= valor_criterio:
                     valor_arma = Database.valor_item(meelee_atacante)
                     dano = int(20 + math.sqrt(valor_arma) * math.sqrt(atributos_atacante[2]))
-                    if horda_mult_atk[codigo1-1] > 0:
-                        dano = dano + (0,3 * horda_mult_atk[codigo1-1] * dano)
-                    elif horda_mult_atk[codigo1-1] < 0:
-                        dano = dano - (0,3 * horda_mult_atk[codigo1-1] * dano)
+                    if horda_mult_atk[ok1-1] > 0:
+                        dano = dano + (0,3 * horda_mult_atk[ok1-1] * dano)
+                    elif horda_mult_atk[ok1-1] < 0:
+                        dano = dano - (0,3 * horda_mult_atk[ok1-1] * dano)
                     if armadura == None:
                         valor_armadura = 0
                     else:
                         valor_armadura = Database.valor_item(armadura)
                     dano_mitigado = int(math.sqrt((atributos_defensor[4]*8)+valor_armadura))
-                    if party_mult_def[codigo2-1] > 0:
-                        dano_mitigado = dano + (0,3 * party_mult_def[codigo2-1] * dano)
-                    elif party_mult_def[codigo2-1] < 0:
-                        dano = dano - (0,3 * party_mult_def[codigo2-1] * dano)
+                    if party_mult_def[ok2-1] > 0:
+                        dano_mitigado = dano + (0,3 * party_mult_def[ok2-1] * dano)
+                    elif party_mult_def[ok2-1] < 0:
+                        dano = dano - (0,3 * party_mult_def[ok2-1] * dano)
                     dano = dano - dano_mitigado
-                    if party_elem_dano[codigo2-1][0] > 0:
-                        if party_elem_dano[codigo2-1][0] == 1:
+                    if party_elem_dano[ok2-1][0] > 0:
+                        if party_elem_dano[ok2-1][0] == 1:
                             dano = dano * 2
-                            await canal.send(f"""**FRACO! {horda[codigo1-1][1]}** causou **{dano}** de dano e derrubou **{party[codigo2-1]}**!""")
-                        elif party_elem_dano[codigo2-1][0] == 2:
+                            await canal.send(f"""**FRACO! {nome_horda}** causou **{dano}** de dano e derrubou **{nome_party}**!""")
+                        elif party_elem_dano[ok2-1][0] == 2:
                             dano = dano / 2
-                            await canal.send(f"""**RESISTIU! {horda[codigo1-1][1]}** causou **{dano}** de dano em **{party[codigo2-1]}**!""")
-                        elif party_elem_dano[codigo2-1][0] == 3:
+                            await canal.send(f"""**RESISTIU! {nome_horda}** causou **{dano}** de dano em **{nome_party}**!""")
+                        elif party_elem_dano[ok2-1][0] == 3:
                             dano = 0
-                            await canal.send(f"""**NULIFICOU! **{party[codigo2-1]}** nulificou todo o dano causado!""")
-                        elif party_elem_dano[codigo2-1][0] == 4:
-                            await canal.send(f"""**DRENOU! **{party[codigo2-1]}** se curou em **{dano}**!""")
-                        elif party_elem_dano[codigo2-1][0] == 5:
-                            await canal.send(f"""**REFLETIU! **{party[codigo2-1]}** refletiu **{dano}** de dano em **{horda[codigo1-1][1]}**!""")
+                            await canal.send(f"""**NULIFICOU! **{nome_party}** nulificou todo o dano causado!""")
+                        elif party_elem_dano[ok2-1][0] == 4:
+                            await canal.send(f"""**DRENOU! **{nome_party}** se curou em **{dano}**!""")
+                        elif party_elem_dano[ok2-1][0] == 5:
+                            await canal.send(f"""**REFLETIU! **{nome_party}** refletiu **{dano}** de dano em **{nome_horda}**!""")
                         else:
-                            await canal.send(f"""**{horda[codigo1-1][1]}** causou **{dano}** de dano em **{party[codigo2-1]}**!""")
+                            await canal.send(f"""**{nome_horda}** causou **{dano}** de dano em **{nome_party}**!""")
                     elif fraquezas[0] == 1:
                         dano = dano * 2
-                        await canal.send(f"""**FRACO! {horda[codigo1-1][1]}** causou **{dano}** de dano e derrubou **{party[codigo2-1]}**!""")
+                        await canal.send(f"""**FRACO! {nome_horda}** causou **{dano}** de dano e derrubou **{nome_party}**!""")
                     elif fraquezas[0] == 2:
                         dano = dano / 2
-                        await canal.send(f"""**RESISTIU! {horda[codigo1-1][1]}** causou **{dano}** de dano em **{party[codigo2-1]}**!""")
+                        await canal.send(f"""**RESISTIU! {nome_horda}** causou **{dano}** de dano em **{nome_party}**!""")
                     elif fraquezas[0] == 3:
                         dano = 0
-                        await canal.send(f"""**NULIFICOU! **{party[codigo2-1]}** nulificou todo o dano causado!""")
+                        await canal.send(f"""**NULIFICOU! **{nome_party}** nulificou todo o dano causado!""")
                     elif fraquezas[0] == 4:
-                        await canal.send(f"""**DRENOU! **{party[codigo2-1]}** se curou em **{dano}**!""")
+                        await canal.send(f"""**DRENOU! **{nome_party}** se curou em **{dano}**!""")
                     elif fraquezas[0] == 5:
-                        await canal.send(f"""**REFLETIU! **{party[codigo2-1]}** refletiu **{dano}** de dano em **{horda[codigo1-1][1]}**!""")
+                        await canal.send(f"""**REFLETIU! **{nome_party}** refletiu **{dano}** de dano em **{nome_horda}**!""")
                     else:
                         if dado <= critico:
                             dano = dano * 2
-                            await canal.send(f"""**CRÍTICO! {horda[codigo1-1][1]}** causou **{dano}** de dano e derrubou **{party[codigo2-1]}**!""")
+                            await canal.send(f"""**CRÍTICO! {nome_horda}** causou **{dano}** de dano e derrubou **{nome_party}**!""")
                         else:
-                            await canal.send(f"""**{horda[codigo1-1][1]}** causou **{dano}** de dano em **{party[codigo2-1]}**!""")
+                            await canal.send(f"""**{nome_horda}** causou **{dano}** de dano em **{nome_party}**!""")
                 else:
-                    await canal.send(f"""**{horda[codigo1-1][1]}** errou o ataque físico  em **{party[codigo2-1]}**""")
+                    await canal.send(f"""**{nome_horda}** errou o ataque físico  em **{nome_party}**""")
+        else:
+            await ctx.send("Ataque físico cancelado.")
     except:
-        await ctx.send("Algo está incorreto.")
+        await ctx.send("Ataque cancelado ou Algo está incorreto.")
 
 @bot.command()
-async def tiro(ctx, canal : discord.TextChannel, codigo1, codigo2):
+async def tiro(ctx):
     global horda, horda_mult_atk, horda_mult_def, horda_mult_acc, horda_mult_evs, horda_mult_crit, horda_elem_dano, party, party_mult_atk, party_mult_def, party_mult_acc, party_mult_evs, party_mult_crit, party_elem_dano
     try:
-        codigo1 = int(codigo1)
-        codigo2 = int(codigo2)
-        personagem_id = Database.personagem_id(party[codigo1-1])
+        embed = discord.Embed(
+            title=f"""Qual personagem da Party irá atacar?""",
+            description=f"""Reaja com a opção desejada""",
+            colour=discord.Colour.blue()
+        )
+        emojis_raw = ["1️⃣", "2️⃣", "3️⃣", "4️⃣", "5️⃣"]
+        emojis_disc = [":one:", ":two:", ":three:", ":four:", ":five:"]
+        for j in range(len(party)):
+            embed.add_field(name=emojis_disc[j], value=party[j], inline=False)
+        embed_msg = await ctx.send(embed=embed)
+        for i in range(len(party)):
+            await embed_msg.add_reaction(emoji=emojis_raw[i])
+        await embed_msg.add_reaction(emoji="❌")
+        ok1 = 0
+        while ok1 == 0:
+            reaction, user = await bot.wait_for('reaction_add', timeout=None)
+            if str(reaction.emoji) == emojis_raw[0] and str(user) != "Persona Bot#0708":
+                ok1 = 1
+            if str(reaction.emoji) == emojis_raw[1] and str(user) != "Persona Bot#0708":
+                ok1 = 2
+            if str(reaction.emoji) == emojis_raw[2] and str(user) != "Persona Bot#0708":
+                ok1 = 3
+            if str(reaction.emoji) == emojis_raw[3] and str(user) != "Persona Bot#0708":
+                ok1 = 4
+            if str(reaction.emoji) == emojis_raw[4] and str(user) != "Persona Bot#0708":
+                ok1 = 5
+            if str(reaction.emoji) == "❌" and str(user) != "Persona Bot#0708":
+                ok1 = 6
+        await embed_msg.delete()
+        nome_party = party[ok1-1]
+        canal = bot.get_channel(canais_jogadores[party[ok1-1]])
+        personagem_id = Database.personagem_id(party[ok1-1])
         persona_id = Database.persona_equipada(personagem_id)
         usuario = Database.discord_user(personagem_id)
         equips = Database.itens_equipados(personagem_id)
@@ -2519,21 +2675,42 @@ async def tiro(ctx, canal : discord.TextChannel, codigo1, codigo2):
                 atributos_atacante[i] += int(a+p)
             else:
                 atributos_atacante[i] += int(p)
-        if horda[codigo2-1][0] == "s":
-            shadow_id = Database.shadow_id(horda[codigo2-1][1])
+        embed = discord.Embed(
+            title=f"""Quem da horda será atacado?""",
+            description=f"""Reaja com a opção desejada""",
+            colour=discord.Colour.blue()
+        )
+        emojis_raw = ["1️⃣", "2️⃣", "3️⃣", "4️⃣", "5️⃣"]
+        emojis_disc = [":one:", ":two:", ":three:", ":four:", ":five:"]
+        for j in range(len(horda)):
+            embed.add_field(name=emojis_disc[j], value=horda[j][1], inline=False)
+        embed_msg = await ctx.send(embed=embed)
+        for i in range(len(horda)):
+            await embed_msg.add_reaction(emoji=emojis_raw[i])
+        await embed_msg.add_reaction(emoji="❌")
+        ok2 = 0
+        while ok2 == 0:
+            reaction, user = await bot.wait_for('reaction_add', timeout=None)
+            if str(reaction.emoji) == emojis_raw[0] and str(user) != "Persona Bot#0708":
+                ok2 = 1
+            if str(reaction.emoji) == emojis_raw[1] and str(user) != "Persona Bot#0708":
+                ok2 = 2
+            if str(reaction.emoji) == emojis_raw[2] and str(user) != "Persona Bot#0708":
+                ok2 = 3
+            if str(reaction.emoji) == emojis_raw[3] and str(user) != "Persona Bot#0708":
+                ok2 = 4
+            if str(reaction.emoji) == emojis_raw[4] and str(user) != "Persona Bot#0708":
+                ok2 = 5
+            if str(reaction.emoji) == "❌" and str(user) != "Persona Bot#0708":
+                ok2 = 6
+        await embed_msg.delete()
+        nome_horda = horda[ok2-1][1]
+        if horda[ok2-1][0] == "s":
+            shadow_id = Database.shadow_id(horda[ok2-1][1])
             fraquezas = Database.fraquezas(shadow_id)
             atributos_defensor = Database.atributos_iniciais(shadow_id)
             for i in range(len(atributos_defensor)):
                 atributos_defensor[i] = atributos_defensor[i][1]
-            atributos_soma = Database.atributos_soma(shadow_id)
-            atributos_porcent = Database.atributos_porcent(shadow_id)
-            for i in range(len(atributos_defensor)):
-                a = atributos_defensor[i] + atributos_soma[i]
-                p = (atributos_porcent[i]/100) * a
-                if atributos_soma[i] > 0:
-                    atributos_defensor[i] += int(a+p)
-                else:
-                    atributos_defensor[i] += int(p)
             next = 0
             while next == 0:
                 await ctx.send("Qual o valor critério? (0 a 100)")
@@ -2545,62 +2722,62 @@ async def tiro(ctx, canal : discord.TextChannel, codigo1, codigo2):
                         next = 1
                 except:
                     await ctx.send("Digite um número entre 0 e 100.")
-            valor_criterio = var + (5*(atributos_atacante[5]//5)) - (5*(atributos_defensor[6]//5)) + (10*party_mult_acc[codigo1-1]) - (10*horda_mult_evs[codigo1-1])
+            valor_criterio = var + (5*(atributos_atacante[5]//5)) - (5*(atributos_defensor[6]//5)) + (10*party_mult_acc[ok1-1]) - (10*horda_mult_evs[ok2-1])
             await canal.send(f"""Você precisa tirar um valor menor que **{valor_criterio}** no dado""")
-            critico = 10 + (party_mult_crit[codigo1-1] * 10)
-            dado = await Dado.rolagem_pronta(bot, canal, party[codigo1-1], usuario, 1, 100)
+            critico = 10 + (party_mult_crit[ok1-1] * 10)
+            dado = await Dado.rolagem_pronta(bot, canal, party[ok1-1], usuario, 1, 100)
             if dado <= valor_criterio:
                 valor_arma = Database.valor_item(ranged)
                 dano = int(math.sqrt(valor_arma) * math.sqrt(atributos_atacante[2]))
-                if party_mult_atk[codigo1-1] > 0:
-                    dano = dano + (0,3 * party_mult_atk[codigo1-1] * dano)
-                elif party_mult_atk[codigo1-1] < 0:
-                    dano = dano - (0,3 * party_mult_atk[codigo1-1] * dano)
+                if party_mult_atk[ok1-1] > 0:
+                    dano = dano + (0,3 * party_mult_atk[ok1-1] * dano)
+                elif party_mult_atk[ok1-1] < 0:
+                    dano = dano - (0,3 * party_mult_atk[ok1-1] * dano)
                 dano_mitigado = int(math.sqrt(atributos_defensor[4]*8))
-                if horda_mult_def[codigo2-1] > 0:
-                    dano_mitigado = dano + (0,3 * horda_mult_def[codigo2-1] * dano)
-                elif horda_mult_def[codigo2-1] < 0:
-                    dano = dano - (0,3 * horda_mult_def[codigo2-1] * dano)
+                if horda_mult_def[ok2-1] > 0:
+                    dano_mitigado = dano + (0,3 * horda_mult_def[ok2-1] * dano)
+                elif horda_mult_def[ok2-1] < 0:
+                    dano = dano - (0,3 * horda_mult_def[ok2-1] * dano)
                 dano = dano - dano_mitigado
-                if horda_elem_dano[codigo2-1][0] > 0:
-                    if horda_elem_dano[codigo2-1][1] == 1:
+                if horda_elem_dano[ok2-1][0] > 0:
+                    if horda_elem_dano[ok2-1][1] == 1:
                         dano = dano * 2
-                        await canal.send(f"""**FRACO! {party[codigo1-1]}** causou **{dano}** de dano e derrubou **{horda[codigo2-1][1]}**!""")
-                    elif horda_elem_dano[codigo2-1][1] == 2:
+                        await canal.send(f"""**FRACO! {nome_party}** causou **{dano}** de dano e derrubou **{nome_horda}**!""")
+                    elif horda_elem_dano[ok2-1][1] == 2:
                         dano = dano / 2
-                        await canal.send(f"""**RESISTIU! {party[codigo1-1]}** causou **{dano}** de dano em **{horda[codigo2-1][1]}**!""")
-                    elif horda_elem_dano[codigo2-1][1] == 3:
+                        await canal.send(f"""**RESISTIU! {nome_party}** causou **{dano}** de dano em **{nome_horda}**!""")
+                    elif horda_elem_dano[ok2-1][1] == 3:
                         dano = 0
-                        await canal.send(f"""**NULIFICOU! **{horda[codigo2-1][1]}** nulificou todo o dano causado!""")
-                    elif horda_elem_dano[codigo2-1][1] == 4:
-                        await canal.send(f"""**DRENOU! **{horda[codigo2-1][1]}** se curou em **{dano}**!""")
-                    elif horda_elem_dano[codigo2-1][1] == 5:
-                        await canal.send(f"""**REFLETIU! **{horda[codigo2-1][1]}** refletiu **{dano}** de dano em **{party[codigo1-1]}**!""")
+                        await canal.send(f"""**NULIFICOU! **{nome_horda}** nulificou todo o dano causado!""")
+                    elif horda_elem_dano[ok2-1][1] == 4:
+                        await canal.send(f"""**DRENOU! **{nome_horda}** se curou em **{dano}**!""")
+                    elif horda_elem_dano[ok2-1][1] == 5:
+                        await canal.send(f"""**REFLETIU! **{nome_horda}** refletiu **{dano}** de dano em **{nome_party}**!""")
                     else:
-                        await canal.send(f"""**{party[codigo1-1]}** causou **{dano}** de dano em **{horda[codigo2-1][1]}**!""")
+                        await canal.send(f"""**{nome_party}** causou **{dano}** de dano em **{nome_horda}**!""")
                 elif fraquezas[0] == 1:
                     dano = dano * 2
-                    await canal.send(f"""**FRACO! {party[codigo1-1]}** causou **{dano}** de dano e derrubou **{horda[codigo2-1][1]}**!""")
+                    await canal.send(f"""**FRACO! {nome_party}** causou **{dano}** de dano e derrubou **{nome_horda}**!""")
                 elif fraquezas[0] == 2:
                     dano = dano / 2
-                    await canal.send(f"""**RESISTIU! {party[codigo1-1]}** causou **{dano}** de dano em **{horda[codigo2-1][1]}**!""")
+                    await canal.send(f"""**RESISTIU! {nome_party}** causou **{dano}** de dano em **{nome_horda}**!""")
                 elif fraquezas[0] == 3:
                     dano = 0
-                    await canal.send(f"""**NULIFICOU! **{horda[codigo2-1][1]}** nulificou todo o dano causado!""")
+                    await canal.send(f"""**NULIFICOU! **{nome_horda}** nulificou todo o dano causado!""")
                 elif fraquezas[0] == 4:
-                    await canal.send(f"""**DRENOU! **{horda[codigo2-1][1]}** se curou em **{dano}**!""")
+                    await canal.send(f"""**DRENOU! **{nome_horda}** se curou em **{dano}**!""")
                 elif fraquezas[0] == 5:
-                    await canal.send(f"""**REFLETIU! **{horda[codigo2-1][1]}** refletiu **{dano}** de dano em **{party[codigo1-1]}**!""")
+                    await canal.send(f"""**REFLETIU! **{nome_horda}** refletiu **{dano}** de dano em **{nome_party}**!""")
                 else:
                     if dado <= critico:
                         dano = dano * 2
-                        await canal.send(f"""**CRÍTICO! {party[codigo1-1]}** causou **{dano}** de dano e derrubou **{horda[codigo2-1][1]}**!""")
+                        await canal.send(f"""**CRÍTICO! {nome_party}** causou **{dano}** de dano e derrubou **{nome_horda}**!""")
                     else:
-                        await canal.send(f"""**{party[codigo1-1]}** causou **{dano}** de dano em **{horda[codigo2-1][1]}**!""")
+                        await canal.send(f"""**{nome_party}** causou **{dano}** de dano em **{nome_horda}**!""")
             else:
-                await canal.send(f"""**{party[codigo1-1]}** errou o tiro em **{horda[codigo2-1][1]}**""")
+                await canal.send(f"""**{nome_party}** errou o tiro em **{nome_horda}**""")
         else:
-            defensor_id = Database.personagem_id(party[codigo2-1])
+            defensor_id = Database.personagem_id(horda[ok2-1])
             d_persona_id = Database.persona_equipada(personagem_id)
             equips_defensor = Database.itens_equipados()
             armadura_defensor = equips[2]
@@ -2628,64 +2805,64 @@ async def tiro(ctx, canal : discord.TextChannel, codigo1, codigo2):
                         next = 1
                 except:
                     await ctx.send("Digite um número entre 0 e 100.")
-            valor_criterio = var + (5*(atributos_atacante[5]//5)) - (5*(atributos_defensor[6]//5)) + (10*party_mult_acc[codigo1-1]) - (10*horda_mult_evs[codigo1-1])
+            valor_criterio = var + (5*(atributos_atacante[5]//5)) - (5*(atributos_defensor[6]//5)) + (10*party_mult_acc[ok1-1]) - (10*horda_mult_evs[ok2-1])
             await canal.send(f"""Você precisa tirar um valor menor que **{valor_criterio}** no dado""")
-            dado = await Dado.rolagem_pronta(bot, canal, party[codigo1-1], usuario, 1, 100)
-            critico = 10 + (party_mult_crit[codigo1-1] * 10)
+            dado = await Dado.rolagem_pronta(bot, canal, party[ok1-1], usuario, 1, 100)
+            critico = 10 + (party_mult_crit[ok1-1] * 10)
             if dado <= valor_criterio:
                 valor_arma = Database.valor_item(ranged)
                 dano = int(math.sqrt(valor_arma) * math.sqrt(atributos_atacante[2]))
-                if party_mult_atk[codigo1-1] > 0:
-                    dano = dano + (0,3 * party_mult_atk[codigo1-1] * dano)
-                elif party_mult_atk[codigo1-1] < 0:
-                    dano = dano - (0,3 * party_mult_atk[codigo1-1] * dano)
+                if party_mult_atk[ok1-1] > 0:
+                    dano = dano + (0,3 * party_mult_atk[ok1-1] * dano)
+                elif party_mult_atk[ok1-1] < 0:
+                    dano = dano - (0,3 * party_mult_atk[ok1-1] * dano)
                 if armadura_defensor == None:
                     valor_armadura = 0
                 else:
                     valor_armadura = Database.valor_item(armadura_defensor)
                 dano_mitigado = int(dano / math.sqrt((atributos_defensor[4]*8)+valor_armadura))
-                if horda_mult_def[codigo2-1] > 0:
-                    dano_mitigado = dano + (0,3 * horda_mult_def[codigo2-1] * dano)
-                elif horda_mult_def[codigo2-1] < 0:
-                    dano = dano - (0,3 * horda_mult_def[codigo2-1] * dano)
+                if horda_mult_def[ok2-1] > 0:
+                    dano_mitigado = dano + (0,3 * horda_mult_def[ok2-1] * dano)
+                elif horda_mult_def[ok2-1] < 0:
+                    dano = dano - (0,3 * horda_mult_def[ok2-1] * dano)
                 dano = dano - dano_mitigado
-                if horda_elem_dano[codigo2-1][1] > 0:
-                    if horda_elem_dano[codigo2-1][1] == 1:
+                if horda_elem_dano[ok2-1][1] > 0:
+                    if horda_elem_dano[ok2-1][1] == 1:
                         dano = dano * 2
-                        await canal.send(f"""**FRACO! {party[codigo1-1]}** causou **{dano}** de dano e derrubou **{horda[codigo2-1][1]}**!""")
-                    elif horda_elem_dano[codigo2-1][1] == 2:
+                        await canal.send(f"""**FRACO! {nome_party}** causou **{dano}** de dano e derrubou **{nome_horda}**!""")
+                    elif horda_elem_dano[ok2-1][1] == 2:
                         dano = dano / 2
-                        await canal.send(f"""**RESISTIU! {party[codigo1-1]}** causou **{dano}** de dano em **{horda[codigo2-1][1]}**!""")
-                    elif horda_elem_dano[codigo2-1][1] == 3:
+                        await canal.send(f"""**RESISTIU! {nome_party}** causou **{dano}** de dano em **{nome_horda}**!""")
+                    elif horda_elem_dano[ok2-1][1] == 3:
                         dano = 0
-                        await canal.send(f"""**NULIFICOU! **{horda[codigo2-1][1]}** nulificou todo o dano causado!""")
-                    elif horda_elem_dano[codigo2-1][1] == 4:
-                        await canal.send(f"""**DRENOU! **{horda[codigo2-1][1]}** se curou em **{dano}**!""")
-                    elif horda_elem_dano[codigo2-1][1] == 5:
-                        await canal.send(f"""**REFLETIU! **{horda[codigo2-1][1]}** refletiu **{dano}** de dano em **{party[codigo1-1]}**!""")
+                        await canal.send(f"""**NULIFICOU! **{nome_horda}** nulificou todo o dano causado!""")
+                    elif horda_elem_dano[ok2-1][1] == 4:
+                        await canal.send(f"""**DRENOU! **{nome_horda}** se curou em **{dano}**!""")
+                    elif horda_elem_dano[ok2-1][1] == 5:
+                        await canal.send(f"""**REFLETIU! **{nome_horda}** refletiu **{dano}** de dano em **{nome_party}**!""")
                     else:
-                        await canal.send(f"""**{party[codigo1-1]}** causou **{dano}** de dano em **{horda[codigo2-1][1]}**!""")
+                        await canal.send(f"""**{nome_party}** causou **{dano}** de dano em **{nome_horda}**!""")
                 elif fraquezas[1] == 1:
                     dano = dano * 2
-                    await canal.send(f"""**FRACO! {party[codigo1-1]}** causou **{dano}** de dano e derrubou **{horda[codigo2-1][1]}**!""")
+                    await canal.send(f"""**FRACO! {nome_party}** causou **{dano}** de dano e derrubou **{nome_horda}**!""")
                 elif fraquezas[1] == 2:
                     dano = dano / 2
-                    await canal.send(f"""**RESISTIU! {party[codigo1-1]}** causou **{dano}** de dano em **{horda[codigo2-1][1]}**!""")
+                    await canal.send(f"""**RESISTIU! {nome_party}** causou **{dano}** de dano em **{nome_horda}**!""")
                 elif fraquezas[1] == 3:
                     dano = 0
-                    await canal.send(f"""**NULIFICOU! **{horda[codigo2-1][1]}** nulificou todo o dano causado!""")
+                    await canal.send(f"""**NULIFICOU! **{nome_horda}** nulificou todo o dano causado!""")
                 elif fraquezas[1] == 4:
-                    await canal.send(f"""**DRENOU! **{horda[codigo2-1][1]}** se curou em **{dano}**!""")
+                    await canal.send(f"""**DRENOU! **{nome_horda}** se curou em **{dano}**!""")
                 elif fraquezas[1] == 5:
-                    await canal.send(f"""**REFLETIU! **{horda[codigo2-1][1]}** refletiu **{dano}** de dano em **{party[codigo1-1]}**!""")
+                    await canal.send(f"""**REFLETIU! **{nome_horda}** refletiu **{dano}** de dano em **{nome_party}**!""")
                 else:
                     if dado <= critico:
                         dano = dano * 2
-                        await canal.send(f"""**CRÍTICO! {party[codigo1-1]}** causou **{dano}** de dano e derrubou **{horda[codigo2-1][1]}**!""")
+                        await canal.send(f"""**CRÍTICO! {nome_party}** causou **{dano}** de dano e derrubou **{nome_horda}**!""")
                     else:
-                        await canal.send(f"""**{party[codigo1-1]}** causou **{dano}** de dano em **{horda[codigo2-1][1]}**!""")
+                        await canal.send(f"""**{nome_party}** causou **{dano}** de dano em **{nome_horda}**!""")
             else:
-                await canal.send(f"""**{party[codigo1-1]}** errou o tiro em **{horda[codigo2-1][1]}**""")
+                await canal.send(f"""**{nome_party}** errou o tiro em **{nome_horda}**""")
     except:
         await ctx.send("Algo está incorreto.")
 
