@@ -12,8 +12,8 @@ O Persona Bot é um bot de Discord criado para auxiliar a execução do meu sist
 | Rolagem automática de dado                      | Finalizado   |
 | Visualização de ficha do jogador e dos inimigos | Finalizado   |
 | Sistema de inventário inteligente               | Finalizado   |
-| Execução de drop de itens                       | Andamento    |
-| Cálculo de dano                                 | Andamento    |
+| Execução de drop de itens                       | Finalizado   |
+| Cálculo de dano                                 | Finalizado   |
 
 [Convidar o Persona Bot ao meu servidor](https://discord.com/api/oauth2/authorize?client_id=788843258306101279&permissions=8&scope=bot)<br>
 
