@@ -1,8 +1,23 @@
-import React from 'react';
+import React, { useState } from 'react';
+
+import './global.css';
+
+import Header from './Header';
+import Routes from './routes';
 
 function App() {
+  const [counter, setCounter] = useState(0);
+
+  function increment() {
+    setCounter(counter + 1);
+  }
+
   return (
-    <p>Hello World</p>
+    <body>
+    <Header />
+    <Routes />
+    </body>
+    
   );
 }
 

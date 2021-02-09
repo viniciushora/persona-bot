@@ -8,12 +8,11 @@ module.exports = {
     },
 
     async create(request, response) {
-        const { item_id, nome, fk_tipo_item_tipo_id, valor } = request.body;
+        const { nome, fk_tipo_item_tipo_id, valor } = request.body;
 
         console.log(data);
 
         await connection('item').insert({
-            item_id,
             nome,
             fk_tipo_item_tipo_id,
             valor
