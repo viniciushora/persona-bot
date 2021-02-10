@@ -9,7 +9,9 @@ export default function Cadastro() {
             <div class="row">
                 <div class="col-sm-6 area-botoes">
                     <div class="row">
-                        <button>Persona</button>
+                        <Link to="/persona" className="link">
+                            <button>Persona</button>
+                        </Link>
                     </div>
                     <div class="row">
                         <button>Shadow</button>

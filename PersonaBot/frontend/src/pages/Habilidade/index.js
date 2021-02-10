@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import api from '../../services/api';
 import './styles.css';
 
-export default function Item() {
+export default function Habilidade() {
     const [nome, setNome] = useState('');
     const [fk_atributo_atributo_id, setAtributo] = useState(0);
     const [fk_intensidade_intensidade_id, setIntensidade] = useState(0);
