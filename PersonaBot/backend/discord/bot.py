@@ -3377,7 +3377,9 @@ async def habilidade(ctx, *habilidade):
     #    await ctx.send("Algo está incorreto.")
 
 @bot.command()
-async def add_atributo(ctx, canal : discord.TextChannel, personagem, tipo, quant, atributo):
+async def add_atributo(ctx, personagem, tipo, quant, atributo):
+    global canais_jogadores
+    canal = canais_jogadores
     personagem_id = Database.personagem_id(personagem)
     if personagem_id != False:
         atributo_id = Database.atributo_id(atributo)
@@ -3403,7 +3405,9 @@ async def add_atributo(ctx, canal : discord.TextChannel, personagem, tipo, quant
         await ctx.send(f"""Este personagem não existe.""")
 
 @bot.command()
-async def del_atributo(ctx, canal : discord.TextChannel, personagem, quant, atributo):
+async def del_atributo(ctx, personagem, quant, atributo):
+    global canais_jogadores
+    canal = canais_jogadores
     personagem_id = Database.personagem_id(personagem)
     if personagem_id != False:
         atributo_id = Database.atributo_id(atributo)
@@ -3422,8 +3426,9 @@ async def del_atributo(ctx, canal : discord.TextChannel, personagem, quant, atri
         await ctx.send(f"""Este personagem não existe.""")
 
 @bot.command()
-async def lider(ctx, canal : discord.TextChannel, personagem):
-    global party
+async def lider(ctx, personagem):
+    global canal_grupo, party
+    canal = canal_grupo
     if party != []:
         for i in range(len(party)):
             if party[i] == personagem:
@@ -3432,11 +3437,15 @@ async def lider(ctx, canal : discord.TextChannel, personagem):
                 break
 
 @bot.command()
-async def marcador(ctx,  canal : discord.TextChannel, tipo_marcador, tipo_grupo, codigo, quant):
-    global party_mult_atk, party_mult_crit, party_mult_dano, party_mult_def, party_mult_evs, horda_mult_acc, horda_mult_atk, horda_mult_crit, horda_mult_def, horda_mult_evs
+async def marcador(ctx, tipo_marcador, tipo_grupo, codigo, quant):
+    global canais_jogadores, canal_inimigos, party_mult_atk, party_mult_crit, party_mult_dano, party_mult_def, party_mult_evs, horda_mult_acc, horda_mult_atk, horda_mult_crit, horda_mult_def, horda_mult_evs
     try:
         quant = int(quant)
         codigo = int(codigo)
+        if tipo_grupo == "party":
+            canal = canais_jogadores[party[codigo-1]]
+        elif tipo_grupo == "horda":
+            canal = canal_inimigos
         if tipo_marcador == "atk":
             if tipo_grupo == "party":
                 party_mult_atk[codigo-1] += quant
