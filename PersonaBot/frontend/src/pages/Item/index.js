@@ -5,18 +5,20 @@ import './styles.css';
 
 export default function Item() {
     const [nome, setNome] = useState('');
-    const [tipo, setTipo] = useState(0);
+    const [fk_tipo_item_tipo_id, setTipo] = useState(0);
     const [valor, setValor] = useState('');
 
     useEffect(() => {
-        if (tipo>6 && tipo < 10) {
+        if (fk_tipo_item_tipo_id>6 && fk_tipo_item_tipo_id < 10) {
             document.getElementById("valorItem").style.display = "block";
         } else {
             document.getElementById("valorItem").style.display = "none";
         }
-    }, [tipo]);
+    }, [fk_tipo_item_tipo_id]);
 
     async function handleRegister(e) {
+        e.preventDefault();
+        document.getElementById("nomeItem").value = "";
 
         var valor_item = null;
         if (valor > 0) {
@@ -25,9 +27,11 @@ export default function Item() {
 
         const data = {
             nome,
-            tipo,
+            fk_tipo_item_tipo_id,
             valor_item
         };
+
+        console.log(data)
 
         try {
             const response = await api.post('item', data);
@@ -47,11 +51,11 @@ export default function Item() {
                             <h1>Item</h1>
                         </div>
                         <div class="row">
-                            <input placeholder="Nome do item" value={nome} onChange={e => setNome(e.target.value)}/>
+                            <input id="nomeItem" placeholder="Nome do item" value={nome} onChange={e => setNome(e.target.value)}/>
                         </div>
                         <div class="row">
-                            <select class="fix1" id="tipoItem" value={tipo} onChange={e => setTipo(e.target.value)}>
-                                <option selected disabled>Tipo do Item</option>
+                            <select class="fix1" id="tipoItem" value={fk_tipo_item_tipo_id} onChange={e => setTipo(e.target.value)}>
+                                <option value="0" selected disabled>Tipo do Item</option>
                                 <option value="1">Consumíveis</option>
                                 <option value="2">Cartas de Habilidade</option>
                                 <option value="3">Materiais</option>

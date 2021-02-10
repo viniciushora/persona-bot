@@ -10,8 +10,6 @@ module.exports = {
     async create(request, response) {
         const { nome, fk_atributo_atributo_id, fk_intensidade_intensidade_id, fk_elemento_elemento_id, vezes } = request.body;
 
-        console.log(data);
-
         await connection('habilidade').insert({
             nome,
             fk_atributo_atributo_id,

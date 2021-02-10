@@ -10,8 +10,6 @@ module.exports = {
     async create(request, response) {
         const { nivel, fk_personagem_personagem_id, fk_persona_persona_id, compendium } = request.body;
 
-        console.log(data);
-
         await connection('personagem_persona').insert({
             nivel,
             fk_personagem_personagem_id,

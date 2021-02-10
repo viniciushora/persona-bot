@@ -18,12 +18,14 @@ export default function Cadastro() {
                         <button>Personagem</button>
                     </div>
                     <div class="row">
-                        <Link to="/item" class="link">
+                        <Link to="/item" className="link">
                             <button>Item</button>
                         </Link>
                     </div>
                     <div class="row">
-                        <button>Habilidade</button>
+                        <Link to="/habilidade" className="link">
+                            <button>Habilidade</button>
+                        </Link>
                     </div>
                 </div>
                 <div class="col-sm-6">

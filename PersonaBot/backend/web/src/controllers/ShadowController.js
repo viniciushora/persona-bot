@@ -10,8 +10,6 @@ module.exports = {
     async create(request, response) {
         const { codinome, fk_persona_persona_id, exp, dinheiro } = request.body;
 
-        console.log(data);
-
         await connection('shadow').insert({
             codinome,
             fk_persona_persona_id,

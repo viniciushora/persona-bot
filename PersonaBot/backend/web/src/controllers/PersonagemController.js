@@ -10,8 +10,6 @@ module.exports = {
     async create(request, response) {
         const { nome, fk_grupo_grupo_id, usuario, fool, persona_equipada, foto } = request.body;
 
-        console.log(data);
-
         await connection('personagem').insert({
             nome,
             fk_grupo_grupo_id,

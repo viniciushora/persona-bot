@@ -13,10 +13,10 @@ function App() {
   }
 
   return (
-    <body>
-    <Header />
-    <Routes />
-    </body>
+    <div>
+      <Header />
+      <Routes />
+    </div>
     
   );
 }

@@ -10,8 +10,6 @@ module.exports = {
     async create(request, response) {
         const { nome, fk_tipo_item_tipo_id, valor } = request.body;
 
-        console.log(data);
-
         await connection('item').insert({
             nome,
             fk_tipo_item_tipo_id,
