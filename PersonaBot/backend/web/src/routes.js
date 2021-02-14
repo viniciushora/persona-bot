@@ -16,6 +16,8 @@ const routes = express.Router();
 
 routes.get('/persona', PersonaController.index);
 
+routes.get('/persona-id', PersonaController.selectId);
+
 routes.post('/persona', PersonaController.create);
 
 routes.get('/shadow', ShadowController.index);

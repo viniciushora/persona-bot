@@ -8,13 +8,21 @@ module.exports = {
     },
 
     async create(request, response) {
-        const { valor, fk_atributo_atributo_id, fk_persona_persona_id } = request.body;
+        const { fk_persona_persona_id, atributos } = request.body;
 
-        await connection('reacao_elemental').insert({
-            valor,
-            fk_atributo_atributo_id,
-            fk_persona_persona_id
-        })
+        var valor = 0;
+        var fk_atributo_atributo_id = 0;
+
+        for (var i=1; i <= atributos.length; i ++) {
+            valor = i;
+            fk_atributo_atributo_id = atributos[i-1];
+
+            await connection('persona_atributo').insert({
+                valor,
+                fk_atributo_atributo_id,
+                fk_persona_persona_id
+            })
+        }
 
         return response.json({ fk_persona_persona_id });
     }

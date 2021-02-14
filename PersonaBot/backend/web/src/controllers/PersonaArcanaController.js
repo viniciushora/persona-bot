@@ -10,11 +10,9 @@ module.exports = {
     async create(request, response) {
         const { fk_persona_persona_id, fk_arcana_arcana_id } = request.body;
 
-        console.log(data);
-
         await connection('persona_arcana').insert({
-            fk_persona_persona_id,
-            fk_arcana_arcana_id
+            fk_arcana_arcana_id,
+            fk_persona_persona_id
         })
 
         return response.json({ fk_persona_persona_id });

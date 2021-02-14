@@ -31,6 +31,37 @@ select {
     margin-bottom: 2%;
 }
 
+.fix3 {
+    margin-top: 1%;
+    margin-bottom: 1%;
+}
+
+.fix4 {
+    margin-left: -20%;
+}
+
+.fix5 {
+    margin-top: 2%;
+}
+
+.fix6 {
+    margin-top:5%;
+}
+
 .atributo {
     width: 5%;
+}
+
+.icon-add {
+    color: #ffffff;
+    height: 200%;
+    width: 35%;
+    margin-left: 0%;
+}
+
+.btn, .btn:focus{
+    background-color: transparent;
+    border-color: transparent;
+    box-shadow: none;
+    outline:none;
 }

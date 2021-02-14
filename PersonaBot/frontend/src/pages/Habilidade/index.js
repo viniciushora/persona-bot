@@ -12,8 +12,6 @@ export default function Habilidade() {
 
     async function handleRegister(e) {
         e.preventDefault();
-        document.getElementById("nomeHabilidade").value = "";
-        document.getElementById("vezesHabilidade").value = "";
 
         const data = {
             nome,
@@ -27,6 +25,8 @@ export default function Habilidade() {
 
         try {
             const response = await api.post('habilidade', data);
+
+            document.getElementById("nomeHabilidade").value = "";
 
             alert('Habilidade cadastrada com sucesso.');
         } catch (err) {
@@ -46,7 +46,7 @@ export default function Habilidade() {
                             <input id="nomeHabilidade" placeholder="Nome da Habilidade" value={nome} onChange={e => setNome(e.target.value)}/>
                         </div>
                         <div class="row">
-                            <select class="fix1" value={fk_atributo_atributo_id} onChange={e => setAtributo(e.target.value)}>
+                            <select id="atributoHabilidade" class="fix1" value={fk_atributo_atributo_id} onChange={e => setAtributo(e.target.value)}>
                                 <option value="0" selected disabled>Atributo da Habilidade</option>
                                 <option value="3">Força (St)</option>
                                 <option value="4">Magia (Ma)</option>
@@ -56,7 +56,7 @@ export default function Habilidade() {
                             </select>
                         </div>
                         <div class="row">
-                            <select value={fk_intensidade_intensidade_id} onChange={e => setIntensidade(e.target.value)}>
+                            <select id="intensidadeHabilidade" value={fk_intensidade_intensidade_id} onChange={e => setIntensidade(e.target.value)}>
                                 <option value="0" selected disabled>Intensidade da Habilidade</option>
                                 <option value="1">Minúsculo</option>
                                 <option value="2">Leve</option>
@@ -68,7 +68,7 @@ export default function Habilidade() {
                             </select>
                         </div>
                         <div class="row">
-                            <select class="fix1" value={fk_elemento_elemento_id} onChange={e => setElemento(e.target.value)}>
+                            <select id="elementoHabilidade" class="fix1" value={fk_elemento_elemento_id} onChange={e => setElemento(e.target.value)}>
                                 <option value="0" selected disabled>Elemento da Habilidade</option>
                                 <option value="1">Físico</option>
                                 <option value="2">Arma de Fogo</option>

@@ -8,13 +8,20 @@ module.exports = {
     },
 
     async create(request, response) {
-        const { nivel, fk_habilidade_habilidade_id, fk_persona_persona_id } = request.body;
+        const { fk_persona_persona_id, niveis, habilidadesPersona } = request.body;
+        var nivel = 0;
+        var fk_habilidade_habilidade_id = 0;
 
-        await connection('habilidade_persona').insert({
-            nivel,
-            fk_habilidade_habilidade_id,
-            fk_persona_persona_id
-        })
+        for (var i=0; i < niveis.length; i ++) {
+            nivel = niveis[i];
+            fk_habilidade_habilidade_id = habilidadesPersona[i];
+
+            await connection('habilidade_persona').insert({
+                nivel,
+                fk_habilidade_habilidade_id,
+                fk_persona_persona_id
+            })
+        }
 
         return response.json({ fk_persona_persona_id });
     }

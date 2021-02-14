@@ -18,7 +18,6 @@ export default function Item() {
 
     async function handleRegister(e) {
         e.preventDefault();
-        document.getElementById("nomeItem").value = "";
 
         var valor_item = null;
         if (valor > 0) {
@@ -36,6 +35,9 @@ export default function Item() {
         try {
             const response = await api.post('item', data);
 
+            document.getElementById("nomeItem").value = "";
+            document.getElementById("tipoItem").value = 0;
+            document.getElementById("valorItem").value = "";
             alert('Item cadastrado com sucesso.');
         } catch (err) {
             alert('Erro no cadastro, tente novamente.');
