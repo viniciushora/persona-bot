@@ -14,8 +14,8 @@ module.exports = {
         var fk_atributo_atributo_id = 0;
 
         for (var i=1; i <= atributos.length; i ++) {
-            valor = i;
-            fk_atributo_atributo_id = atributos[i-1];
+            valor = atributos[i-1];
+            fk_atributo_atributo_id = i;
 
             await connection('persona_atributo').insert({
                 valor,
