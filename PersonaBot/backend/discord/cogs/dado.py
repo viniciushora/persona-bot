@@ -2,9 +2,25 @@ import discord
 import random
 from discord.ext import commands
 
+from cogs.database import *
+from cogs.canal import *
+
 class Dado(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
+
+    @commands.command(name='rolagem')
+    async def rolagem(self, ctx, personagem, dados, lados):
+        try:
+            personagem_id = Database.personagem_id(personagem)
+            if personagem_id != False:
+                canal = bot.get_channel(Canal.canais_jogadores[personagem])
+                usuario = Database.discord_user()
+                dado = await Dado.rolagem_pronta(bot, canal, personagem, usuario, dados, lados)
+            else:
+                await ctx.send("Este personagem não existe.")
+        except:
+            await ctx.send("Canal do jogador não registrado ou informações do dado erradas.")
 
     @commands.command(name='rolldice')
     async def rolldice(self, ctx):
