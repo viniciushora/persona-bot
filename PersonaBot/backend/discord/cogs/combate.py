@@ -1,6 +1,5 @@
 import discord
 import random
-import pickle
 import math
 from discord.ext import commands
 

@@ -1,17 +1,10 @@
 import discord
-import random
-import pickle
-from discord.utils import get
-import logging
-import asyncio
 import json
 
 from cogs.canal import *
 from cogs.ficha import *
 
 from discord.ext import commands
-
-global canais, combate, fichas
 
 f = open('config.json')
 data = json.load(f)

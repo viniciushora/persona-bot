@@ -1,6 +1,5 @@
 import discord
 import random
-import pickle
 from discord.ext import commands
 
 from cogs.database import *
