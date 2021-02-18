@@ -33,7 +33,7 @@ class Persona(commands.Cog):
                     elif atributo_id == 2:
                         sp = random.randint(1,4)
                         crescimento_atributo[1] = sp
-                flex.sort(key=takeSecond, reverse=True)
+                flex.sort(key=self.takeSecond, reverse=True)
                 nao_repetidos = list(dict.fromkeys(flex))
                 pontos = 3
                 valores_criterio = []
@@ -123,7 +123,7 @@ class Persona(commands.Cog):
                                 await embed_msg.add_reaction(emoji="❌")
                                 ok = 0
                                 while ok == 0:
-                                    reaction, user = await bot.wait_for('reaction_add', timeout=None)
+                                    reaction, user = await self.bot.wait_for('reaction_add', timeout=None)
                                     if str(reaction.emoji) == emojis_raw[0] and str(user) != "Persona Bot#0708":
                                         ok = 1
                                     if str(reaction.emoji) == emojis_raw[1] and str(user) != "Persona Bot#0708":
@@ -179,7 +179,7 @@ class Persona(commands.Cog):
                             await embed_msg.add_reaction(emoji="❌")
                             ok = 0
                             while ok == 0:
-                                reaction, user = await bot.wait_for('reaction_add', timeout=None)
+                                reaction, user = await self.bot.wait_for('reaction_add', timeout=None)
                                 if str(reaction.emoji) == emojis_raw[0] and str(user) != "Persona Bot#0708":
                                     ok = 1
                                 if str(reaction.emoji) == emojis_raw[1] and str(user) != "Persona Bot#0708":
@@ -287,7 +287,7 @@ class Persona(commands.Cog):
                     elif atributo_id == 2:
                         sp = random.randint(1,4)
                         crescimento_atributo[1] = sp
-                flex.sort(key=takeSecond, reverse=True)
+                flex.sort(key=self.takeSecond, reverse=True)
                 pontos = 3
                 while pontos > 0:
                     for atributo_id, quant_inicial in flex:
@@ -355,7 +355,7 @@ class Persona(commands.Cog):
                                 await embed_msg.add_reaction(emoji="❌")
                                 ok = 0
                                 while ok == 0:
-                                    reaction, user = await bot.wait_for('reaction_add', timeout=None)
+                                    reaction, user = await self.bot.wait_for('reaction_add', timeout=None)
                                     if str(reaction.emoji) == emojis_raw[0] and str(user) != "Persona Bot#0708":
                                         ok = 1
                                     if str(reaction.emoji) == emojis_raw[1] and str(user) != "Persona Bot#0708":
@@ -407,7 +407,7 @@ class Persona(commands.Cog):
                             await embed_msg.add_reaction(emoji="❌")
                             ok = 0
                             while ok == 0:
-                                reaction, user = await bot.wait_for('reaction_add', timeout=None)
+                                reaction, user = await self.bot.wait_for('reaction_add', timeout=None)
                                 if str(reaction.emoji) == emojis_raw[0] and str(user) != "Persona Bot#0708":
                                     ok = 1
                                 if str(reaction.emoji) == emojis_raw[1] and str(user) != "Persona Bot#0708":
@@ -500,7 +500,7 @@ class Persona(commands.Cog):
                         await embed_msg.add_reaction(emoji="❌")
                         ok = 0
                         while ok == 0:
-                            reaction, user = await bot.wait_for('reaction_add', timeout=None)
+                            reaction, user = await self.bot.wait_for('reaction_add', timeout=None)
                             if str(reaction.emoji) == emojis_raw[0] and str(user) != "Persona Bot#0708":
                                 persona_l_id = personas[0]
                                 ok = 1
@@ -691,7 +691,7 @@ class Persona(commands.Cog):
                         await embed_msg.add_reaction(emoji="❌")
                         ok = 0
                         while ok == 0:
-                            reaction, user = await bot.wait_for('reaction_add', timeout=None)
+                            reaction, user = await self.bot.wait_for('reaction_add', timeout=None)
                             if str(reaction.emoji) == emojis_raw[0] and str(user) != "Persona Bot#0708":
                                 ok = 1
                             if str(reaction.emoji) == emojis_raw[1] and str(user) != "Persona Bot#0708":
@@ -758,7 +758,7 @@ class Persona(commands.Cog):
             await embed_msg.add_reaction(emoji="❌")
             ok = 0
             while ok == 0:
-                reaction, user = await bot.wait_for('reaction_add', timeout=None)
+                reaction, user = await self.bot.wait_for('reaction_add', timeout=None)
                 if str(reaction.emoji) == emojis_raw[0] and str(user) != "Persona Bot#0708":
                     ok = 1
                 if str(reaction.emoji) == emojis_raw[1] and str(user) != "Persona Bot#0708":
@@ -842,7 +842,7 @@ class Persona(commands.Cog):
         else:
             await ctx.send(f"""Este personagem não existe.""")
     
-    def takeSecond(elem):
+    def takeSecond(self, elem):
         return elem[1]
 
 def setup(bot):

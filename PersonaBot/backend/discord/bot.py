@@ -5,7 +5,6 @@ from discord.utils import get
 import logging
 import asyncio
 import json
-import math
 
 from cogs.canal import *
 from cogs.ficha import *

@@ -1,9 +1,11 @@
 import discord
 import random
 import pickle
+import math
 from discord.ext import commands
 
 from cogs.database import *
+from cogs.dado import *
 from cogs.canal import *
 
 class Combate(commands.Cog):
@@ -181,7 +183,7 @@ class Combate(commands.Cog):
                 await embed_msg.add_reaction(emoji="❌")
                 ok = 0
                 while ok == 0:
-                    reaction, user = await bot.wait_for('reaction_add', timeout=None)
+                    reaction, user = await self.bot.wait_for('reaction_add', timeout=None)
                     if str(reaction.emoji) == emojis_raw[0] and str(user) != "Persona Bot#0708":
                         ok = 1
                     if str(reaction.emoji) == emojis_raw[1] and str(user) != "Persona Bot#0708":
@@ -193,7 +195,7 @@ class Combate(commands.Cog):
                     next = 0
                     while next == 0:
                         await ctx.send("**EMBOSCADA**: Qual o valor critério? (0 a 100)")
-                        msg = await bot.wait_for('message')
+                        msg = await self.bot.wait_for('message')
                         mensagem = msg.content
                         try:
                             valor_criterio = int(mensagem)
@@ -203,7 +205,7 @@ class Combate(commands.Cog):
                             await ctx.send("Digite um número entre 0 e 100.")
                     lider_id = Database.personagem_id(self.party[0])
                     usuario = Database.discord_user(lider_id)
-                    dado = await Dado.rolagem_pronta(bot, canal, self.party[0], usuario, 1, 100)
+                    dado = await Dado.rolagem_pronta(self.bot, canal, self.party[0], usuario, 1, 100)
                     if dado <= valor_criterio:
                         ordem1 = []
                         ordem2 = []
@@ -217,7 +219,7 @@ class Combate(commands.Cog):
                             agilidade = atributos[5]
                             ordem1.append(personagem)
                             quant1.append(agilidade)
-                        insertion_sort(quant1, ordem1)
+                        self.insertion_sort(quant1, ordem1)
                         for tipo, char in self.horda:
                             if tipo == "s":
                                 shadow_id = Database.shadow_id(char)
@@ -235,7 +237,7 @@ class Combate(commands.Cog):
                                 agilidade = atributos[5]
                                 ordem2.append(personagem_id)
                                 quant2.append(agilidade)
-                        insertion_sort(quant2, ordem2)
+                        self.insertion_sort(quant2, ordem2)
                         ordem = ordem1 + ordem2
                     else:
                         ordem1 = []
@@ -265,7 +267,7 @@ class Combate(commands.Cog):
                                 agilidade = atributos[5]
                                 ordem1.append(personagem_id)
                                 quant1.append(agilidade)
-                        insertion_sort(quant1, ordem1)
+                        self.insertion_sort(quant1, ordem1)
                         ordem = ordem1
                     embed = discord.Embed(
                         title=f"""**Ordem de turnos*""",
@@ -283,7 +285,7 @@ class Combate(commands.Cog):
                     next = 0
                     while next == 0:
                         await ctx.send("**DISPUTA**: Qual o valor critério? (0 a 100)")
-                        msg = await bot.wait_for('message')
+                        msg = await self.bot.wait_for('message')
                         mensagem = msg.content
                         try:
                             valor_criterio = int(mensagem)
@@ -293,7 +295,7 @@ class Combate(commands.Cog):
                             await ctx.send("Digite um número entre 0 e 100.")
                     lider_id = Database.personagem_id(self.party[0])
                     usuario = Database.discord_user(lider_id)
-                    dado = await Dado.rolagem_pronta(bot, canal, self.party[0], usuario, 1, 100)
+                    dado = await Dado.rolagem_pronta(self.bot, canal, self.party[0], usuario, 1, 100)
                     if dado <= valor_criterio:
                         ordem1 = []
                         quant1 = []
@@ -305,7 +307,7 @@ class Combate(commands.Cog):
                             agilidade = atributos[5]
                             ordem1.append(personagem)
                             quant1.append(agilidade)
-                        insertion_sort(quant1, ordem1)
+                        self.insertion_sort(quant1, ordem1)
                         for tipo, char in self.horda:
                             if tipo == "s":
                                 shadow_id = Database.shadow_id(char)
@@ -323,7 +325,7 @@ class Combate(commands.Cog):
                                 agilidade = atributos[5]
                                 ordem1.append(personagem_id)
                                 quant1.append(agilidade)
-                        insertion_sort(quant1, ordem1)
+                        self.insertion_sort(quant1, ordem1)
                         ordem = ordem1
                     else:
                         ordem1 = []
@@ -338,7 +340,7 @@ class Combate(commands.Cog):
                             agilidade = atributos[5]
                             ordem1.append(personagem)
                             quant1.append(agilidade)
-                        insertion_sort(quant1, ordem1)
+                        self.insertion_sort(quant1, ordem1)
                         for tipo, char in self.horda:
                             if tipo == "s":
                                 shadow_id = Database.shadow_id(char)
@@ -356,7 +358,7 @@ class Combate(commands.Cog):
                                 agilidade = atributos[5]
                                 ordem2.append(personagem_id)
                                 quant2.append(agilidade)
-                        insertion_sort(quant2, ordem2)
+                        self.insertion_sort(quant2, ordem2)
                         ordem = ordem2 + ordem1
                     embed = discord.Embed(
                         title=f"""**Ordem de turnos**""",
@@ -377,7 +379,7 @@ class Combate(commands.Cog):
         except:
             await ctx.send("Canal do grupo não está registrado.")
     
-    def insertion_sort(arr, ordem): 
+    def insertion_sort(self, arr, ordem): 
         for i in range(1, len(arr)): 
             key = arr[i]
             key2 = ordem[i]
@@ -406,7 +408,7 @@ class Combate(commands.Cog):
             await embed_msg.add_reaction(emoji="❌")
             ok = 0
             while ok == 0:
-                reaction, user = await bot.wait_for('reaction_add', timeout=None)
+                reaction, user = await self.bot.wait_for('reaction_add', timeout=None)
                 if str(reaction.emoji) == emojis_raw[0] and str(user) != "Persona Bot#0708":
                     ok = 1
                 if str(reaction.emoji) == emojis_raw[1] and str(user) != "Persona Bot#0708":
@@ -430,7 +432,7 @@ class Combate(commands.Cog):
                 await embed_msg.add_reaction(emoji="❌")
                 ok1 = 0
                 while ok1 == 0:
-                    reaction, user = await bot.wait_for('reaction_add', timeout=None)
+                    reaction, user = await self.bot.wait_for('reaction_add', timeout=None)
                     if str(reaction.emoji) == emojis_raw[0] and str(user) != "Persona Bot#0708":
                         ok1 = 1
                     if str(reaction.emoji) == emojis_raw[1] and str(user) != "Persona Bot#0708":
@@ -478,7 +480,7 @@ class Combate(commands.Cog):
                 await embed_msg.add_reaction(emoji="❌")
                 ok2 = 0
                 while ok2 == 0:
-                    reaction, user = await bot.wait_for('reaction_add', timeout=None)
+                    reaction, user = await self.bot.wait_for('reaction_add', timeout=None)
                     if str(reaction.emoji) == emojis_raw[0] and str(user) != "Persona Bot#0708":
                         ok2 = 1
                     if str(reaction.emoji) == emojis_raw[1] and str(user) != "Persona Bot#0708":
@@ -503,7 +505,7 @@ class Combate(commands.Cog):
                     next = 0
                     while next == 0:
                         await ctx.send("Qual o valor critério? (0 a 100)")
-                        msg = await bot.wait_for('message')
+                        msg = await self.bot.wait_for('message')
                         mensagem = msg.content
                         try:
                             var = int(mensagem)
@@ -513,7 +515,7 @@ class Combate(commands.Cog):
                             await ctx.send("Digite um número entre 0 e 100.")
                     valor_criterio = var + (5*(atributos_atacante[5]//5)) - (5*(atributos_defensor[6]//5)) + (10*self.party_mult_acc[ok1-1]) - (10*self.horda_mult_evs[ok2-1])
                     await canal.send(f"""Você precisa tirar um valor menor que **{valor_criterio}** no dado""")
-                    dado = await Dado.rolagem_pronta(bot, canal, self.party[ok1-1], usuario, 1, 100)
+                    dado = await Dado.rolagem_pronta(self.bot, canal, self.party[ok1-1], usuario, 1, 100)
                     critico = 10 + (self.party_mult_crit[ok1-1] * 10)
                     if dado <= valor_criterio:
                         valor_arma = Database.valor_item(meelee)
@@ -586,7 +588,7 @@ class Combate(commands.Cog):
                     next = 0
                     while next == 0:
                         await ctx.send("Qual o valor critério? (0 a 100)")
-                        msg = await bot.wait_for('message')
+                        msg = await self.bot.wait_for('message')
                         mensagem = msg.content
                         try:
                             var = int(mensagem)
@@ -596,7 +598,7 @@ class Combate(commands.Cog):
                             await ctx.send("Digite um número entre 0 e 100.")
                     valor_criterio = var + (5*(atributos_atacante[5]//5)) - (5*(atributos_defensor[6]//5)) + (10*self.party_mult_acc[ok1-1]) - (10*self.horda_mult_evs[ok2-1])
                     await canal.send(f"""Você precisa tirar um valor menor que **{valor_criterio}** no dado""")
-                    dado = await Dado.rolagem_pronta(bot, canal, self.party[ok1-1], usuario, 1, 100)
+                    dado = await Dado.rolagem_pronta(self.bot, canal, self.party[ok1-1], usuario, 1, 100)
                     critico = 10 + (self.party_mult_crit[ok1-1] * 10)
                     if dado <= valor_criterio:
                         valor_arma = Database.valor_item(meelee)
@@ -669,7 +671,7 @@ class Combate(commands.Cog):
                 await embed_msg.add_reaction(emoji="❌")
                 ok1 = 0
                 while ok1 == 0:
-                    reaction, user = await bot.wait_for('reaction_add', timeout=None)
+                    reaction, user = await self.bot.wait_for('reaction_add', timeout=None)
                     if str(reaction.emoji) == emojis_raw[0] and str(user) != "Persona Bot#0708":
                         ok1 = 1
                     if str(reaction.emoji) == emojis_raw[1] and str(user) != "Persona Bot#0708":
@@ -699,7 +701,7 @@ class Combate(commands.Cog):
                 await embed_msg.add_reaction(emoji="❌")
                 ok2 = 0
                 while ok2 == 0:
-                    reaction, user = await bot.wait_for('reaction_add', timeout=None)
+                    reaction, user = await self.bot.wait_for('reaction_add', timeout=None)
                     if str(reaction.emoji) == emojis_raw[0] and str(user) != "Persona Bot#0708":
                         ok2 = 1
                     if str(reaction.emoji) == emojis_raw[1] and str(user) != "Persona Bot#0708":
@@ -740,7 +742,7 @@ class Combate(commands.Cog):
                     next = 0
                     while next == 0:
                         await ctx.send("Qual o valor critério? (0 a 100)")
-                        msg = await bot.wait_for('message')
+                        msg = await self.bot.wait_for('message')
                         mensagem = msg.content
                         try:
                             var = int(mensagem)
@@ -750,7 +752,7 @@ class Combate(commands.Cog):
                             await ctx.send("Digite um número entre 0 e 100.")
                     valor_criterio = var + (5*(atributos_atacante[5]//5)) - (5*(atributos_defensor[6]//5)) + (10*self.horda_mult_acc[ok1-1])- (10*self.party_mult_evs[ok2-1])
                     await canal.send(f"""Você precisa tirar um valor menor que **{valor_criterio}** no dado""")
-                    dado = await Dado.rolagem_pronta(bot, canal, "Mestre", "Axuáti#9639", 1, 100)
+                    dado = await Dado.rolagem_pronta(self.bot, canal, "Mestre", "Axuáti#9639", 1, 100)
                     critico = 10 + (self.horda_mult_crit[ok1-1] * 10)
                     if dado <= valor_criterio:
                         dano = int(20 * math.sqrt(atributos_atacante[2]))
@@ -829,7 +831,7 @@ class Combate(commands.Cog):
                     next = 0
                     while next == 0:
                         await ctx.send("Qual o valor critério? (0 a 100)")
-                        msg = await bot.wait_for('message')
+                        msg = await self.bot.wait_for('message')
                         mensagem = msg.content
                         try:
                             var = int(mensagem)
@@ -839,7 +841,7 @@ class Combate(commands.Cog):
                             await ctx.send("Digite um número entre 0 e 100.")
                     valor_criterio = var + (5*(atributos_atacante[5]//5)) - (5*(atributos_defensor[6]//5)) + (10*self.horda_mult_acc[ok1-1])- (10*self.party_mult_evs[ok2-1])
                     await canal.send(f"""Você precisa tirar um valor menor que **{valor_criterio}** no dado""")
-                    dado = await Dado.rolagem_pronta(bot, canal, "Mestre", "Axuáti#9639", 1, 100)
+                    dado = await Dado.rolagem_pronta(self.bot, canal, "Mestre", "Axuáti#9639", 1, 100)
                     critico = 10 + (self.horda_mult_crit[ok1-1] * 10)
                     if dado <= valor_criterio:
                         valor_arma = Database.valor_item(meelee_atacante)
@@ -918,7 +920,7 @@ class Combate(commands.Cog):
             await embed_msg.add_reaction(emoji="❌")
             ok1 = 0
             while ok1 == 0:
-                reaction, user = await bot.wait_for('reaction_add', timeout=None)
+                reaction, user = await self.bot.wait_for('reaction_add', timeout=None)
                 if str(reaction.emoji) == emojis_raw[0] and str(user) != "Persona Bot#0708":
                     ok1 = 1
                 if str(reaction.emoji) == emojis_raw[1] and str(user) != "Persona Bot#0708":
@@ -966,7 +968,7 @@ class Combate(commands.Cog):
             await embed_msg.add_reaction(emoji="❌")
             ok2 = 0
             while ok2 == 0:
-                reaction, user = await bot.wait_for('reaction_add', timeout=None)
+                reaction, user = await self.bot.wait_for('reaction_add', timeout=None)
                 if str(reaction.emoji) == emojis_raw[0] and str(user) != "Persona Bot#0708":
                     ok2 = 1
                 if str(reaction.emoji) == emojis_raw[1] and str(user) != "Persona Bot#0708":
@@ -990,7 +992,7 @@ class Combate(commands.Cog):
                 next = 0
                 while next == 0:
                     await ctx.send("Qual o valor critério? (0 a 100)")
-                    msg = await bot.wait_for('message')
+                    msg = await self.bot.wait_for('message')
                     mensagem = msg.content
                     try:
                         var = int(mensagem)
@@ -998,10 +1000,10 @@ class Combate(commands.Cog):
                             next = 1
                     except:
                         await ctx.send("Digite um número entre 0 e 100.")
-                valor_criterio = var + (5*(atributos_atacante[5]//5)) - (5*(atributos_defensor[6]//5)) + (10*self.party_mult_acc[ok1-1]) - (10*horda_mult_evs[ok2-1])
+                valor_criterio = var + (5*(atributos_atacante[5]//5)) - (5*(atributos_defensor[6]//5)) + (10*self.party_mult_acc[ok1-1]) - (10*self.horda_mult_evs[ok2-1])
                 await canal.send(f"""Você precisa tirar um valor menor que **{valor_criterio}** no dado""")
                 critico = 10 + (self.party_mult_crit[ok1-1] * 10)
-                dado = await Dado.rolagem_pronta(bot, canal, self.party[ok1-1], usuario, 1, 100)
+                dado = await Dado.rolagem_pronta(self.bot, canal, self.party[ok1-1], usuario, 1, 100)
                 if dado <= valor_criterio:
                     valor_arma = Database.valor_item(ranged)
                     dano = int(math.sqrt(valor_arma) * math.sqrt(atributos_atacante[2]))
@@ -1073,7 +1075,7 @@ class Combate(commands.Cog):
                 next = 0
                 while next == 0:
                     await ctx.send("Qual o valor critério? (0 a 100)")
-                    msg = await bot.wait_for('message')
+                    msg = await self.bot.wait_for('message')
                     mensagem = msg.content
                     try:
                         var = int(mensagem)
@@ -1083,7 +1085,7 @@ class Combate(commands.Cog):
                         await ctx.send("Digite um número entre 0 e 100.")
                 valor_criterio = var + (5*(atributos_atacante[5]//5)) - (5*(atributos_defensor[6]//5)) + (10*self.party_mult_acc[ok1-1]) - (10*self.horda_mult_evs[ok2-1])
                 await canal.send(f"""Você precisa tirar um valor menor que **{valor_criterio}** no dado""")
-                dado = await Dado.rolagem_pronta(bot, canal, self.party[ok1-1], usuario, 1, 100)
+                dado = await Dado.rolagem_pronta(self.bot, canal, self.party[ok1-1], usuario, 1, 100)
                 critico = 10 + (self.party_mult_crit[ok1-1] * 10)
                 if dado <= valor_criterio:
                     valor_arma = Database.valor_item(ranged)
@@ -1165,7 +1167,7 @@ class Combate(commands.Cog):
                 await embed_msg.add_reaction(emoji="❌")
                 ok = 0
                 while ok == 0:
-                    reaction, user = await bot.wait_for('reaction_add', timeout=None)
+                    reaction, user = await self.bot.wait_for('reaction_add', timeout=None)
                     if str(reaction.emoji) == emojis_raw[0] and str(user) != "Persona Bot#0708":
                         ok = 1
                     if str(reaction.emoji) == emojis_raw[1] and str(user) != "Persona Bot#0708":
@@ -1191,7 +1193,7 @@ class Combate(commands.Cog):
                     await embed_msg.add_reaction(emoji="❌")
                     ok1 = 0
                     while ok1 == 0:
-                        reaction, user = await bot.wait_for('reaction_add', timeout=None)
+                        reaction, user = await self.bot.wait_for('reaction_add', timeout=None)
                         if str(reaction.emoji) == emojis_raw[0] and str(user) != "Persona Bot#0708":
                             ok1 = 1
                         if str(reaction.emoji) == emojis_raw[1] and str(user) != "Persona Bot#0708":
@@ -1244,7 +1246,7 @@ class Combate(commands.Cog):
                         ok2 = 0
                         defensores = []
                         while ok2 == 0:
-                            reaction, user = await bot.wait_for('reaction_add', timeout=None)
+                            reaction, user = await self.bot.wait_for('reaction_add', timeout=None)
                             if str(reaction.emoji) == emojis_raw[0] and str(user) != "Persona Bot#0708":
                                 defensores.append(1)
                             if str(reaction.emoji) == emojis_raw[1] and str(user) != "Persona Bot#0708":
@@ -1264,7 +1266,7 @@ class Combate(commands.Cog):
                             next = 0
                             while next == 0:
                                 await ctx.send("Qual o valor critério? (0 a 100)")
-                                msg = await bot.wait_for('message')
+                                msg = await self.bot.wait_for('message')
                                 mensagem = msg.content
                                 try:
                                     var = int(mensagem)
@@ -1307,7 +1309,7 @@ class Combate(commands.Cog):
                             await canal.send(f"""Você precisa tirar valor(es) menor(es) que **{texto}** no dado""")
                             dados = []
                             for i in range(vezes):   
-                                dado = await Dado.rolagem_pronta(bot, canal, self.party[codigo1-1], usuario, 1, 100)
+                                dado = await Dado.rolagem_pronta(self.bot, canal, self.party[codigo1-1], usuario, 1, 100)
                                 dados.append(dado)
                             for defensor in defensores:
                                 codigo2 = defensor
@@ -1389,7 +1391,7 @@ class Combate(commands.Cog):
                                             atributos_defensor[i] += int(p)
                                     valor_criterio = var + (5*(atributos_atacante[5]//5)) - (5*(atributos_defensor[6]//5)) + (10*self.party_mult_acc[codigo1-1]) - (10*self.horda_mult_evs[codigo2-1])
                                     for i in range(vezes):  
-                                        dado = await Dado.rolagem_pronta(bot, canal, self.party[codigo1-1], usuario, 1, 100)
+                                        dado = await Dado.rolagem_pronta(self.bot, canal, self.party[codigo1-1], usuario, 1, 100)
                                         if dado <= valor_criterio:
                                             if elemento < 3:
                                                 dano = int((intensidade * 25) * math.sqrt(atributos_atacante[2]))
@@ -1458,7 +1460,7 @@ class Combate(commands.Cog):
                     await embed_msg.add_reaction(emoji="❌")
                     ok1 = 0
                     while ok1 == 0:
-                        reaction, user = await bot.wait_for('reaction_add', timeout=None)
+                        reaction, user = await self.bot.wait_for('reaction_add', timeout=None)
                         if str(reaction.emoji) == emojis_raw[0] and str(user) != "Persona Bot#0708":
                             ok1 = 1
                         if str(reaction.emoji) == emojis_raw[1] and str(user) != "Persona Bot#0708":
@@ -1519,7 +1521,7 @@ class Combate(commands.Cog):
                         ok2 = 0
                         defensores = []
                         while ok2 == 0:
-                            reaction, user = await bot.wait_for('reaction_add', timeout=None)
+                            reaction, user = await self.bot.wait_for('reaction_add', timeout=None)
                             if str(reaction.emoji) == emojis_raw[0] and str(user) != "Persona Bot#0708":
                                 defensores.append(1)
                             if str(reaction.emoji) == emojis_raw[1] and str(user) != "Persona Bot#0708":
@@ -1538,7 +1540,7 @@ class Combate(commands.Cog):
                         next = 0
                         while next == 0:
                             await ctx.send("Qual o valor critério? (0 a 100)")
-                            msg = await bot.wait_for('message')
+                            msg = await self.bot.wait_for('message')
                             mensagem = msg.content
                             try:
                                 var = int(mensagem)
@@ -1574,7 +1576,7 @@ class Combate(commands.Cog):
                         await canal.send(f"""Você precisa tirar valor(es) menor(es) que **{texto}** no dado""")
                         dados = []
                         for i in range(vezes):   
-                            dado = await Dado.rolagem_pronta(bot, canal, self.horda[codigo1-1][1], "Axuáti#9639", 1, 100)
+                            dado = await Dado.rolagem_pronta(self.bot, canal, self.horda[codigo1-1][1], "Axuáti#9639", 1, 100)
                             dados.append(dado)
                         for defensor in defensores:
                             codigo2 = defensor
@@ -1660,7 +1662,7 @@ class Combate(commands.Cog):
         if self.party != []:
             for i in range(len(self.party)):
                 if self.party[i] == personagem:
-                    self.party.insert(0, mylist.pop(i))
+                    self.party.insert(0, self.party.pop(i))
                     await canal.send(f"""**{personagem}** foi denominado o líder do grupo.""")
                     break
     
@@ -1757,7 +1759,7 @@ class Combate(commands.Cog):
         await embed_msg.add_reaction(emoji="❌")
         ok = 0
         while ok == 0:
-            reaction, user = await bot.wait_for('reaction_add', timeout=None)
+            reaction, user = await self.bot.wait_for('reaction_add', timeout=None)
             if str(reaction.emoji) == emojis_raw[0] and str(user) != "Persona Bot#0708":
                 ok = 1
             if str(reaction.emoji) == emojis_raw[1] and str(user) != "Persona Bot#0708":
@@ -1781,7 +1783,7 @@ class Combate(commands.Cog):
                 await embed_msg.add_reaction(emoji=emojis_raw[i])
             await embed_msg.add_reaction(emoji="❌")
             while conjurador == 0:
-                reaction, user = await bot.wait_for('reaction_add', timeout=None)
+                reaction, user = await self.bot.wait_for('reaction_add', timeout=None)
                 if str(reaction.emoji) == emojis_raw[0] and str(user) != "Persona Bot#0708":
                     conjurador = 1
                 if str(reaction.emoji) == emojis_raw[1] and str(user) != "Persona Bot#0708":
@@ -1826,7 +1828,7 @@ class Combate(commands.Cog):
                 await embed_msg.add_reaction(emoji=emojis_raw[i])
             await embed_msg.add_reaction(emoji="❌")
             while conjurador == 0:
-                reaction, user = await bot.wait_for('reaction_add', timeout=None)
+                reaction, user = await self.bot.wait_for('reaction_add', timeout=None)
                 if str(reaction.emoji) == emojis_raw[0] and str(user) != "Persona Bot#0708":
                     conjurador = 1
                 if str(reaction.emoji) == emojis_raw[1] and str(user) != "Persona Bot#0708":
@@ -1885,7 +1887,7 @@ class Combate(commands.Cog):
             await embed_msg.add_reaction(emoji="❌")
             skill = 0
             while skill == 0:
-                reaction, user = await bot.wait_for('reaction_add', timeout=None)
+                reaction, user = await self.bot.wait_for('reaction_add', timeout=None)
                 if str(reaction.emoji) == emojis_raw[0] and str(user) != "Persona Bot#0708":
                     skill = 1
                 if str(reaction.emoji) == emojis_raw[1] and str(user) != "Persona Bot#0708":
@@ -1936,7 +1938,7 @@ class Combate(commands.Cog):
     async def interacao(self, ctx, tipo_grupo, codigo, elemento, tipo_interacao):
         try:
             codigo = int(codigo)
-            atributo = int(atributo)
+            elemento = int(elemento)
             tipo_interacao = int(tipo_interacao)
             if tipo_grupo == "horda":
                 self.horda_elem_dano[codigo-1][elemento] == tipo_interacao

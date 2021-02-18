@@ -181,7 +181,7 @@ class Ficha(commands.Cog):
             ok = 0
             mensagem = ""
             while ok == 0:
-                reaction, user = await bot.wait_for('reaction_add', timeout=None)
+                reaction, user = await self.bot.wait_for('reaction_add', timeout=None)
                 if str(reaction.emoji) == "<:phys:790320130810839101>" and str(user) != "Persona Bot#0708":
                     print(info)
                     info[shadow_id][0] = 1
@@ -289,7 +289,7 @@ class Ficha(commands.Cog):
             ok = 0
             mensagem = ""
             while ok == 0:
-                reaction, user = await bot.wait_for('reaction_add', timeout=None)
+                reaction, user = await self.bot.wait_for('reaction_add', timeout=None)
                 if str(reaction.emoji) == "<:phys:790320130810839101>" and str(user) != "Persona Bot#0708":
                     print(info)
                     info[shadow_id][0] = 0
