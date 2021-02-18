@@ -10,7 +10,7 @@ class Item(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
     
-    def add_item(quant, item_id):
+    def add_item(self, quant, item_id):
         contem_item = Database.item_no_inventario2(item_id)
         if contem_item != False:
             soma_item = Database.soma_item_database(item_id, contem_item[1], quant)
@@ -119,7 +119,7 @@ class Item(commands.Cog):
             for item_id, chance in drops:
                 dado = random.randint(0, 100)
                 if dado <= chance:
-                    add_item(1, item_id)
+                    self.add_item(1, item_id)
                     lista_drops.append(Database.nome_item(item_id))
             dinheiro_exp = Database.dinheiro_exp(shadow_id)
             dinheiro_inicial = dinheiro_exp[0]
@@ -143,7 +143,7 @@ class Item(commands.Cog):
             embed_drops.add_field(name="Itens dropados", value=texto, inline=False)
             await canal.send(embed=embed_drops)
         except:
-            await ctx.send("Canal do jogador não registrado ou informações do dado erradas.")
+            await ctx.send("Canal do grupo não registrado ou informações do dado erradas.")
     
     @commands.command(name='equipar')
     async def equipar(self, ctx, personagem, *item):

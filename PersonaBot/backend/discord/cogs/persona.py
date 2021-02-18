@@ -460,6 +460,7 @@ class Persona(commands.Cog):
                     await canal.send(f"""Nível de **{Database.nome_persona(persona_id)}** diminuído para {nivel -1}""")
                 personagem_persona_id = Database.personagem_persona_id(personagem_id, persona_id)
                 apagar = Database.apagar_crecimento(personagem_persona_id, nivel)
+                apagar = Database.apagar_crecimento(personagem_persona_id, nivel)
                 if apagar:
                     await canal.send(f"""Atributos de **{Database.nome_persona(persona_id)}** resetado para os do {nivel -1}""")
                 nivel_skills = Database.nivel_skills(nivel-1, persona_id)
@@ -467,8 +468,8 @@ class Persona(commands.Cog):
                     desaprendeu = Database.del_skill(skill, personagem_persona_id)
                     if desaprendeu:
                         await canal.send(f"""Habilidade: **{Database.nome_skill(skill)}** foi desaprendida.""")
-                else:
-                    await ctx.send(f"""Este personagem não é da Arcana Fool""")
+            else:
+                await ctx.send(f"""Este personagem não é da Arcana Fool""")
         except:
             await ctx.send("Canal do jogador não registrado.")
 
@@ -650,7 +651,7 @@ class Persona(commands.Cog):
         except:
             await ctx.send("Canal do jogador não registrado.")
     
-    @commands.command(name='aprender_skill')
+    @commands.command(name='aprender_habilidade')
     async def aprender_skill(self, ctx, personagem, *skill):
         global canais_jogadores
         try:
@@ -731,7 +732,7 @@ class Persona(commands.Cog):
         except:
             await ctx.send("Canal do jogador não registrado.")
 
-    @commands.command(name='esquecer_skill')
+    @commands.command(name='esquecer_habilidade')
     async def esquecer_skill(self, ctx, personagem):
         try:
             personagem_id = Database.personagem_id(personagem)
