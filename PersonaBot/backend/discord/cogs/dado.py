@@ -14,9 +14,9 @@ class Dado(commands.Cog):
         try:
             personagem_id = Database.personagem_id(personagem)
             if personagem_id != False:
-                canal = bot.get_channel(Canal.carregar_canal_jogador(personagem))
+                canal = self.bot.get_channel(Canal.carregar_canal_jogador(personagem))
                 usuario = Database.discord_user()
-                dado = await Dado.rolagem_pronta(bot, canal, personagem, usuario, dados, lados)
+                dado = await Dado.rolagem_pronta(self.bot, canal, personagem, usuario, dados, lados)
             else:
                 await ctx.send("Este personagem não existe.")
         except:
