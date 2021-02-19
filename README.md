@@ -1,5 +1,9 @@
 # Documentação do Persona Bot
 
+![GitHub repo size](https://img.shields.io/github/repo-size/ViniciusHora1009/persona-bot)
+![GitHub release (latest by date including pre-releases)](https://img.shields.io/github/v/release/ViniciusHora1009/persona-bot?include_prereleases)
+![GitHub top language](https://img.shields.io/github/languages/top/ViniciusHora1009/persona-bot)
+
 <p align="center">
   <img img width="400" height="288" src="https://github.com/ViniciusHora1009/persona-bot/blob/main/imagens/persona-bot-circle.png">
 </p>
