@@ -31,6 +31,8 @@ O sistema de combate está sendo criado do zero por mim e se encontra hospedado 
 
 ## Funcionalidades
 
+Confira a [Lista de Comandos](https://github.com/ViniciusHora1009/persona-bot/blob/main/comandos.md)
+
 ### Sistema de canal inteligente dos jogadores
 No Persona Bot, o mestre gerencia a maioria dos comandos, sendo ele que envia os dados das ações aos jogadores, informações dos inimigos, informações do inventário, informações de combate, etc. Para aumentar a imersão, esses dados e informações são enviados diretamente para o jogador em seu canal, que será onde ele executará suas ações e visualizará suas informações. Esses canais serão previamente registrados através de comandos pelo mestre, podendo ser alterados caso necessário. Cada jogador tem seu canal, além do canal do mestre, do grupo, do suporte e dos inimigos.
 
