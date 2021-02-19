@@ -1726,7 +1726,7 @@ class Combate(commands.Cog):
                         await canal.send(f"""**{self.horda[codigo-1][1]}** teve sua evasão aumentada em {quant}.""")
                     elif quant < 0:
                         await canal.send(f"""**{self.horda[codigo-1][1]}** teve sua evasão diminuida em {quant}.""")
-            else:
+            elif marcador == "crit":
                 if tipo_grupo == "party":
                     self.party_mult_crit[codigo-1] += quant
                     if quant > 0:
