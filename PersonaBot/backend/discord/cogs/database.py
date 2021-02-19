@@ -1154,7 +1154,7 @@ where fk_personagem_personagem_id = %s and fk_atributo_atributo_id = %s and fk_t
 select atributo_id from atributo
 where nome = %s
 """
-                        cur.execute(select,(atributo_id,))
+                        cur.execute(select,(nome,))
                         atributo_id = cur.fetchone()
                         return atributo_id[0]
                 except:
