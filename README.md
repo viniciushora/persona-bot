@@ -1,5 +1,9 @@
 # Documentação do Persona Bot
 
+![GitHub repo size](https://img.shields.io/github/repo-size/ViniciusHora1009/persona-bot)
+![GitHub release (latest by date including pre-releases)](https://img.shields.io/github/v/release/ViniciusHora1009/persona-bot?include_prereleases)
+![GitHub top language](https://img.shields.io/github/languages/top/ViniciusHora1009/persona-bot)
+
 <p align="center">
   <img img width="400" height="288" src="https://github.com/ViniciusHora1009/persona-bot/blob/main/imagens/persona-bot-circle.png">
 </p>
@@ -14,6 +18,8 @@ O Persona Bot é um bot de Discord criado para auxiliar a execução do meu sist
 | Sistema de inventário inteligente               | Finalizado   |
 | Execução de drop de itens                       | Finalizado   |
 | Cálculo de dano                                 | Finalizado   |
+| Execução de mecânicas de combate                | Finalizado   |
+| Sistema de canal inteligente dos jogadores      | Finalizado   |
 
 [Convidar o Persona Bot ao meu servidor](https://discord.com/api/oauth2/authorize?client_id=788843258306101279&permissions=8&scope=bot)<br>
 
@@ -22,7 +28,8 @@ O sistema de combate está sendo criado do zero por mim e se encontra hospedado 
 [Pasta do Sistema](https://drive.google.com/drive/folders/16OB41w_IHq1p9vzMyiCOC2TrLpnopyDq?usp=sharing)
 
 ### Rolagem automática de dado
-Para que os jogadores possam executar suas ações será necessário rodar um dado D100. Para que não seja necessário programas auxiliares, o Persona Bot se encarregará dessa tarefa, fornecendo comandos e funções automáticas para a rolagem de dados.
+Para que os jogadores possam executar suas ações será necessário rodar um dado D100. Para que não seja necessário programas auxiliares, o Persona Bot se encarregará dessa tarefa, fornecendo comandos e funções automáticas para a rolagem de dados.<br>
+Com o sistema de batalha, além do dado personalizado que será direcionado ao jogador, também mostrará informações importantes ao mesmo, como qual valor abaixo que ele deve tirar para acertar um golpe ou habilidade.
 
 #### p!rolldice
 A versão mais intuitiva da rolagem de dados, perguntando diretamente ao jogador qual a quantia de dados e lados dos dados que deseja rolar. Adequada a jogadores iniciantes.
