@@ -1,5 +1,7 @@
 # Documentação do Persona Bot
 
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/532ac7b89b9c43c18d8929af29915e6f)](https://app.codacy.com/gh/ViniciusHora1009/persona-bot?utm_source=github.com&utm_medium=referral&utm_content=ViniciusHora1009/persona-bot&utm_campaign=Badge_Grade)
+
 ![GitHub repo size](https://img.shields.io/github/repo-size/ViniciusHora1009/persona-bot)
 ![GitHub release (latest by date including pre-releases)](https://img.shields.io/github/v/release/ViniciusHora1009/persona-bot?include_prereleases)
 ![GitHub top language](https://img.shields.io/github/languages/top/ViniciusHora1009/persona-bot)
