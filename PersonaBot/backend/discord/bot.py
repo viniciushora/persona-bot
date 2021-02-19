@@ -1,8 +1,7 @@
-import discord
 import json
 
-from cogs.canal import *
-from cogs.ficha import *
+from cogs.canal import Canal
+from cogs.ficha import Ficha
 
 from discord.ext import commands
 

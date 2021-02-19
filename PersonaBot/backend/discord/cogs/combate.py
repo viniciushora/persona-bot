@@ -3,9 +3,9 @@ import random
 import math
 from discord.ext import commands
 
-from cogs.database import *
-from cogs.dado import *
-from cogs.canal import *
+from cogs.database import Database
+from cogs.dado import Dado
+from cogs.canal import Canal
 
 class Combate(commands.Cog):
     def __init__(self, bot):

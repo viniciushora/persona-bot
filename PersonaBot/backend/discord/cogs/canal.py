@@ -2,7 +2,7 @@ import discord
 import pickle
 from discord.ext import commands
 
-from cogs.database import *
+from cogs.database import Database
 
 class Canal(commands.Cog):
     def __init__(self, bot):

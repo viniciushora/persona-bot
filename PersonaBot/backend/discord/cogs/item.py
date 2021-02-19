@@ -2,8 +2,8 @@ import discord
 import random
 from discord.ext import commands
 
-from cogs.database import *
-from cogs.canal import *
+from cogs.database import Database
+from cogs.canal import Canal
 
 class Item(commands.Cog):
     def __init__(self, bot):
