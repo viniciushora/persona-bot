@@ -54,8 +54,8 @@ class Ficha(commands.Cog):
             persona_id = Database.persona_id(nome)
             nivel = Database.nivel_persona(persona_id)
             embed.set_image(url=foto)
-            embed.add_field(name=f'**Nível base**"', value=nivel, inline=False)
-            embed.add_field(name=f'**Arcana**"', value=arcana, inline=False)
+            embed.add_field(name="**Nível base**", value=nivel, inline=False)
+            embed.add_field(name="**Arcana**", value=arcana, inline=False)
             embed.add_field(name=f'**{ficha[1][0][0]}**"', value=ficha[1][0][1], inline=False)
             embed.add_field(name=f'**{ficha[1][1][0]}**"', value=ficha[1][1][1], inline=False)
             embed.add_field(name=f'**{ficha[1][2][0]}**"', value=ficha[1][2][1], inline=False)
@@ -64,20 +64,20 @@ class Ficha(commands.Cog):
             embed.add_field(name=f'**{ficha[1][5][0]}**"', value=ficha[1][5][1], inline=False)
             embed.add_field(name=f'**{ficha[1][6][0]}**"', value=ficha[1][6][1], inline=False)
             embed2 = discord.Embed(
-                title=f'**Fraquezas**"',
+                title="**Fraquezas**",
                 colour=discord.Colour.red()
             )
-            embed2.add_field(name=f'<:phys:790320130810839101>"', value=ficha[2][0][1], inline=True)
-            embed2.add_field(name=f'<:gun:790320131028287488>"', value=ficha[2][1][1], inline=True)
-            embed2.add_field(name=f'<:fire:790320130483421245>"', value=ficha[2][2][1], inline=True)
-            embed2.add_field(name=f'<:ice:790320130738356224>"', value=ficha[2][3][1], inline=True)
-            embed2.add_field(name=f'<:elec:790320130151809047>"', value=ficha[2][4][1], inline=True)
-            embed2.add_field(name=f'<:wind:790320130521169922>"', value=ficha[2][5][1], inline=True)
-            embed2.add_field(name=f'<:psy:790320130772566046>"', value=ficha[2][6][1], inline=True)
-            embed2.add_field(name=f'<:nuclear:790320130584084532>"', value=ficha[2][7][1], inline=True)
-            embed2.add_field(name=f'<:bless:790320130746744892>"', value=ficha[2][8][1], inline=True)
-            embed2.add_field(name=f'<:curse:790320130387214336>"', value=ficha[2][9][1], inline=True)
-            embed2.add_field(name=f'<:almighty:790320130297954374>"', value=ficha[2][10][1], inline=True)
+            embed2.add_field(name="<:phys:790320130810839101>", value=ficha[2][0][1], inline=True)
+            embed2.add_field(name="<:gun:790320131028287488>", value=ficha[2][1][1], inline=True)
+            embed2.add_field(name="<:fire:790320130483421245>", value=ficha[2][2][1], inline=True)
+            embed2.add_field(name="<:ice:790320130738356224>", value=ficha[2][3][1], inline=True)
+            embed2.add_field(name="<:elec:790320130151809047>", value=ficha[2][4][1], inline=True)
+            embed2.add_field(name="<:wind:790320130521169922>", value=ficha[2][5][1], inline=True)
+            embed2.add_field(name="<:psy:790320130772566046>", value=ficha[2][6][1], inline=True)
+            embed2.add_field(name="<:nuclear:790320130584084532>", value=ficha[2][7][1], inline=True)
+            embed2.add_field(name="<:bless:790320130746744892>", value=ficha[2][8][1], inline=True)
+            embed2.add_field(name="<:curse:790320130387214336>", value=ficha[2][9][1], inline=True)
+            embed2.add_field(name="<:almighty:790320130297954374>", value=ficha[2][10][1], inline=True)
             await canal.send(embed=embed)
             await canal.send(embed=embed2)
         except:
@@ -100,13 +100,12 @@ class Ficha(commands.Cog):
                 shadow_id = ficha[0][0]
                 nome = ficha[0][1]
                 foto = ficha[0][2]
-                arcana = ficha[0][3]
                 embed = discord.Embed(
                     title=f'**{nome}**"',
                     colour=discord.Colour.red()
                 )
                 embed.set_image(url=foto)
-                embed.add_field(name=f'Nível base"', value=nivel, inline=False)
+                embed.add_field(name="Nível base", value=nivel, inline=False)
                 fraquezas = ['???','???','???','???','???','???','???','???','???','???','???']
                 if info[shadow_id][0] == 1:
                     fraquezas[0] = ficha[1][0][1]
@@ -130,17 +129,17 @@ class Ficha(commands.Cog):
                     fraquezas[9] = ficha[1][9][1]
                 if info[shadow_id][10] == 1:
                     fraquezas[10] = ficha[1][10][1]
-                embed.add_field(name=f'<:phys:790320130810839101>"', value=fraquezas[0], inline=True)
-                embed.add_field(name=f'<:gun:790320131028287488>"', value=fraquezas[1], inline=True)
-                embed.add_field(name=f'<:fire:790320130483421245>"', value=fraquezas[2], inline=True)
-                embed.add_field(name=f'<:ice:790320130738356224>"', value=fraquezas[3], inline=True)
-                embed.add_field(name=f'<:elec:790320130151809047>"', value=fraquezas[4], inline=True)
-                embed.add_field(name=f'<:wind:790320130521169922>"', value=fraquezas[5], inline=True)
-                embed.add_field(name=f'<:psy:790320130772566046>"', value=fraquezas[6], inline=True)
-                embed.add_field(name=f'<:nuclear:790320130584084532>"', value=fraquezas[7], inline=True)
-                embed.add_field(name=f'<:bless:790320130746744892>"', value=fraquezas[8], inline=True)
-                embed.add_field(name=f'<:curse:790320130387214336>"', value=fraquezas[9], inline=True)
-                embed.add_field(name=f'<:almighty:790320130297954374>"', value=fraquezas[10], inline=True)
+                embed.add_field(name="<:phys:790320130810839101>", value=fraquezas[0], inline=True)
+                embed.add_field(name="<:gun:790320131028287488>", value=fraquezas[1], inline=True)
+                embed.add_field(name="<:fire:790320130483421245>", value=fraquezas[2], inline=True)
+                embed.add_field(name="<:ice:790320130738356224>", value=fraquezas[3], inline=True)
+                embed.add_field(name="<:elec:790320130151809047>", value=fraquezas[4], inline=True)
+                embed.add_field(name="<:wind:790320130521169922>", value=fraquezas[5], inline=True)
+                embed.add_field(name="<:psy:790320130772566046>", value=fraquezas[6], inline=True)
+                embed.add_field(name="<:nuclear:790320130584084532>", value=fraquezas[7], inline=True)
+                embed.add_field(name="<:bless:790320130746744892>", value=fraquezas[8], inline=True)
+                embed.add_field(name="<:curse:790320130387214336>", value=fraquezas[9], inline=True)
+                embed.add_field(name="<:almighty:790320130297954374>", value=fraquezas[10], inline=True)
                 await canal.send(embed=embed)
             except:
                 await ctx.send("**Shadow não encontrada, digite novamente e corretamente.**")
@@ -368,7 +367,7 @@ class Ficha(commands.Cog):
         personagem_id = Database.personagem_id(personagem)
         if personagem_id != False:
             personagem_ficha = discord.Embed(
-                title=f'**Ficha de personagem**"',
+                title="**Ficha de personagem**",
                 description=f'Atributos, equipamentos e Persona de **{personagem}**"',
                 colour=discord.Colour.red()
             )
@@ -402,8 +401,8 @@ class Ficha(commands.Cog):
                     colour=discord.Colour.red()
                 )
                 embed.set_image(url=foto)
-                embed.add_field(name=f'**Arcana**"', value=arcana, inline=False)
-                embed.add_field(name=f'**Nível**"', value=nivel, inline=False)
+                embed.add_field(name="**Arcana**", value=arcana, inline=False)
+                embed.add_field(name="**Nível**", value=nivel, inline=False)
                 atributos = [ficha[1][0][1], ficha[1][1][1], ficha[1][2][1], ficha[1][3][1], ficha[1][4][1], ficha[1][5][1], ficha[1][6][1]]
                 atributos_soma = Database.atributos_soma(personagem_id)
                 atributos_porcent = Database.atributos_porcent(personagem_id)
@@ -429,7 +428,7 @@ class Ficha(commands.Cog):
                     elemento = Database.elemento(skill_id)
                     texto += f'{skill} {emote[elemento-1]}' + "\n"
                 texto = texto[:-1]
-                embed.add_field(name=f'**Habilidades**"', value=texto, inline=False)
+                embed.add_field(name="**Habilidades**", value=texto, inline=False)
                 embed2 = discord.Embed(
                     title=f'**Fraquezas**"',
                     colour=discord.Colour.red()

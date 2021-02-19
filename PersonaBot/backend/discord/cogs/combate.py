@@ -124,7 +124,7 @@ class Combate(commands.Cog):
     async def mostrar_party(self, ctx):
         if self.party != []:
             embed = discord.Embed(
-                title=f'**PARTY**',
+                title="**PARTY**",
                 colour=discord.Colour.blue()
             )
             texto = ""
@@ -142,7 +142,7 @@ class Combate(commands.Cog):
     async def mostrar_horda(self, ctx):
         if self.horda != []:
             embed = discord.Embed(
-                title=f'**HORDA**',
+                title="**HORDA**",
                 colour=discord.Colour.blue()
             )
             texto = ""
@@ -168,8 +168,8 @@ class Combate(commands.Cog):
             ordem = []
             if self.horda != [] and self.party != []:
                 embed = discord.Embed(
-                    title=f'Qual a forma de interação pós combate?',
-                    description=f'Reaja com a opção desejada',
+                    title="Qual a forma de interação pós combate?",
+                    description="Reaja com a opção desejada",
                     colour=discord.Colour.blue()
                 )
                 embed.add_field(name=":one:", value="Emboscada", inline=False)
@@ -268,7 +268,7 @@ class Combate(commands.Cog):
                         self.insertion_sort(quant1, ordem1)
                         ordem = ordem1
                     embed = discord.Embed(
-                        title=f'**Ordem de turnos*',
+                        title="**Ordem de turnos*",
                         colour=discord.Colour.blue()
                     )
                     texto = ""
@@ -359,7 +359,7 @@ class Combate(commands.Cog):
                         self.insertion_sort(quant2, ordem2)
                         ordem = ordem2 + ordem1
                     embed = discord.Embed(
-                        title=f'**Ordem de turnos**',
+                        title="**Ordem de turnos**",
                         colour=discord.Colour.blue()
                     )
                     texto = ""
@@ -393,8 +393,8 @@ class Combate(commands.Cog):
     async def ataque_fisico(self, ctx):
         try:
             embed = discord.Embed(
-                title=f'Quem vai atacar?',
-                description=f'Reaja com a opção desejada',
+                title="Quem vai atacar?",
+                description="Reaja com a opção desejada",
                 colour=discord.Colour.blue()
             )
             embed.add_field(name=":one:", value="Party", inline=False)
@@ -416,8 +416,8 @@ class Combate(commands.Cog):
             await embed_msg.delete()
             if ok == 1:
                 embed = discord.Embed(
-                    title=f'Qual personagem da Party irá atacar?',
-                    description=f'Reaja com a opção desejada',
+                    title="Qual personagem da Party irá atacar?",
+                    description="Reaja com a opção desejada",
                     colour=discord.Colour.blue()
                 )
                 emojis_raw = ["1️⃣", "2️⃣", "3️⃣", "4️⃣", "5️⃣"]
@@ -464,8 +464,8 @@ class Combate(commands.Cog):
                     else:
                         atributos_atacante[i] += int(p)
                 embed = discord.Embed(
-                    title=f'Quem da horda será atacado?',
-                    description=f'Reaja com a opção desejada',
+                    title="Quem da horda será atacado?",
+                    description="Reaja com a opção desejada",
                     colour=discord.Colour.blue()
                 )
                 emojis_raw = ["1️⃣", "2️⃣", "3️⃣", "4️⃣", "5️⃣"]
@@ -655,8 +655,8 @@ class Combate(commands.Cog):
             elif ok == 2:
                 canal = self.bot.get_channel(Canal.carregar_canal_inimigos())
                 embed = discord.Embed(
-                    title=f'Quem da horda atacará?',
-                    description=f'Reaja com a opção desejada',
+                    title="Quem da horda atacará?",
+                    description="Reaja com a opção desejada",
                     colour=discord.Colour.blue()
                 )
                 emojis_raw = ["1️⃣", "2️⃣", "3️⃣", "4️⃣", "5️⃣"]
@@ -685,8 +685,8 @@ class Combate(commands.Cog):
                 await embed_msg.delete()
                 nome_horda = self.horda[ok1-1][1]
                 embed = discord.Embed(
-                    title=f'Qual personagem da Party será atacado?',
-                    description=f'Reaja com a opção desejada',
+                    title="Qual personagem da Party será atacado?",
+                    description="Reaja com a opção desejada",
                     colour=discord.Colour.blue()
                 )
                 emojis_raw = ["1️⃣", "2️⃣", "3️⃣", "4️⃣", "5️⃣"]
@@ -765,7 +765,7 @@ class Combate(commands.Cog):
                         if armadura == None:
                             valor_armadura = 0
                         else:
-                            valor_armadura = Database.valor_item(armadur)
+                            valor_armadura = Database.valor_item(armadura)
                         dano_mitigado = int(dano / math.sqrt((atributos_defensor[4]*8) + valor_armadura))
                         if self.party_mult_def[ok2-1] > 0:
                             dano_mitigado = dano + (0,3 *self.party_mult_def[ok2-1] * dano)
@@ -813,8 +813,8 @@ class Combate(commands.Cog):
                     atacante_id = Database.personagem_id(self.horda[ok1-1])
                     a_persona_id = Database.persona_equipada(personagem_id)
                     equips_atacante = Database.itens_equipados()
-                    meelee_atacante = equips[0]
-                    atributos_atacante = Database.atributos(atacante_id, d_persona_id)
+                    meelee_atacante = equips_atacante[0]
+                    atributos_atacante = Database.atributos(atacante_id, a_persona_id)
                     for i in range(len(atributos_atacante)):
                         atributos_atacante[i] = atributos_atacante[i][1]
                     atributos_soma = Database.atributos_soma(atacante_id)
@@ -904,8 +904,8 @@ class Combate(commands.Cog):
     async def tiro(self, ctx):
         try:
             embed = discord.Embed(
-                title=f'Qual personagem da Party irá atacar?',
-                description=f'Reaja com a opção desejada',
+                title="Qual personagem da Party irá atacar?",
+                description="Reaja com a opção desejada",
                 colour=discord.Colour.blue()
             )
             emojis_raw = ["1️⃣", "2️⃣", "3️⃣", "4️⃣", "5️⃣"]
@@ -952,8 +952,8 @@ class Combate(commands.Cog):
                 else:
                     atributos_atacante[i] += int(p)
             embed = discord.Embed(
-                title=f'Quem da horda será atacado?',
-                description=f'Reaja com a opção desejada',
+                title="Quem da horda será atacado?",
+                description="Reaja com a opção desejada",
                 colour=discord.Colour.blue()
             )
             emojis_raw = ["1️⃣", "2️⃣", "3️⃣", "4️⃣", "5️⃣"]
@@ -1152,8 +1152,8 @@ class Combate(commands.Cog):
             skill_id = Database.skill_id(nome)
             if skill_id != False:
                 embed = discord.Embed(
-                    title=f'Quem vai atacar?',
-                    description=f'Reaja com a opção desejada',
+                    title="Quem vai atacar?",
+                    description="Reaja com a opção desejada",
                     colour=discord.Colour.blue()
                 )
                 embed.add_field(name=":one:", value="Party", inline=False)
@@ -1177,8 +1177,8 @@ class Combate(commands.Cog):
                 vezes = Database.skill_vezes(skill_id)
                 if ok == 1:
                     embed = discord.Embed(
-                        title=f'Qual personagem da Party irá atacar?',
-                        description=f'Reaja com a opção desejada',
+                        title="Qual personagem da Party irá atacar?",
+                        description="Reaja com a opção desejada",
                         colour=discord.Colour.blue()
                     )
                     emojis_raw = ["1️⃣", "2️⃣", "3️⃣", "4️⃣", "5️⃣"]
@@ -1228,8 +1228,8 @@ class Combate(commands.Cog):
                             else:
                                 atributos_atacante[i] += int(p)
                         embed = discord.Embed(
-                            title=f'Quem/Quais da horda será atacado?',
-                            description=f'Reaja com a opções desejadas e confirme',
+                            title="Quem/Quais da horda será atacado?",
+                            description="Reaja com a opções desejadas e confirme",
                             colour=discord.Colour.blue()
                         )
                         emojis_raw = ["1️⃣", "2️⃣", "3️⃣", "4️⃣", "5️⃣"]
@@ -1444,14 +1444,14 @@ class Combate(commands.Cog):
                             await ctx.send("Habilidade cancelada.")
                 elif ok == 2:
                     embed = discord.Embed(
-                        title=f'Qual personagem da Horda irá atacar?',
-                        description=f'Reaja com a opção desejada',
+                        title="Qual personagem da Horda irá atacar?",
+                        description="Reaja com a opção desejada",
                         colour=discord.Colour.blue()
                     )
                     emojis_raw = ["1️⃣", "2️⃣", "3️⃣", "4️⃣", "5️⃣"]
                     emojis_disc = [":one:", ":two:", ":three:", ":four:", ":five:"]
                     for j in range(len(self.horda)):
-                        embed.add_field(name=emojis_disc[j], value=horda[j][1], inline=False)
+                        embed.add_field(name=emojis_disc[j], value=self.horda[j][1], inline=False)
                     embed_msg = await ctx.send(embed=embed)
                     for i in range(len(self.horda)):
                         await embed_msg.add_reaction(emoji=emojis_raw[i])
@@ -1503,8 +1503,8 @@ class Combate(commands.Cog):
                         elemento = Database.elemento(skill_id)
                         nome_elemento = Database.nome_elemento(elemento)
                         embed = discord.Embed(
-                            title=f'Quem/Quais da Party será atacado?',
-                            description=f'Reaja com a opções desejadas e confirme',
+                            title="Quem/Quais da Party será atacado?",
+                            description="Reaja com a opções desejadas e confirme",
                             colour=discord.Colour.blue()
                         )
                         emojis_raw = ["1️⃣", "2️⃣", "3️⃣", "4️⃣", "5️⃣"]
@@ -1712,7 +1712,7 @@ class Combate(commands.Cog):
                         await canal.send(f'**{self.horda[codigo-1][1]}** teve sua acurácia aumentada em {quant}.')
                     elif quant < 0:
                         await canal.send(f'**{self.horda[codigo-1][1]}** teve sua acurácia diminuida em {quant}.')
-            elif marcador == "evs":
+            elif tipo_marcador == "evs":
                 if tipo_grupo == "party":
                     self.party_mult_evs[codigo-1] += quant
                     if quant > 0:
@@ -1725,7 +1725,7 @@ class Combate(commands.Cog):
                         await canal.send(f'**{self.horda[codigo-1][1]}** teve sua evasão aumentada em {quant}.')
                     elif quant < 0:
                         await canal.send(f'**{self.horda[codigo-1][1]}** teve sua evasão diminuida em {quant}.')
-            elif marcador == "crit":
+            elif tipo_marcador == "crit":
                 if tipo_grupo == "party":
                     self.party_mult_crit[codigo-1] += quant
                     if quant > 0:
@@ -1739,13 +1739,13 @@ class Combate(commands.Cog):
                     elif quant < 0:
                         await canal.send(f'**{self.horda[codigo-1][1]}** teve sua taxa de acerto crítico diminuida em {quant}.')
         except:
-            await ctx.send(f'Erro')
+            await ctx.send("Erro")
 
     @commands.command(name='cura')
     async def cura(self, ctx, bonus=0.0):
         embed = discord.Embed(
-            title=f'Quem vai conjurar?',
-            description=f'Reaja com a opção desejada',
+            title="Quem vai conjurar?",
+            description="Reaja com a opção desejada",
             colour=discord.Colour.blue()
         )
         embed.add_field(name=":one:", value="Party", inline=False)
@@ -1768,8 +1768,8 @@ class Combate(commands.Cog):
         conjurador = 0
         if ok == 1:
             embed = discord.Embed(
-                title=f'Qual personagem da Party irá conjurar?',
-                description=f'Reaja com a opção desejada',
+                title="Qual personagem da Party irá conjurar?",
+                description="Reaja com a opção desejada",
                 colour=discord.Colour.blue()
             )
             emojis_raw = ["1️⃣", "2️⃣", "3️⃣", "4️⃣", "5️⃣"]
@@ -1813,8 +1813,8 @@ class Combate(commands.Cog):
                         atributos_atacante[i] += int(p)
         elif ok == 2:
             embed = discord.Embed(
-                title=f'Qual personagem da Horda irá conjurar?',
-                description=f'Reaja com a opção desejada',
+                title="Qual personagem da Horda irá conjurar?",
+                description="Reaja com a opção desejada",
                 colour=discord.Colour.blue()
             )
             emojis_raw = ["1️⃣", "2️⃣", "3️⃣", "4️⃣", "5️⃣"]
@@ -1853,7 +1853,6 @@ class Combate(commands.Cog):
                     personagem_id = Database.personagem_id(self.horda[conjurador-1][1])
                     persona_id = Database.persona_equipada(personagem_id)
                     atributos_atacante = Database.atributos_iniciais(shadow_id)
-                    skills = Database.skills_id(personagem_id, persona_id)
                     atributos_atacante = Database.atributos(personagem_id, persona_id)
                     for i in range(len(atributos_atacante)):
                         atributos_atacante[i] = atributos_atacante[i][1]
@@ -1870,8 +1869,8 @@ class Combate(commands.Cog):
             await ctx.send("Cura cancelada.")
         if conjurador > 0 and conjurador < 6:
             embed = discord.Embed(
-                title=f'Qual a magia de cura?',
-                description=f'Reaja com a opção desejada',
+                title="Qual a magia de cura?",
+                description="Reaja com a opção desejada",
                 colour=discord.Colour.blue()
             )
             emojis_raw = ["1️⃣", "2️⃣", "3️⃣", "4️⃣"]
@@ -1943,9 +1942,9 @@ class Combate(commands.Cog):
             elif tipo_grupo == "party":
                 self.party_elem_dano[codigo-1][elemento] == tipo_interacao
             else:
-                await ctx.send(f'Tipo incorreto.')
+                await ctx.send("Tipo incorreto.")
         except:
-            await ctx.send(f'Erro')
+            await ctx.send("Erro")
 
 def setup(bot):
     bot.add_cog(Combate(bot))

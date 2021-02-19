@@ -37,7 +37,7 @@ class Item(commands.Cog):
                     if add_item:
                         await canal.send(f'**{quant} {nome}** adicionado(s) no inventário do grupo.')
                     else:
-                        await ctx.send(f'**Erro interno**"')
+                        await ctx.send("**Erro interno**")
             else:
                 await ctx.send(f'**{nome} não existe.**"')
         except:
@@ -82,9 +82,9 @@ class Item(commands.Cog):
                 if novo_dinheiro:
                     await canal.send(f'Adicionado **R$ {quant}**; (Valor anterior: **R$ {dinheiro_inicial}**). O dinheiro do grupo agora é **R$ {dinheiro_final}**')
                 else:
-                    await ctx.send(f'Erro interno')
+                    await ctx.send("Erro interno")
             except:
-                await ctx.send(f'Valor incorreto')
+                await ctx.send("Valor incorreto")
         except:
             await ctx.send("Canal do grupo não registrado.")
     
@@ -260,7 +260,7 @@ class Item(commands.Cog):
                     roupas.append((item,quant))
             dinheiro = Database.dinheiro_grupo()
             inventario = discord.Embed(
-                    title=f'**Inventário do grupo**',
+                    title="**Inventário do grupo**",
                     description=f'Dinheiro: R$ {dinheiro}',
                     colour=discord.Colour.blue()
             )

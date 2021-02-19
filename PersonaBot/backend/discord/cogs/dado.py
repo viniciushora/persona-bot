@@ -16,7 +16,7 @@ class Dado(commands.Cog):
             if personagem_id != False:
                 canal = self.bot.get_channel(Canal.carregar_canal_jogador(personagem))
                 usuario = Database.discord_user()
-                dado = await Dado.rolagem_pronta(self.bot, canal, personagem, usuario, dados, lados)
+                await Dado.rolagem_pronta(self.bot, canal, personagem, usuario, dados, lados)
             else:
                 await ctx.send("Este personagem não existe.")
         except:
@@ -57,7 +57,7 @@ class Dado(commands.Cog):
             dado.description = f'SUM: {soma} = **{total}**'
             await ctx.send(embed=dado)
         else:
-            await ctx.send(f'You failed to roll the dice. Try Again.')
+            await ctx.send("You failed to roll the dice. Try Again.")
 
     @commands.command(name='roll', aliases=['r'])
     async def fast_rolldice(self, ctx, dado):
@@ -87,7 +87,7 @@ class Dado(commands.Cog):
                 dado.description = f'SUM: {soma} = **{total}**'
                 await ctx.send(embed=dado)
         except:
-            await ctx.send(f'Incorrect parameters. Dices amount must be enter 1 and 25 / Dice sides must be integer and greater than 0.')
+            await ctx.send("Incorrect parameters. Dices amount must be enter 1 and 25 / Dice sides must be integer and greater than 0.")
 
     @classmethod
     async def rolagem_pronta(self, bot, canal, personagem, usuario, dados, lados):
@@ -121,7 +121,7 @@ class Dado(commands.Cog):
                     await canal.send(embed=dado1)
                     return total
         else:
-            await canal.send(f'Parâmetros incorretos.')
+            await canal.send("Parâmetros incorretos.")
 
 def setup(bot):
     bot.add_cog(Dado(bot))

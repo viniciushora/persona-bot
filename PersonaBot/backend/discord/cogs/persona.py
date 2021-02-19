@@ -62,7 +62,7 @@ class Persona(commands.Cog):
                             crescimento_atributo[atributo_id - 1] = 0
                 Database.aumentar_status(personagem_persona_id, nivel, crescimento_atributo)
                 atributos_aumento = discord.Embed(
-                    title=f'**SUBIU DE NÍVEL!**',
+                    title="**SUBIU DE NÍVEL!**",
                     description=f'**{personagem}** alcançou o nível ({nivel})',
                     colour=discord.Colour.green()
                 )
@@ -222,7 +222,7 @@ class Persona(commands.Cog):
                 crescimento_atributo[1] = random.randint(1,4)
                 Database.aumentar_status_fool(personagem_id, nivel, crescimento_atributo)
                 atributos_aumento = discord.Embed(
-                    title=f'**SUBIU DE NÍVEL!**',
+                    title="**SUBIU DE NÍVEL!**",
                     description=f'**{personagem}** alcançou o nível ({nivel})',
                     colour=discord.Colour.green()
                 )
@@ -305,7 +305,7 @@ class Persona(commands.Cog):
                             crescimento_atributo[atributo_id - 1] = 0
                 Database.aumentar_status_fool_persona(personagem_persona_id, nivel, crescimento_atributo)
                 atributos_aumento = discord.Embed(
-                    title=f'**PERSONA SUBIU DE NÍVEL!**',
+                    title="**PERSONA SUBIU DE NÍVEL!**",
                     description=f'**{Database.nome_persona(persona_id)}** alcançou o nível ({nivel})',
                     colour=discord.Colour.green()
                 )
@@ -327,6 +327,7 @@ class Persona(commands.Cog):
                                     await canal.send(f'**{Database.nome_persona(persona_id)}** aprendeu a habilidade **{nome_skill}**')
                     elif len(skills) + len(nivel_skills) > 8 and len(skills) < 8:
                         tam = len(skills)
+                        i = 0
                         while tam < 8:
                             if nivel_skills[i] not in skills:
                                 aprendeu = Database.add_skill(nivel_skills[0], personagem_persona_id)
@@ -335,6 +336,7 @@ class Persona(commands.Cog):
                                     await canal.send(f'**{Database.nome_persona(persona_id)}** aprendeu a habilidade **{nome_skill}**')
                                     del nivel_skills[i]
                                     tam += 1
+                            i += 1
                         if nivel_skills != []:
                             nova_skills = Database.skills(personagem_id, persona_id)
                             for skill in nivel_skills:
@@ -468,7 +470,7 @@ class Persona(commands.Cog):
                     if desaprendeu:
                         await canal.send(f'Habilidade: **{Database.nome_skill(skill)}** foi desaprendida.')
             else:
-                await ctx.send(f'Este personagem não é da Arcana Fool')
+                await ctx.send("Este personagem não é da Arcana Fool")
         except:
             await ctx.send("Canal do jogador não registrado.")
 
@@ -486,8 +488,8 @@ class Persona(commands.Cog):
                     personas.remove(persona_nome)
                     if personas != []:
                         embed = discord.Embed(
-                        title=f'**Troca de Persona**',
-                        description=f'Reaja com a opção da Persona que deseja equipar',
+                        title="**Troca de Persona**",
+                        description="Reaja com a opção da Persona que deseja equipar",
                         colour=discord.Colour.red()
                         )
                         emojis_disc = [":one:", ":two:", ":three:", ":four:", ":five:", ":six:", ":seven:", ":eight:"]
@@ -502,28 +504,20 @@ class Persona(commands.Cog):
                         while ok == 0:
                             reaction, user = await self.bot.wait_for('reaction_add', timeout=None)
                             if str(reaction.emoji) == emojis_raw[0] and str(user) != "Persona Bot#0708":
-                                persona_l_id = personas[0]
                                 ok = 1
                             if str(reaction.emoji) == emojis_raw[1] and str(user) != "Persona Bot#0708":
-                                persona_l_id = personas[1]
                                 ok = 2
                             if str(reaction.emoji) == emojis_raw[2] and str(user) != "Persona Bot#0708":
-                                persona_l_id = personas[2]
                                 ok = 3
                             if str(reaction.emoji) == emojis_raw[3] and str(user) != "Persona Bot#0708":
-                                persona_l_id = personas[3]
                                 ok = 4
                             if str(reaction.emoji) == emojis_raw[4] and str(user) != "Persona Bot#0708":
-                                persona_l_id = personas[4]
                                 ok = 5
                             if str(reaction.emoji) == emojis_raw[5] and str(user) != "Persona Bot#0708":
-                                persona_l_id = personas[5]
                                 ok = 6
                             if str(reaction.emoji) == emojis_raw[6] and str(user) != "Persona Bot#0708":
-                                persona_l_id = personas[6]
                                 ok = 7
                             if str(reaction.emoji) == emojis_raw[7] and str(user) != "Persona Bot#0708":
-                                persona_l_id = personas[7]
                                 ok = 8
                             if str(reaction.emoji) == "❌" and str(user) != "Persona Bot#0708":
                                 ok = 9
@@ -543,11 +537,11 @@ class Persona(commands.Cog):
                         else:
                             await canal.send("Troca de Persona cancelada.")
                     else:
-                        await ctx.send(f'Você só tem uma persona, não tem o que equipar xD')
+                        await ctx.send("Você só tem uma persona, não tem o que equipar xD")
                 else:
-                    await ctx.send(f'Este personagem não possui Arcana Fool')
+                    await ctx.send("Este personagem não possui Arcana Fool")
             else:
-                await ctx.send(f'Este personagem não existe.')
+                await ctx.send("Este personagem não existe.")
         except:
             await ctx.send("Canal do jogador não registrado.")
 
@@ -566,28 +560,26 @@ class Persona(commands.Cog):
                 if persona_id != False:
                     if eh_fool == True:
                         persona_habilitada = Database.personagem_persona_id(personagem_id, persona_id)
-                        print(persona_habilitada)
                         if persona_habilitada == False:
                             nova_persona = Database.personagem_add_persona(personagem_id, persona_id)
                             if nova_persona:
                                 await canal.send(f'{nome} agora é bem vindo(a) ao coração de {personagem}')
                             else:
-                                await ctx.send(f'Erro interno')
+                                await ctx.send("Erro interno")
                         else:
                             compendium = Database.compendium(persona_habilitada)
-                            print(compendium)
                             if compendium == True:
                                 reativar_persona = Database.personagem_reativar_persona(personagem_id, persona_id)
                                 if reativar_persona:
                                     await canal.send(f'{nome} agora é bem vindo(a) ao coração de {personagem} novamente')
                             else:
-                                await ctx.send(f'Você já possui essa Persona')
+                                await ctx.send("Você já possui essa Persona")
                     else:
-                        await ctx.send(f'Este personagem não possui Arcana Fool')
+                        await ctx.send("Este personagem não possui Arcana Fool")
                 else:
-                    await ctx.send(f'Esta Persona não existe')
+                    await ctx.send("Esta Persona não existe")
             else:
-                await ctx.send(f'Este personagem não existe.')
+                await ctx.send("Este personagem não existe.")
         except:
             await ctx.send("Canal do jogador não registrado.")
 
@@ -612,15 +604,15 @@ class Persona(commands.Cog):
                             if persona_solta:
                                 await canal.send(f'{nome} agora é não é mais bem vindo(a) ao coração de {personagem}')
                             else:
-                                await ctx.send(f'Erro interno')
+                                await ctx.send("Erro interno")
                         else:
-                            await ctx.send(f'Você não possui essa Persona')
+                            await ctx.send("Você não possui essa Persona")
                     else:
-                        await ctx.send(f'Este personagem não possui Arcana Fool')
+                        await ctx.send("Este personagem não possui Arcana Fool")
                 else:
-                    await ctx.send(f'Esta Persona não existe')
+                    await ctx.send("Esta Persona não existe")
             else:
-                await ctx.send(f'Este personagem não existe.')
+                await ctx.send("Este personagem não existe.")
         except:
             await ctx.send("Canal do jogador não registrado.")
 
@@ -725,9 +717,9 @@ class Persona(commands.Cog):
                         else:
                             await canal.send(f'**{personagem}** ignorou a habilidade **{nome_skill}**')
                 else:
-                    await ctx.send(f'**{personagem}** já conhece essa habildade.')
+                    await ctx.send("**{personagem}** já conhece essa habildade.")
             else:
-                await ctx.send(f'Esta habilidade não existe.')
+                await ctx.send("Esta habilidade não existe.")
         except:
             await ctx.send("Canal do jogador não registrado.")
 
@@ -744,8 +736,8 @@ class Persona(commands.Cog):
             for skill in skills:
                 skills_id.append(Database.skill_id(skill))
             embed = discord.Embed(
-                title=f'**{personagem}** deseja esquecer uma habilidade!',
-                description=f'Reaja com a opção da habilidade que deseja esquecer.',
+                title=f'**{personagem}** deseja esquecer uma habilidade de {nome}!',
+                description="Reaja com a opção da habilidade que deseja esquecer.",
                 colour=discord.Colour.red()
             )
             emojis_disc = [":one:", ":two:", ":three:", ":four:", ":five:", ":six:", ":seven:", ":eight:"]
@@ -780,10 +772,9 @@ class Persona(commands.Cog):
             await embed_msg.delete()
             if ok < 9:
                 deletou = Database.del_skill(skills_id[ok-1], personagem_persona_id)
-                print(deletou)
                 if deletou:
                     confirmacao = discord.Embed(
-                        title=f'Habilidade esquecida: **{nome_skill}**',
+                        title=f'Habilidade esquecida: **{skills[ok-1]}**',
                         description=f'**{personagem}** esqueceu de **{skills[ok-1]}**',
                         colour=discord.Colour.blue()
                     )
@@ -791,7 +782,7 @@ class Persona(commands.Cog):
                 else:
                     await ctx.send("Erro no esquecimento da habilidade")
             else:
-                await canal.send(f'**Esquecimento cancelado**')
+                await canal.send("**Esquecimento cancelado**")
         except:
             await ctx.send("Canal do jogador não registrado.")
     
@@ -814,13 +805,13 @@ class Persona(commands.Cog):
                             if mod:
                                 await canal.send(f'**{personagem}** agora recebe aumento de **{quant}%** de **{atributo}**')
                         else:
-                            await ctx.send(f'Tipo incorreto (digite p(porcentagem) ou n(normal)')
+                            await ctx.send("Tipo incorreto (digite p(porcentagem) ou n(normal)")
                     else:
-                        await ctx.send(f'Valor incorreto.')
+                        await ctx.send("Valor incorreto.")
                 except:
-                    await ctx.send(f'Valor incorreto.')
+                    await ctx.send("Valor incorreto.")
         else:
-            await ctx.send(f'Este personagem não existe.')
+            await ctx.send("Este personagem não existe.")
 
     @commands.command(name='del_atributo')
     async def del_atributo(self, ctx, personagem, quant, atributo):
@@ -836,11 +827,11 @@ class Persona(commands.Cog):
                         if delete:
                             await canal.send(f'**{quant}** foi diminuido em **{atributo}** de **{personagem}**')
                     else:
-                        await ctx.send(f'Valor incorreto.')
+                        await ctx.send("Valor incorreto.")
                 except:
-                    await ctx.send(f'Valor incorreto.')
+                    await ctx.send("Valor incorreto.")
         else:
-            await ctx.send(f'Este personagem não existe.')
+            await ctx.send("Este personagem não existe.")
     
     def takeSecond(self, elem):
         return elem[1]
