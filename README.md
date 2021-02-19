@@ -34,32 +34,46 @@ O sistema de combate está sendo criado do zero por mim e se encontra hospedado 
 ### Sistema de canal inteligente dos jogadores
 No Persona Bot, o mestre gerencia a maioria dos comandos, sendo ele que envia os dados das ações aos jogadores, informações dos inimigos, informações do inventário, informações de combate, etc. Para aumentar a imersão, esses dados e informações são enviados diretamente para o jogador em seu canal, que será onde ele executará suas ações e visualizará suas informações. Esses canais serão previamente registrados através de comandos pelo mestre, podendo ser alterados caso necessário. Cada jogador tem seu canal, além do canal do mestre, do grupo, do suporte e dos inimigos.
 
-![Alt text](https://github.com/ViniciusHora1009/persona-bot/blob/main/imagens/print0.PNG "Canais")
+<p align="center">
+  <img src="https://github.com/ViniciusHora1009/persona-bot/blob/main/imagens/print0.PNG">
+</p>
 
 ### Rolagem automática de dado
 Para que os jogadores possam executar suas ações será necessário rodar um dado D100. Para que não seja necessário programas auxiliares, o Persona Bot se encarregará dessa tarefa, fornecendo comandos e funções automáticas para a rolagem de dados.<br>
 Com o sistema de batalha, além do dado personalizado que será direcionado ao jogador, também mostrará informações importantes ao mesmo, como qual valor abaixo que ele deve tirar para acertar um golpe ou habilidade.
 
-![Alt text](https://github.com/ViniciusHora1009/persona-bot/blob/main/imagens/print1.PNG "Rolar dado")
-![Alt text](https://github.com/ViniciusHora1009/persona-bot/blob/main/imagens/print2.PNG "Resultado do dado")
+<p align="center">
+  <img src="https://github.com/ViniciusHora1009/persona-bot/blob/main/imagens/print1.PNG">
+</p>
+<p align="center">
+  <img src="https://github.com/ViniciusHora1009/persona-bot/blob/main/imagens/print2.PNG">
+</p>
 
 ### Ficha dos jogadores e inimigos
 O bot informará aos jogadores as informações essenciais de seu personagem e dos inimigos encontrados. Dentre as informações do jogador estão: nome, arcana, atributos, habilidades e fraquezas. Dentre as informações dos inimigos estarão somente as suas fraquezas, essas informações serão enviadas ao canal do suporte. <br>
 As informações disponíveis serão modificadas pelo mestre e ficarão visíveis aos jogadores.
 
-![Alt text](https://github.com/ViniciusHora1009/persona-bot/blob/main/imagens/print3.PNG "Informações das Shadows")
+<p align="center">
+  <img src="https://github.com/ViniciusHora1009/persona-bot/blob/main/imagens/print3.PNG">
+</p>
 
 ### Sistema de inventário inteligente
 O inventário nesse sistema é compartilhado entre o grupo, então todo dinheiro e itens adquiridos são direcionados ao inventário independente de quem o tenha. Os itens que podem ser adicionados no inventário são aqueles previamente registrados no banco de dados. O mestre se encarregará de gerenciar esses itens para os jogadores.
 
-![Alt text](https://github.com/ViniciusHora1009/persona-bot/blob/main/imagens/print4.PNG "Inventário")
+<p align="center">
+  <img src="https://github.com/ViniciusHora1009/persona-bot/blob/main/imagens/print4.PNG">
+</p>
 
 ### Execução do drop de itens
 O drop de itens será automatico, gerado através de um comando, será calculada a experiência adquirida pelo grupo e os itens dropados pelos inimigos aleatoriamente.
 
-![Alt text](https://github.com/ViniciusHora1009/persona-bot/blob/main/imagens/print5.PNG "Drop de itens")
+<p align="center">
+  <img src="https://github.com/ViniciusHora1009/persona-bot/blob/main/imagens/print5.PNG">
+</p>
 
 ### Mecânicas de combate
 O bot se encarrega de automatizar cada mecânica de combate para deixar a sessão cada vez mais dinâmica. Conta com sistema de marcadores para tratar dos buffs/debuffs, modificados através de comandos pelo mestre; interações com elementos dos jogadores e inimigos pode ser modificada no meio do combate para aplicar condições de habilidades e itens. As ações como usar ataques físicos, arma de fogo ou habilidades são gerenciadas pelo mestre, que irá utilizar o comando específico e enviará o dado para o jogador em seu devido canal. Caso o jogador consiga o dado necessário, o bot realizará o cálculo do dano, levando em conta os atributos do atacante e do defensor, marcadores, interações, armadura e bônus aplicados.
 
-![Alt text](https://github.com/ViniciusHora1009/persona-bot/blob/main/imagens/print6.PNG "Cálculo de dano")
+<p align="center">
+  <img src="https://github.com/ViniciusHora1009/persona-bot/blob/main/imagens/print6.PNG">
+</p>
