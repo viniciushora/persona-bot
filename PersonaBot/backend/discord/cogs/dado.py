@@ -43,21 +43,21 @@ class Dado(commands.Cog):
                 await ctx.send("Incorrect parameter.")
         if lados > 0:
             dado = discord.Embed(
-                title=f"""{quant_dados} D{lados} roll by {str(ctx.author)} :game_die: """,
+                title=f'{quant_dados} D{lados} roll by {str(ctx.author)} :game_die: ',
                 colour=discord.Colour.greyple()
             )
             total = 0
             soma = ""
             for i in range(quant_dados):
                 num = random.randint(1, lados)
-                dado.add_field(name=f"""Dice #{i + 1}""", value=num, inline=True)
+                dado.add_field(name=f'Dice #{i + 1}', value=num, inline=True)
                 total += num
                 soma += str(num) + " + "
             soma = soma[:len(soma) - 2]
-            dado.description = f"""SUM: {soma} = **{total}**"""
+            dado.description = f'SUM: {soma} = **{total}**'
             await ctx.send(embed=dado)
         else:
-            await ctx.send(f"""You failed to roll the dice. Try Again.""")
+            await ctx.send(f'You failed to roll the dice. Try Again.')
 
     @commands.command(name='roll', aliases=['r'])
     async def fast_rolldice(self, ctx, dado):
@@ -73,27 +73,27 @@ class Dado(commands.Cog):
                     break
             if lados > 0:
                 dado = discord.Embed(
-                    title=f"""{quant_dados} D{lados} roll by {str(ctx.author)} :game_die: """,
+                    title=f'{quant_dados} D{lados} roll by {str(ctx.author)} :game_die: ',
                     colour=discord.Colour.greyple()
                 )
                 total = 0
                 soma = ""
                 for i in range(quant_dados):
                     num = random.randint(1, lados)
-                    dado.add_field(name=f"""Dice #{i + 1}""", value=num, inline=True)
+                    dado.add_field(name=f'Dice #{i + 1}', value=num, inline=True)
                     total += num
                     soma += str(num) + " + "
                 soma = soma[:len(soma) - 2]
-                dado.description = f"""SUM: {soma} = **{total}**"""
+                dado.description = f'SUM: {soma} = **{total}**'
                 await ctx.send(embed=dado)
         except:
-            await ctx.send(f"""Incorrect parameters. Dices amount must be enter 1 and 25 / Dice sides must be integer and greater than 0.""")
+            await ctx.send(f'Incorrect parameters. Dices amount must be enter 1 and 25 / Dice sides must be integer and greater than 0.')
 
     @classmethod
     async def rolagem_pronta(self, bot, canal, personagem, usuario, dados, lados):
         if (dados > 0 and dados < 25) and (lados > 0):
             dado = discord.Embed(
-                title=f"""{dados} D{lados} roll by {personagem} :game_die: """,
+                title=f'{dados} D{lados} roll by {personagem} :game_die: ',
                 description="Clique no dado abaixo para rodar o dado.",
                 colour=discord.Colour.greyple()
             )
@@ -108,20 +108,20 @@ class Dado(commands.Cog):
                     total = 0
                     soma = ""
                     dado1 = discord.Embed(
-                        title=f"""{dados} D{lados} roll by {personagem} :game_die: """,
+                        title=f'{dados} D{lados} roll by {personagem} :game_die: ',
                         colour=discord.Colour.greyple()
                     )
                     for i in range(dados):
                         num = random.randint(1, lados)
-                        dado1.add_field(name=f"""Dice #{i + 1}""", value=num, inline=True)
+                        dado1.add_field(name=f'Dice #{i + 1}', value=num, inline=True)
                         total += num
                         soma += str(num) + " + "
                     soma = soma[:len(soma) - 2]
-                    dado1.description = f"""SUM: {soma} = **{total}**"""
+                    dado1.description = f'SUM: {soma} = **{total}**'
                     await canal.send(embed=dado1)
                     return total
         else:
-            await canal.send(f"""Parâmetros incorretos.""")
+            await canal.send(f'Parâmetros incorretos.')
 
 def setup(bot):
     bot.add_cog(Dado(bot))

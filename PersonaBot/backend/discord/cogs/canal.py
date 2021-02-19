@@ -13,11 +13,6 @@ class Canal(commands.Cog):
         try:
             with open('canais.pickle', 'rb') as handle:
                 canais = pickle.load(handle)
-            canais_jogadores = canais["jogadores"]
-            canal_inimigos = canais["inimigos"]
-            canal_grupo = canais["grupo"]
-            canal_mestre = canais["mestre"]
-            canal_suporte = canais["suporte"]
         except:
             canais = {"jogadores": {}, "inimigos": 0, "grupo": 0, "mestre": 0, "suporte": 0}
             with open('canais.pickle', 'wb') as handle:

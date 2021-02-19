@@ -62,17 +62,17 @@ class Persona(commands.Cog):
                             crescimento_atributo[atributo_id - 1] = 0
                 Database.aumentar_status(personagem_persona_id, nivel, crescimento_atributo)
                 atributos_aumento = discord.Embed(
-                    title=f"""**SUBIU DE NÍVEL!**""",
-                    description=f"""**{personagem}** alcançou o nível ({nivel})""",
+                    title=f'**SUBIU DE NÍVEL!**',
+                    description=f'**{personagem}** alcançou o nível ({nivel})',
                     colour=discord.Colour.green()
                 )
-                atributos_aumento.add_field(name="**HP**", value=f"""+{crescimento_atributo[0]}""")
-                atributos_aumento.add_field(name="**SP**", value=f"""+{crescimento_atributo[1]}""")
-                atributos_aumento.add_field(name="**St**", value=f"""+{crescimento_atributo[2]}""")
-                atributos_aumento.add_field(name="**Ma**", value=f"""+{crescimento_atributo[3]}""")
-                atributos_aumento.add_field(name="**En**", value=f"""+{crescimento_atributo[4]}""")
-                atributos_aumento.add_field(name="**Ag**", value=f"""+{crescimento_atributo[5]}""")
-                atributos_aumento.add_field(name="**Lu**", value=f"""+{crescimento_atributo[6]}""")
+                atributos_aumento.add_field(name="**HP**", value=f'+{crescimento_atributo[0]}')
+                atributos_aumento.add_field(name="**SP**", value=f'+{crescimento_atributo[1]}')
+                atributos_aumento.add_field(name="**St**", value=f'+{crescimento_atributo[2]}')
+                atributos_aumento.add_field(name="**Ma**", value=f'+{crescimento_atributo[3]}')
+                atributos_aumento.add_field(name="**En**", value=f'+{crescimento_atributo[4]}')
+                atributos_aumento.add_field(name="**Ag**", value=f'+{crescimento_atributo[5]}')
+                atributos_aumento.add_field(name="**Lu**", value=f'+{crescimento_atributo[6]}')
                 await canal.send(embed=atributos_aumento)
                 nivel_skills = Database.nivel_skills(nivel, persona_id)
                 if nivel_skills != False:
@@ -87,7 +87,7 @@ class Persona(commands.Cog):
                                 if aprendeu == True:
                                     nome_skill = Database.nome_skill(skill)
                                     elemento = Database.elemento(skill)
-                                    await canal.send(f"""**{personagem}** aprendeu a habilidade **{nome_skill}** {emote[elemento-1]}""")
+                                    await canal.send(f'**{personagem}** aprendeu a habilidade **{nome_skill}** {emote[elemento-1]}')
                     elif len(skills_id) + len(nivel_skills) > 8 and len(skills) < 8:
                         tam = len(skills_id)
                         while tam < 8:
@@ -96,7 +96,7 @@ class Persona(commands.Cog):
                                 if aprendeu == True:
                                     nome_skill = Database.nome_skill(nivel_skills[0])
                                     elemento = Database.elemento(nivel_skills[0])
-                                    await canal.send(f"""**{personagem}** aprendeu a habilidade **{nome_skill}** {emote[elemento-1]}""")
+                                    await canal.send(f'**{personagem}** aprendeu a habilidade **{nome_skill}** {emote[elemento-1]}')
                                     del nivel_skills[i]
                                     tam += 1
                         if nivel_skills != []:
@@ -108,8 +108,8 @@ class Persona(commands.Cog):
                                 nome_skill = Database.nome_skill(skill)
                                 elemento = Database.elemento(skill)
                                 embed = discord.Embed(
-                                    title=f"""**{personagem}** aprendeu uma nova habilidade!""",
-                                    description=f"""Você já conhece habilidades demais, deseja trocar alguma por **{nome_skill}** {emote[elemento-1]}?""",
+                                    title=f'**{personagem}** aprendeu uma nova habilidade!',
+                                    description=f'Você já conhece habilidades demais, deseja trocar alguma por **{nome_skill}** {emote[elemento-1]}?',
                                     colour=discord.Colour.red()
                                 )
                                 emojis_disc = [":one:", ":two:", ":three:", ":four:", ":five:", ":six:", ":seven:", ":eight:"]
@@ -146,15 +146,15 @@ class Persona(commands.Cog):
                                     mudou = Database.mod_skill(skills_id[ok-1], skill, personagem_persona_id)
                                     if mudou:
                                         confirmacao = discord.Embed(
-                                            title=f"""Nova habilidade aprendida: **{nome_skill}**""",
-                                            description=f"""**{personagem}** esqueceu de **{nova_skills[ok-1]}**""",
+                                            title=f'Nova habilidade aprendida: **{nome_skill}**',
+                                            description=f'**{personagem}** esqueceu de **{nova_skills[ok-1]}**',
                                             colour=discord.Colour.blue()
                                         )
                                         await canal.send(embed=confirmacao)
                                     else:
                                         await ctx.send("Erro no aprendizado da habilidade")
                                 else:
-                                    await canal.send(f"""**{personagem}** ignorou a habilidade **{nome_skill}**""")
+                                    await canal.send(f'**{personagem}** ignorou a habilidade **{nome_skill}**')
                                 nova_skills = Database.skills(personagem_id, persona_id)
                     else:
                         nova_skills = Database.skills(personagem_id, persona_id)
@@ -164,8 +164,8 @@ class Persona(commands.Cog):
                         for skill in nivel_skills:
                             nome_skill = Database.nome_skill(skill)
                             embed = discord.Embed(
-                                title=f"""**{personagem}** aprendeu uma nova habilidade!""",
-                                description=f"""Você já conhece habilidades demais, deseja trocar alguma por **{nome_skill}**?""",
+                                title=f'**{personagem}** aprendeu uma nova habilidade!',
+                                description=f'Você já conhece habilidades demais, deseja trocar alguma por **{nome_skill}**?',
                                 colour=discord.Colour.red()
                             )
                             emojis_disc = [":one:", ":two:", ":three:", ":four:", ":five:", ":six:", ":seven:", ":eight:"]
@@ -202,15 +202,15 @@ class Persona(commands.Cog):
                                 mudou = Database.mod_skill(skills_id[ok-1], skill, personagem_persona_id)
                                 if mudou:
                                     confirmacao = discord.Embed(
-                                        title=f"""Nova habilidade aprendida: **{nome_skill}**""",
-                                        description=f"""**{personagem}** esqueceu de **{nova_skills[ok-1]}**""",
+                                        title=f'Nova habilidade aprendida: **{nome_skill}**',
+                                        description=f'**{personagem}** esqueceu de **{nova_skills[ok-1]}**',
                                         colour=discord.Colour.blue()
                                     )
                                     await canal.send(embed=confirmacao)
                                 else:
                                     await ctx.send("Erro no aprendizado da habilidade")
                             else:
-                                await canal.send(f"""**{personagem}** ignorou a habilidade **{nome_skill}**""")
+                                await canal.send(f'**{personagem}** ignorou a habilidade **{nome_skill}**')
                             nova_skills = Database.skills(personagem_id, persona_id)
             else:
                 subiu_nivel = Database.aumentar_nivel_fool(personagem_id)
@@ -222,12 +222,12 @@ class Persona(commands.Cog):
                 crescimento_atributo[1] = random.randint(1,4)
                 Database.aumentar_status_fool(personagem_id, nivel, crescimento_atributo)
                 atributos_aumento = discord.Embed(
-                    title=f"""**SUBIU DE NÍVEL!**""",
-                    description=f"""**{personagem}** alcançou o nível ({nivel})""",
+                    title=f'**SUBIU DE NÍVEL!**',
+                    description=f'**{personagem}** alcançou o nível ({nivel})',
                     colour=discord.Colour.green()
                 )
-                atributos_aumento.add_field(name="**HP**", value=f"""+{crescimento_atributo[0]}""")
-                atributos_aumento.add_field(name="**SP**", value=f"""+{crescimento_atributo[1]}""")
+                atributos_aumento.add_field(name="**HP**", value=f'+{crescimento_atributo[0]}')
+                atributos_aumento.add_field(name="**SP**", value=f'+{crescimento_atributo[1]}')
                 await canal.send(embed=atributos_aumento)
         except:
             await ctx.send("Canal do jogador não registrado.")
@@ -243,24 +243,24 @@ class Persona(commands.Cog):
                 nivel = Database.nivel(personagem_id, persona_id)
                 diminuiu_nivel = Database.diminuir_nivel(personagem_id)
                 if diminuiu_nivel:
-                    await canal.send(f"""Nível de **{personagem}** diminuído para {nivel -1}""")
+                    await canal.send(f'Nível de **{personagem}** diminuído para {nivel -1}')
                 personagem_persona_id = Database.personagem_persona_id(personagem_id, persona_id)
                 apagar = Database.apagar_crecimento(personagem_persona_id, nivel)
                 if apagar:
-                    await canal.send(f"""Atributos de **{personagem}** resetado para os do {nivel -1}""")
+                    await canal.send(f'Atributos de **{personagem}** resetado para os do {nivel -1}')
                 nivel_skills = Database.nivel_skills(nivel, persona_id)
                 for skill in nivel_skills:
                     desaprendeu = Database.del_skill(skill, personagem_persona_id)
                     if desaprendeu:
-                        await canal.send(f"""Habilidade: **{Database.nome_skill(skill)}** foi desaprendida.""")
+                        await canal.send(f'Habilidade: **{Database.nome_skill(skill)}** foi desaprendida.')
             else:
                 nivel = Database.nivel_fool(personagem_id)
                 diminuiu_nivel = Database.diminuir_nivel_fool(personagem_id)
                 if diminuiu_nivel:
-                    await canal.send(f"""Nível de **{personagem}** diminuído para {nivel -1}""")
+                    await canal.send(f'Nível de **{personagem}** diminuído para {nivel -1}')
                 apagar = Database.apagar_crecimento_fool(personagem_id, nivel)
                 if apagar:
-                    await canal.send(f"""Atributos de **{personagem}** resetado para os do {nivel -1}""")
+                    await canal.send(f'Atributos de **{personagem}** resetado para os do {nivel -1}')
         except:
             await ctx.send("Canal do jogador não registrado.")
 
@@ -305,15 +305,15 @@ class Persona(commands.Cog):
                             crescimento_atributo[atributo_id - 1] = 0
                 Database.aumentar_status_fool_persona(personagem_persona_id, nivel, crescimento_atributo)
                 atributos_aumento = discord.Embed(
-                    title=f"""**PERSONA SUBIU DE NÍVEL!**""",
-                    description=f"""**{Database.nome_persona(persona_id)}** alcançou o nível ({nivel})""",
+                    title=f'**PERSONA SUBIU DE NÍVEL!**',
+                    description=f'**{Database.nome_persona(persona_id)}** alcançou o nível ({nivel})',
                     colour=discord.Colour.green()
                 )
-                atributos_aumento.add_field(name="**St**", value=f"""+{crescimento_atributo[2]}""")
-                atributos_aumento.add_field(name="**Ma**", value=f"""+{crescimento_atributo[3]}""")
-                atributos_aumento.add_field(name="**En**", value=f"""+{crescimento_atributo[4]}""")
-                atributos_aumento.add_field(name="**Ag**", value=f"""+{crescimento_atributo[5]}""")
-                atributos_aumento.add_field(name="**Lu**", value=f"""+{crescimento_atributo[6]}""")
+                atributos_aumento.add_field(name="**St**", value=f'+{crescimento_atributo[2]}')
+                atributos_aumento.add_field(name="**Ma**", value=f'+{crescimento_atributo[3]}')
+                atributos_aumento.add_field(name="**En**", value=f'+{crescimento_atributo[4]}')
+                atributos_aumento.add_field(name="**Ag**", value=f'+{crescimento_atributo[5]}')
+                atributos_aumento.add_field(name="**Lu**", value=f'+{crescimento_atributo[6]}')
                 await canal.send(embed=atributos_aumento)
                 nivel_skills = Database.nivel_skills(nivel, persona_id)
                 if nivel_skills != False:
@@ -324,7 +324,7 @@ class Persona(commands.Cog):
                                 aprendeu = Database.add_skill(skill, personagem_persona_id)
                                 if aprendeu == True:
                                     nome_skill = Database.nome_skill(skill)
-                                    await canal.send(f"""**{Database.nome_persona(persona_id)}** aprendeu a habilidade **{nome_skill}**""")
+                                    await canal.send(f'**{Database.nome_persona(persona_id)}** aprendeu a habilidade **{nome_skill}**')
                     elif len(skills) + len(nivel_skills) > 8 and len(skills) < 8:
                         tam = len(skills)
                         while tam < 8:
@@ -332,7 +332,7 @@ class Persona(commands.Cog):
                                 aprendeu = Database.add_skill(nivel_skills[0], personagem_persona_id)
                                 if aprendeu == True:
                                     nome_skill = Database.nome_skill(nivel_skills[0])
-                                    await canal.send(f"""**{Database.nome_persona(persona_id)}** aprendeu a habilidade **{nome_skill}**""")
+                                    await canal.send(f'**{Database.nome_persona(persona_id)}** aprendeu a habilidade **{nome_skill}**')
                                     del nivel_skills[i]
                                     tam += 1
                         if nivel_skills != []:
@@ -340,8 +340,8 @@ class Persona(commands.Cog):
                             for skill in nivel_skills:
                                 nome_skill = Database.nome_skill(skill)
                                 embed = discord.Embed(
-                                    title=f"""**{Database.nome_persona(persona_id)}** aprendeu uma nova habilidade!""",
-                                    description=f"""Você já conhece habilidades demais, deseja trocar alguma por **{nome_skill}**?""",
+                                    title=f'**{Database.nome_persona(persona_id)}** aprendeu uma nova habilidade!',
+                                    description=f'Você já conhece habilidades demais, deseja trocar alguma por **{nome_skill}**?',
                                     colour=discord.Colour.red()
                                 )
                                 emojis_disc = [":one:", ":two:", ":three:", ":four:", ":five:", ":six:", ":seven:", ":eight:"]
@@ -378,22 +378,22 @@ class Persona(commands.Cog):
                                     mudou = Database.mod_skill(nova_skills[ok-1], skill, personagem_persona_id)
                                     if mudou:
                                         confirmacao = discord.Embed(
-                                            title=f"""Nova habilidade aprendida: **{nome_skill}**""",
-                                            description=f"""**{Database.nome_persona(persona_id)}** esqueceu de **{Database.nome_skill(nova_skills[ok-1])}**""",
+                                            title=f'Nova habilidade aprendida: **{nome_skill}**',
+                                            description=f'**{Database.nome_persona(persona_id)}** esqueceu de **{Database.nome_skill(nova_skills[ok-1])}**',
                                             colour=discord.Colour.blue()
                                         )
                                         await canal.send(embed=confirmacao)
                                     else:
                                         await ctx.send("Erro no aprendizado da habilidade")
                                 else:
-                                    await canal.send(f"""**{Database.nome_persona(persona_id)}** ignorou a habilidade **{nome_skill}**""")
+                                    await canal.send(f'**{Database.nome_persona(persona_id)}** ignorou a habilidade **{nome_skill}**')
                                 nova_skills = Database.skills(personagem_id, persona_id)
                     else:
                         for skill in nivel_skills:
                             nome_skill = Database.nome_skill(skill)
                             embed = discord.Embed(
-                                title=f"""**{Database.nome_persona(persona_id)}** aprendeu uma nova habilidade!""",
-                                description=f"""Você já conhece habilidades demais, deseja trocar alguma por **{nome_skill}**?""",
+                                title=f'**{Database.nome_persona(persona_id)}** aprendeu uma nova habilidade!',
+                                description=f'Você já conhece habilidades demais, deseja trocar alguma por **{nome_skill}**?',
                                 colour=discord.Colour.red()
                             )
                             emojis_disc = [":one:", ":two:", ":three:", ":four:", ":five:", ":six:", ":seven:", ":eight:"]
@@ -430,15 +430,15 @@ class Persona(commands.Cog):
                                 mudou = Database.mod_skill(nova_skills[ok-1], skill, personagem_persona_id)
                                 if mudou:
                                     confirmacao = discord.Embed(
-                                        title=f"""Nova habilidade aprendida: **{nome_skill}**""",
-                                        description=f"""**{Database.nome_persona(persona_id)}** esqueceu de **{Database.nome_skill(nova_skills[ok-1])}**""",
+                                        title=f'Nova habilidade aprendida: **{nome_skill}**',
+                                        description=f'**{Database.nome_persona(persona_id)}** esqueceu de **{Database.nome_skill(nova_skills[ok-1])}**',
                                         colour=discord.Colour.blue()
                                     )
                                     await canal.send(embed=confirmacao)
                                 else:
                                     await ctx.send("Erro no aprendizado da habilidade")
                             else:
-                                await canal.send(f"""**{Database.nome_persona(persona_id)}** ignorou a habilidade **{nome_skill}**""")
+                                await canal.send(f'**{Database.nome_persona(persona_id)}** ignorou a habilidade **{nome_skill}**')
                             nova_skills = Database.skills(personagem_id, persona_id)
             else:
                 await ctx.send("Este personagem não é da Arcana Fool")
@@ -456,19 +456,19 @@ class Persona(commands.Cog):
                 nivel = Database.nivel(personagem_id, persona_id)
                 diminuiu_nivel = Database.diminuir_nivel(personagem_id)
                 if diminuiu_nivel:
-                    await canal.send(f"""Nível de **{Database.nome_persona(persona_id)}** diminuído para {nivel -1}""")
+                    await canal.send(f'Nível de **{Database.nome_persona(persona_id)}** diminuído para {nivel -1}')
                 personagem_persona_id = Database.personagem_persona_id(personagem_id, persona_id)
                 apagar = Database.apagar_crecimento(personagem_persona_id, nivel)
                 apagar = Database.apagar_crecimento(personagem_persona_id, nivel)
                 if apagar:
-                    await canal.send(f"""Atributos de **{Database.nome_persona(persona_id)}** resetado para os do {nivel -1}""")
+                    await canal.send(f'Atributos de **{Database.nome_persona(persona_id)}** resetado para os do {nivel -1}')
                 nivel_skills = Database.nivel_skills(nivel-1, persona_id)
                 for skill in nivel_skills:
                     desaprendeu = Database.del_skill(skill, personagem_persona_id)
                     if desaprendeu:
-                        await canal.send(f"""Habilidade: **{Database.nome_skill(skill)}** foi desaprendida.""")
+                        await canal.send(f'Habilidade: **{Database.nome_skill(skill)}** foi desaprendida.')
             else:
-                await ctx.send(f"""Este personagem não é da Arcana Fool""")
+                await ctx.send(f'Este personagem não é da Arcana Fool')
         except:
             await ctx.send("Canal do jogador não registrado.")
 
@@ -486,8 +486,8 @@ class Persona(commands.Cog):
                     personas.remove(persona_nome)
                     if personas != []:
                         embed = discord.Embed(
-                        title=f"""**Troca de Persona**""",
-                        description=f"""Reaja com a opção da Persona que deseja equipar""",
+                        title=f'**Troca de Persona**',
+                        description=f'Reaja com a opção da Persona que deseja equipar',
                         colour=discord.Colour.red()
                         )
                         emojis_disc = [":one:", ":two:", ":three:", ":four:", ":five:", ":six:", ":seven:", ":eight:"]
@@ -534,7 +534,7 @@ class Persona(commands.Cog):
                             if equipou_persona:
                                 confirmacao = discord.Embed(
                                     title="Persona equipada atualizada",
-                                    description=f"""**A Persona equipada de {personagem} agora é {personas[ok-1]}**""",
+                                    description=f'**A Persona equipada de {personagem} agora é {personas[ok-1]}**',
                                     colour=discord.Colour.blue()
                                 )
                                 await canal.send(embed=confirmacao)
@@ -543,11 +543,11 @@ class Persona(commands.Cog):
                         else:
                             await canal.send("Troca de Persona cancelada.")
                     else:
-                        await ctx.send(f"""Você só tem uma persona, não tem o que equipar xD""")
+                        await ctx.send(f'Você só tem uma persona, não tem o que equipar xD')
                 else:
-                    await ctx.send(f"""Este personagem não possui Arcana Fool""")
+                    await ctx.send(f'Este personagem não possui Arcana Fool')
             else:
-                await ctx.send(f"""Este personagem não existe.""")
+                await ctx.send(f'Este personagem não existe.')
         except:
             await ctx.send("Canal do jogador não registrado.")
 
@@ -570,24 +570,24 @@ class Persona(commands.Cog):
                         if persona_habilitada == False:
                             nova_persona = Database.personagem_add_persona(personagem_id, persona_id)
                             if nova_persona:
-                                await canal.send(f"""{nome} agora é bem vindo(a) ao coração de {personagem}""")
+                                await canal.send(f'{nome} agora é bem vindo(a) ao coração de {personagem}')
                             else:
-                                await ctx.send(f"""Erro interno""")
+                                await ctx.send(f'Erro interno')
                         else:
                             compendium = Database.compendium(persona_habilitada)
                             print(compendium)
                             if compendium == True:
                                 reativar_persona = Database.personagem_reativar_persona(personagem_id, persona_id)
                                 if reativar_persona:
-                                    await canal.send(f"""{nome} agora é bem vindo(a) ao coração de {personagem} novamente""")
+                                    await canal.send(f'{nome} agora é bem vindo(a) ao coração de {personagem} novamente')
                             else:
-                                await ctx.send(f"""Você já possui essa Persona""")
+                                await ctx.send(f'Você já possui essa Persona')
                     else:
-                        await ctx.send(f"""Este personagem não possui Arcana Fool""")
+                        await ctx.send(f'Este personagem não possui Arcana Fool')
                 else:
-                    await ctx.send(f"""Esta Persona não existe""")
+                    await ctx.send(f'Esta Persona não existe')
             else:
-                await ctx.send(f"""Este personagem não existe.""")
+                await ctx.send(f'Este personagem não existe.')
         except:
             await ctx.send("Canal do jogador não registrado.")
 
@@ -610,17 +610,17 @@ class Persona(commands.Cog):
                         if persona_habilitada != False and compendium != True:
                             persona_solta = Database.personagem_del_persona(personagem_id, persona_id)
                             if persona_solta:
-                                await canal.send(f"""{nome} agora é não é mais bem vindo(a) ao coração de {personagem}""")
+                                await canal.send(f'{nome} agora é não é mais bem vindo(a) ao coração de {personagem}')
                             else:
-                                await ctx.send(f"""Erro interno""")
+                                await ctx.send(f'Erro interno')
                         else:
-                            await ctx.send(f"""Você não possui essa Persona""")
+                            await ctx.send(f'Você não possui essa Persona')
                     else:
-                        await ctx.send(f"""Este personagem não possui Arcana Fool""")
+                        await ctx.send(f'Este personagem não possui Arcana Fool')
                 else:
-                    await ctx.send(f"""Esta Persona não existe""")
+                    await ctx.send(f'Esta Persona não existe')
             else:
-                await ctx.send(f"""Este personagem não existe.""")
+                await ctx.send(f'Este personagem não existe.')
         except:
             await ctx.send("Canal do jogador não registrado.")
 
@@ -639,10 +639,10 @@ class Persona(commands.Cog):
                 nome_skill = Database.nome_skill(skill)
                 skill_id = Database.skill_id(nome_skill)
                 elemento = Database.elemento(skill_id)
-                texto += f"""{nome_skill} {emote[elemento-1]}\n"""
+                texto += f'{nome_skill} {emote[elemento-1]}' + "\n"
             texto = texto[:-1]
             embed = discord.Embed(
-                title=f"""Habilidades conhecidas de **{nome}**""",
+                title=f'Habilidades conhecidas de **{nome}**',
                 description=texto,
                 colour=discord.Colour.blue()
             )
@@ -674,11 +674,11 @@ class Persona(commands.Cog):
                     if len(skills) < 8:
                         aprendeu = Database.add_skill(skill_id, personagem_persona_id)
                         if aprendeu == True:
-                            await canal.send(f"""**{personagem}** aprendeu a habilidade **{nome_skill}**""")
+                            await canal.send(f'**{personagem}** aprendeu a habilidade **{nome_skill}**')
                     else:
                         embed = discord.Embed(
-                            title=f"""**{personagem}** aprendeu uma nova habilidade!""",
-                            description=f"""Você já conhece habilidades demais, deseja trocar alguma por **{nome_skill}**?""",
+                            title=f'**{personagem}** aprendeu uma nova habilidade!',
+                            description=f'Você já conhece habilidades demais, deseja trocar alguma por **{nome_skill}**?',
                             colour=discord.Colour.red()
                         )
                         emojis_disc = [":one:", ":two:", ":three:", ":four:", ":five:", ":six:", ":seven:", ":eight:"]
@@ -715,19 +715,19 @@ class Persona(commands.Cog):
                             mudou = Database.mod_skill(skills_id[ok-1], skill_id, personagem_persona_id)
                             if mudou:
                                 confirmacao = discord.Embed(
-                                    title=f"""Nova habilidade aprendida: **{nome_skill}**""",
-                                    description=f"""**{personagem}** esqueceu de **{skills[ok-1]}**""",
+                                    title=f'Nova habilidade aprendida: **{nome_skill}**',
+                                    description=f'**{personagem}** esqueceu de **{skills[ok-1]}**',
                                     colour=discord.Colour.blue()
                                 )
                                 await canal.send(embed=confirmacao)
                             else:
                                 await ctx.send("Erro no aprendizado da habilidade")
                         else:
-                            await canal.send(f"""**{personagem}** ignorou a habilidade **{nome_skill}**""")
+                            await canal.send(f'**{personagem}** ignorou a habilidade **{nome_skill}**')
                 else:
-                    await ctx.send(f"""**{personagem}** já conhece essa habildade.""")
+                    await ctx.send(f'**{personagem}** já conhece essa habildade.')
             else:
-                await ctx.send(f"""Esta habilidade não existe.""")
+                await ctx.send(f'Esta habilidade não existe.')
         except:
             await ctx.send("Canal do jogador não registrado.")
 
@@ -744,8 +744,8 @@ class Persona(commands.Cog):
             for skill in skills:
                 skills_id.append(Database.skill_id(skill))
             embed = discord.Embed(
-                title=f"""**{personagem}** deseja esquecer uma habilidade!""",
-                description=f"""Reaja com a opção da habilidade que deseja esquecer.""",
+                title=f'**{personagem}** deseja esquecer uma habilidade!',
+                description=f'Reaja com a opção da habilidade que deseja esquecer.',
                 colour=discord.Colour.red()
             )
             emojis_disc = [":one:", ":two:", ":three:", ":four:", ":five:", ":six:", ":seven:", ":eight:"]
@@ -783,15 +783,15 @@ class Persona(commands.Cog):
                 print(deletou)
                 if deletou:
                     confirmacao = discord.Embed(
-                        title=f"""Habilidade esquecida: **{nome_skill}**""",
-                        description=f"""**{personagem}** esqueceu de **{skills[ok-1]}**""",
+                        title=f'Habilidade esquecida: **{nome_skill}**',
+                        description=f'**{personagem}** esqueceu de **{skills[ok-1]}**',
                         colour=discord.Colour.blue()
                     )
                     await canal.send(embed=confirmacao)
                 else:
                     await ctx.send("Erro no esquecimento da habilidade")
             else:
-                await canal.send(f"""**Esquecimento cancelado**""")
+                await canal.send(f'**Esquecimento cancelado**')
         except:
             await ctx.send("Canal do jogador não registrado.")
     
@@ -808,19 +808,19 @@ class Persona(commands.Cog):
                         if tipo == "n":
                             add = Database.add_atributo(personagem_id, atributo_id, quant)
                             if add:
-                                await canal.send(f"""**{quant}** foi adicionado em **{atributo}** de **{personagem}**""")
+                                await canal.send(f'**{quant}** foi adicionado em **{atributo}** de **{personagem}**')
                         elif tipo == "p":
                             mod = Database.mod_atributo(personagem_id, atributo_id, quant)
                             if mod:
-                                await canal.send(f"""**{personagem}** agora recebe aumento de **{quant}%** de **{atributo}**""")
+                                await canal.send(f'**{personagem}** agora recebe aumento de **{quant}%** de **{atributo}**')
                         else:
-                            await ctx.send(f"""Tipo incorreto (digite p(porcentagem) ou n(normal)""")
+                            await ctx.send(f'Tipo incorreto (digite p(porcentagem) ou n(normal)')
                     else:
-                        await ctx.send(f"""Valor incorreto.""")
+                        await ctx.send(f'Valor incorreto.')
                 except:
-                    await ctx.send(f"""Valor incorreto.""")
+                    await ctx.send(f'Valor incorreto.')
         else:
-            await ctx.send(f"""Este personagem não existe.""")
+            await ctx.send(f'Este personagem não existe.')
 
     @commands.command(name='del_atributo')
     async def del_atributo(self, ctx, personagem, quant, atributo):
@@ -834,13 +834,13 @@ class Persona(commands.Cog):
                     if quant > 0:
                         delete = Database.del_atributo(personagem_id, atributo_id, quant)
                         if delete:
-                            await canal.send(f"""**{quant}** foi diminuido em **{atributo}** de **{personagem}**""")
+                            await canal.send(f'**{quant}** foi diminuido em **{atributo}** de **{personagem}**')
                     else:
-                        await ctx.send(f"""Valor incorreto.""")
+                        await ctx.send(f'Valor incorreto.')
                 except:
-                    await ctx.send(f"""Valor incorreto.""")
+                    await ctx.send(f'Valor incorreto.')
         else:
-            await ctx.send(f"""Este personagem não existe.""")
+            await ctx.send(f'Este personagem não existe.')
     
     def takeSecond(self, elem):
         return elem[1]
