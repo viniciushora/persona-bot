@@ -335,7 +335,7 @@ class Combate(commands.Cog):
                 usuario = Database.discord_user(personagem_id)
                 equips = Database.itens_equipados(personagem_id)
                 fraquezas = Database.fraquezas(persona_id)
-                armadura = equips[2]
+                armadura_defensor = equips[2]
                 atributos = Database.atributos(personagem_id, persona_id)
                 atributos_base = Reparador.valores_atributos(atributos)
                 atributos_defensor = Somatorio.atributos_totais_personagem(personagem_id, atributos_base)
@@ -475,8 +475,12 @@ class Combate(commands.Cog):
                     valor_arma = 0
                 else:
                     valor_arma = Database.valor_item(ranged)
+                if armadura_defensor == None:
+                    valor_armadura = 0
+                else:
+                    valor_armadura = Database.valor_item(armadura_defensor)
                 dano = int(math.sqrt(valor_arma) * math.sqrt(atributos_atacante[2])) * ((0.3 * self.party_mult_atk[ok1-1]) + 1) 
-                dano_mitigado = int(math.sqrt(atributos_defensor[4]*8)) * ((0.3 * self.horda_mult_def[ok2-1]) + 1)
+                dano_mitigado = int(math.sqrt(atributos_defensor[4]*8 + valor_armadura)) * ((0.3 * self.horda_mult_def[ok2-1]) + 1)
                 dano = dano - dano_mitigado
                 interacoes = {
                     1: f'**FRACO!** **{nome_party}** causou **{int(dano * 2)}** de dano e derrubou **{nome_horda}**!',
@@ -590,7 +594,6 @@ class Combate(commands.Cog):
                                 valor = self.horda_mult_evs[defensor-1]
                                 defensor_info = (defensor, atributos_defensor, armadura_defensor, valor, defesa, dano_mod, fraquezas, nome_horda)
                                 defensores_info.append(defensor_info)
-                            critico_mod =  self.party_mult_crit[ok1-1]
                             ataque = self.party_mult_atk[ok1-1]
                 elif ok == 2:
                     titulo = "Qual personagem da Horda irá atacar?"
@@ -647,7 +650,6 @@ class Combate(commands.Cog):
                                 valor = self.party_mult_evs[defensor-1]
                                 defensor_info = (defensor, atributos_defensor, armadura_defensor, valor, defesa, dano_mod, fraquezas, nome_party)
                                 defensores_info.append(defensor_info)
-                            critico_mod =  self.horda_mult_crit[ok1-1]
                             ataque = self.horda_mult_atk[ok1-1]
                 if defensores_info != []:
                     next = 0
@@ -683,7 +685,6 @@ class Combate(commands.Cog):
                     dano = (bonus + 1) * habilidade_controlador[tipo] * ((0.3 * ataque) + 1)
                     i = 0
                     for defensor_info in defensores_info:
-                        codigo_defensor = defensor_info[0]
                         atributos_defensor = defensor_info[1]
                         armadura_defensor = defensor_info[2]
                         defesa = defensor_info[4]
@@ -697,13 +698,12 @@ class Combate(commands.Cog):
                         dano_mitigado = int(math.sqrt((atributos_defensor[4]*8) + valor_armadura)) * ((0.3 * defesa) + 1)
                         dano = dano - dano_mitigado
                         interacoes = {
-                            1: f'**FRACO!** **{nome1}** causou **{int(dano * 2)}** de dano e derrubou **{nome2}**!',
-                            2: f'**RESISTIU!** {nome1}** causou **{int(dano / 2)}** de dano em **{nome2}**!',
-                            3: f'**NULIFICOU!** **{nome2}** nulificou todo o dano causado!',
-                            4: f'**DRENOU!** **{nome2}** se curou em **{int(dano)}**!',
-                            5: f'**REFLETIU!** **{nome2}** refletiu **{int(dano)}** de dano em **{nome1}**!',
-                            6: f'**{nome1}** causou **{int(dano)}** de dano em **{nome2}**!',
-                            7: f'**CRÍTICO!** {nome1}** causou **{int(dano * 2)}** de dano e derrubou **{nome2}**!'
+                            1: f'**FRACO!** **{nome1}** causou **{int(dano * 2)}** de dano de {nome_elemento} e derrubou **{nome2}**!',
+                            2: f'**RESISTIU!** {nome1}** causou **{int(dano / 2)}** de dano de {nome_elemento} em **{nome2}**!',
+                            3: f'**NULIFICOU!** **{nome2}** nulificou todo o dano de {nome_elemento} causado!',
+                            4: f'**DRENOU!** **{nome2}** se curou em **{int(dano)} de {nome_elemento}**!',
+                            5: f'**REFLETIU!** **{nome2}** refletiu **{int(dano)}** de dano de {nome_elemento} em **{nome1}**!',
+                            6: f'**{nome1}** causou **{int(dano)}** de dano de {nome_elemento} em **{nome2}**!'
                         }  
                         for dado in dados:
                             if dado <= valores[i]:
@@ -731,7 +731,6 @@ class Combate(commands.Cog):
     @commands.command(name='marcador')
     async def marcador(self, ctx, tipo_marcador, tipo_grupo, codigo=0, quant=0):
         try:
-            nome = ""
             canal = 0
             if tipo_grupo == "party":
                 canal = self.bot.get_channel(Canal.carregar_canal_jogador(self.party[codigo-1]))
@@ -867,7 +866,6 @@ class Combate(commands.Cog):
                 if self.horda[conjurador-1][0] == "s":
                     shadow_id = Database.shadow_id(self.horda[conjurador-1][1])
                     nivel = Database.nivel_persona(shadow_id)
-                    skills = Database.skills_shadow(shadow_id, nivel)
                     atributos_base = Database.atributos_iniciais(shadow_id)
                     atributos_conjurador = Reparador.valores_atributos(atributos_base)
                 else:
@@ -875,7 +873,7 @@ class Combate(commands.Cog):
                     persona_id = Database.persona_equipada(personagem_id)
                     atributos = Database.atributos(personagem_id, persona_id)
                     atributos_base = Reparador.valores_atributos(atributos)
-                    atributos_atacante = Somatorio.atributos_totais_personagem(personagem_id, atributos_base)
+                    atributos_conjurador = Somatorio.atributos_totais_personagem(personagem_id, atributos_base)
         if conjurador > 0 and conjurador < tamanho + 2:
             titulo = "Qual a magia de cura?"
             reacoes = ["1️⃣", "2️⃣", "3️⃣", "4️⃣"]
