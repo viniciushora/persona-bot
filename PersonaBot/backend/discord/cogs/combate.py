@@ -1,11 +1,10 @@
-import discord
 import math
 from discord.ext import commands
 
 from cogs.database import Database
 from cogs.dado import Dado
 from cogs.canal import Canal
-from cogs.embed import Embed, EmbedComCampos, EmbedComReacao
+from cogs.embed import EmbedComCampos, EmbedComReacao
 from cogs.utilitarios import Ordenacao, Somatorio, Reparador, Gerador
 
 class Combate(commands.Cog):
