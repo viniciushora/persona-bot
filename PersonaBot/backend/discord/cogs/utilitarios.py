@@ -142,3 +142,64 @@ class Gerador:
             campo = (chaves[i], valores[i])
             campos.append(campo)
         return campos
+
+class Mensageiro:
+
+    @staticmethod
+    def informacoes_personagem(nome):
+        informacoes = {}
+        personagem_id = Database.personagem_id(nome)
+        persona_id = Database.persona_equipada(personagem_id)
+        usuario = Database.discord_user(personagem_id)
+        equips = Database.itens_equipados(personagem_id)
+        meelee = equips[0]
+        ranged = equips[1]
+        armadura = equips[2]
+        fraquezas = Database.fraquezas(persona_id)
+        atributos = Database.atributos(personagem_id, persona_id)
+        atributos_base = Reparador.valores_atributos(atributos)
+        atributos_somados = Somatorio.atributos_totais_personagem(personagem_id, atributos_base)
+        skills = Database.skills_id(personagem_id, persona_id)
+        informacoes["usuario"] = usuario
+        informacoes["meelee"] = meelee
+        informacoes["ranged"] = ranged
+        informacoes["armadura"] = armadura
+        informacoes["fraquezas"] = fraquezas
+        informacoes["atributos"] = atributos_somados
+        informacoes["skills"] = skills
+        return informacoes
+    
+    @staticmethod
+    def informacoes_shadow(nome):
+        informacoes = {}
+        shadow_id = Database.shadow_id(nome)
+        fraquezas = Database.fraquezas(shadow_id)
+        atributos_base = Database.atributos_iniciais(shadow_id)
+        atributos_somados = Reparador.valores_atributos(atributos_base)
+        nivel = Database.nivel_persona(shadow_id)
+        skills = Database.skills_shadow(shadow_id, nivel)
+        informacoes["fraquezas"] = fraquezas
+        informacoes["skills"] = skills
+        informacoes["atributos"] = atributos_somados
+        return informacoes
+
+    @staticmethod
+    def info_armadura(armadura):
+        valor_armadura = 0
+        if armadura != None:
+            valor_armadura = Database.valor_item(armadura_defensor)
+        return valor_armadura
+    
+    @staticmethod
+    def info_ranged(ranged):
+        valor_arma = 0
+        if ranged != None:
+            valor_arma = Database.valor_item(ranged)
+        return valor_arma
+    
+    @staticmethod
+    def info_meelee(meelee):
+        valor_arma = 0
+        if meelee != None:
+            valor_arma = Database.valor_item(meelee)
+        return valor_arma

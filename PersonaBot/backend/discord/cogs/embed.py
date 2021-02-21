@@ -76,6 +76,8 @@ class EmbedComReacao(EmbedComCampos):
                         opcao = len(self.reacoes)
                 elif str(reaction.emoji) == self.reacoes[len(self.reacoes) - 2]:
                         opcao = len(self.reacoes) - 1
+        if opcao == len(self.reacoes):
+            opcoes = []
         final = (opcao, opcoes)
         await embed_msg.delete()
         return final
