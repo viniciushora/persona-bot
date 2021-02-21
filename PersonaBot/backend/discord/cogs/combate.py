@@ -775,7 +775,6 @@ class Combate(commands.Cog):
                 nome = self.horda[conjurador-1][1]
                 if self.horda[conjurador-1][0] == "s":
                     shadow_id = Database.shadow_id(self.horda[conjurador-1][1])
-                    nivel = Database.nivel_persona(shadow_id)
                     atributos_base = Database.atributos_iniciais(shadow_id)
                     atributos_conjurador = Reparador.valores_atributos(atributos_base)
                 else:
