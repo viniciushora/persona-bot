@@ -187,7 +187,7 @@ class Mensageiro:
     def info_armadura(armadura):
         valor_armadura = 0
         if armadura != None:
-            valor_armadura = Database.valor_item(armadura_defensor)
+            valor_armadura = Database.valor_item(armadura)
         return valor_armadura
     
     @staticmethod
