@@ -436,7 +436,6 @@ class Combate(commands.Cog):
                 defensores_info = []
                 valor1 = 0
                 dano_mod = 0
-                critico_mod = 0
                 ataque = 0
                 ok = await self.embed_selecionar_grupo(ctx)
                 if ok == 1:
@@ -454,7 +453,6 @@ class Combate(commands.Cog):
                         usuario = informacoes_party["usuario"]
                         atributos_atacante = informacoes_party["atributos"]
                         resultado = await self.embed_selecionar_horda_multiplo(ctx)
-                        ok2 = resultado[0]
                         defensores = resultado[1]
                         if defensores != []:
                             ataque = self.party_mult_atk[ok1-1]
