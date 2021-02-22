@@ -84,6 +84,7 @@ class Persona(commands.Cog):
                     skills = Database.skills(personagem_id, persona_id)
                     skills_id = []
                     for skill in skills:
+                        habilidade_id = Database.skill_id(skill)
                         skills_id.append(habilidade_id)
                     if len(skills) + len(nivel_skills) < 8:
                         for skill in nivel_skills:
@@ -148,7 +149,6 @@ class Persona(commands.Cog):
                             reacoes.append("❌")
                             campos_aprendizado = Gerador.gerador_campos(emojis_disc, nomes_skills)
                             embed_aprendizado = EmbedComReacao(self.bot, canal, titulo_aprendizado, descricao_aprendizado, cor_aprendizado, False, campos_aprendizado, True, reacoes)
-                            embed_msg = await canal.send(embed=embed)
                             ok = await embed_aprendizado.enviar_embed_reacoes()
                             if ok < 9:
                                 mudou = Database.mod_skill(skills_id[ok-1], skill, personagem_persona_id)
@@ -397,7 +397,7 @@ class Persona(commands.Cog):
                         cor_troca = "vermelho"
                         emojis_disc = [":one:", ":two:", ":three:", ":four:", ":five:", ":six:", ":seven:", ":eight:"]
                         reacoes_padrao = ["1️⃣", "2️⃣", "3️⃣", "4️⃣", "5️⃣", "6️⃣", "7️⃣", "8️⃣"]
-                        campos_aprendizado = Gerador.gerador_campos(emojis_disc, personas)
+                        campos_troca = Gerador.gerador_campos(emojis_disc, personas)
                         reacoes = reacoes_padrao[:len(personas)]
                         reacoes.append("❌")
                         embed_troca = EmbedComReacao(self.bot, canal, titulo_troca, descricao_troca, cor_troca, False, campos_troca, False)
@@ -410,6 +410,7 @@ class Persona(commands.Cog):
                                 descricao_confirmacao = f'**A Persona equipada de {personagem} agora é {personas[ok-1]}**'
                                 cor_confirmacao = "azul"
                                 embed_confirmacao = Embed(self.bot, canal, titulo_confirmacao, descricao_confirmacao, cor_confirmacao, False)
+                                await embed_confirmacao.enviar_embed()
                             else:
                                 await ctx.send("Erro na troca de Persona.")
                         else:
