@@ -385,8 +385,10 @@ class Ficha(commands.Cog):
             campos_persona = campos_atributos + campo_habilidade
             embed_personagem = EmbedComCampos(self.bot, canal, titulo_personagem, descricao_personagem, cor, foto_personagem, campos_personagem, False)
             embed_persona = EmbedComCampos(self.bot, canal, titulo_persona, False, cor, foto_persona, campos_persona, False)
+            embed_fraquezas = EmbedComCampos(self.bot, canal, titulo_fraquezas, False, cor, False, campos_fraquezas, True)
             await embed_personagem.enviar_embed()
             await embed_persona.enviar_embed()
+            await embed_fraquezas.enviar_embed()
             if embed_personas != 0:
                 await embed_personas.enviar_embed()
         else:
