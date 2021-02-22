@@ -22,7 +22,7 @@ class Embed:
         if self.descricao != False:
             obj_embed.description = self.descricao
         if imagem != False:
-            self.obj_embed.set_image(url=imagem)
+            obj_embed.set_image(url=imagem)
         self.obj_embed = obj_embed
 
     async def enviar_embed(self):
@@ -37,8 +37,9 @@ class EmbedComCampos(Embed):
         self.adicionar_campos()
 
     def adicionar_campos(self):
-        for campo in self.campos:
-            self.obj_embed.add_field(name=campo[0], value=campo[1], inline=self.alinhamento)
+        if self.campos != False:
+            for campo in self.campos:
+                self.obj_embed.add_field(name=campo[0], value=campo[1], inline=self.alinhamento)
 
 class EmbedComReacao(EmbedComCampos):
     def __init__(self,bot, ctx, titulo, descricao, cor, imagem, campos, alinhamento, reacoes):
