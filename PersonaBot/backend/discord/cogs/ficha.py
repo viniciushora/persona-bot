@@ -340,8 +340,8 @@ class Ficha(commands.Cog):
                 ("<:almighty:790320130297954374>", ficha[2][10][1])
             ]
             atributos = [ficha[1][0][1], ficha[1][1][1], ficha[1][2][1], ficha[1][3][1], ficha[1][4][1], ficha[1][5][1], ficha[1][6][1]]
-            atributos_soma = Database.atributos_soma(personagem_id)
-            atributos_porcent = Database.atributos_porcent(personagem_id)
+            atributos_soma = Database.atributos_total("soma", personagem_id)
+            atributos_porcent = Database.atributos_total("porcent", personagem_id)
             plus = []
             for i in range(len(atributos)):
                 a = atributos[i] + atributos_soma[i]

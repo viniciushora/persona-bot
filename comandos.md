@@ -2,14 +2,11 @@
 
 ## Canais
 
-|                    Comando                    |                   Funcionalidade                   |
-| :-------------------------------------------: | :------------------------------------------------: |
-| p!canal_jogador [nome do personagem] [#canal] |  Define o canal do jogador como o canal declarado  |
-|            p!canal_grupo [#canal]             |   Define o canal do grupo como o canal declarado   |
-|           p!canal_inimigos [#canal]           | Define o canal dos inimigos como o canal declarado |
-|            p!canal_mestre [#canal]            |  Define o canal do mestre como o canal declarado   |
-|           p!canal_suporte [#canal]            |  Define o canal do suporte como o canal declarado  |
-|                   p!canais                    |         Mostra todos os canais registrados         |
+|                    Comando                    |                        Funcionalidade                        |
+| :-------------------------------------------: | :----------------------------------------------------------: |
+| p!canal_jogador [nome do personagem] [#canal] |       Define o canal do jogador como o canal declarado       |
+|    p!canal_geral [tipo do canal] [#canal]     | Define um canal geral (grupo, inimigos, mestre ou suporte) como o canal declarado |
+|                   p!canais                    |              Mostra todos os canais registrados              |
 
 ## Ficha
 

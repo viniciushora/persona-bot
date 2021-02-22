@@ -107,8 +107,8 @@ class Somatorio:
 
     @staticmethod
     def atributos_totais_personagem(personagem_id, atributos):
-        atributos_soma = Database.atributos_soma(personagem_id)
-        atributos_porcent = Database.atributos_porcent(personagem_id)
+        atributos_soma = Database.atributos_total("soma", personagem_id)
+        atributos_porcent = Database.atributos_total("porcent", personagem_id)
         for i in range(len(atributos)):
             a = atributos[i] + atributos_soma[i]
             p = (atributos_porcent[i]/100) * a

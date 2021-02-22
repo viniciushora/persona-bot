@@ -1,9 +1,10 @@
-import discord
 import random
 from discord.ext import commands
 
 from cogs.database import Database
 from cogs.canal import Canal
+from cogs.embed import Embed, EmbedComCampos, EmbedComReacao
+from cogs.utilitarios import Gerador
 
 class Persona(commands.Cog):
     def __init__(self, bot):
@@ -15,12 +16,21 @@ class Persona(commands.Cog):
             personagem_id = Database.personagem_id(personagem)
             canal = self.bot.get_channel(Canal.carregar_canal_jogador(personagem))
             eh_fool = Database.eh_fool(personagem_id)
+            titulo_aumento = titulo_aumento = "**SUBIU DE NÍVEL!**"
+            descricao_aumento = ""
+            cor_aumento = "verde"
+            cor_aprendizado = "vermelho"
+            reacoes_padrao = ["1️⃣", "2️⃣", "3️⃣", "4️⃣", "5️⃣", "6️⃣", "7️⃣", "8️⃣"]
+            emojis_disc = [":one:", ":two:", ":three:", ":four:", ":five:", ":six:", ":seven:", ":eight:"]
+            campos_aumento = []
+            titulo_aprendizado = f'**{personagem}** aprendeu uma nova habilidade!'
             emote = ["<:phys:790320130810839101>", "<:gun:790320131028287488>", "<:fire:790320130483421245>", "<:ice:790320130738356224>", "<:elec:790320130151809047>", "<:wind:790320130521169922>", "<:psy:790320130772566046>", "<:nuclear:790320130584084532>", "<:bless:790320130746744892>", "<:curse:790320130387214336>", "<:almighty:790320130297954374>", "<:ailment:790320130286551060>", "<:healing:790320130508718100>", "<:support:790320130323775518>", "<:passive:790320130780561408>", "<:navigator:798197909761556521>"]
             if eh_fool != True:
                 persona_id = Database.persona_equipada(personagem_id)
                 subiu_nivel = Database.aumentar_nivel(personagem_id)
                 personagem_persona_id = Database.personagem_persona_id(personagem_id, persona_id)
                 nivel = Database.nivel(personagem_id, persona_id)
+                descricao_aumento = f'**{personagem}** alcançou o nível ({nivel})'
                 atributos = Database.atributos_iniciais(persona_id)
                 fixos = atributos[:2]
                 flex = atributos[2:]
@@ -35,17 +45,14 @@ class Persona(commands.Cog):
                 flex.sort(key=self.takeSecond, reverse=True)
                 nao_repetidos = list(dict.fromkeys(flex))
                 pontos = 3
-                valores_criterio = []
-                if len(nao_repetidos) == 5:
-                    valores_criterio = [90, 72, 54, 36, 18]
-                elif len(nao_repetidos) == 4:
-                    valores_criterio = [90, 68, 44, 22]
-                elif len(nao_repetidos) == 3:
-                    valores_criterio = [90, 60, 30]
-                elif len(nao_repetidos) == 2:
-                    valores_criterio = [90, 45]
-                else:
-                    valores_criterio = [90]
+                valor_controlador = {
+                    1: [90],
+                    2: [90, 45],
+                    3: [90, 60, 30],
+                    4: [90, 68, 44, 22],
+                    5: [90, 72, 54, 36, 18]
+                }
+                valores_criterio = valor_controlador[len(nao_repetidos)]
                 while pontos > 0:
                     for atributo_id, quant_inicial in flex:
                         pos = -1
@@ -61,25 +68,23 @@ class Persona(commands.Cog):
                         elif crescimento_atributo[atributo_id - 1] < 1:
                             crescimento_atributo[atributo_id - 1] = 0
                 Database.aumentar_status(personagem_persona_id, nivel, crescimento_atributo)
-                atributos_aumento = discord.Embed(
-                    title="**SUBIU DE NÍVEL!**",
-                    description=f'**{personagem}** alcançou o nível ({nivel})',
-                    colour=discord.Colour.green()
-                )
-                atributos_aumento.add_field(name="**HP**", value=f'+{crescimento_atributo[0]}')
-                atributos_aumento.add_field(name="**SP**", value=f'+{crescimento_atributo[1]}')
-                atributos_aumento.add_field(name="**St**", value=f'+{crescimento_atributo[2]}')
-                atributos_aumento.add_field(name="**Ma**", value=f'+{crescimento_atributo[3]}')
-                atributos_aumento.add_field(name="**En**", value=f'+{crescimento_atributo[4]}')
-                atributos_aumento.add_field(name="**Ag**", value=f'+{crescimento_atributo[5]}')
-                atributos_aumento.add_field(name="**Lu**", value=f'+{crescimento_atributo[6]}')
-                await canal.send(embed=atributos_aumento)
+                campos_aumento = [
+                    ("**HP**", f'+{crescimento_atributo[0]}'),
+                    ("**SP**", f'+{crescimento_atributo[1]}'),
+                    ("**St**", f'+{crescimento_atributo[2]}'),
+                    ("**Ma**", f'+{crescimento_atributo[3]}'),
+                    ("**En**", f'+{crescimento_atributo[4]}'),
+                    ("**Ag**", f'+{crescimento_atributo[5]}'),
+                    ("**Lu**", f'+{crescimento_atributo[6]}')
+                ]
+                embed_aumento = EmbedComCampos(self.bot, canal, titulo_aumento, descricao_aumento, cor_aumento, False, campos_aumento, True)
+                await embed_aumento.enviar_embed()
                 nivel_skills = Database.nivel_skills(nivel, persona_id)
                 if nivel_skills != False:
                     skills = Database.skills(personagem_id, persona_id)
                     skills_id = []
                     for skill in skills:
-                        skills_id.append(Database.skill_id(skill))
+                        skills_id.append(habilidade_id)
                     if len(skills) + len(nivel_skills) < 8:
                         for skill in nivel_skills:
                             if skill not in skills_id:
@@ -102,55 +107,28 @@ class Persona(commands.Cog):
                         if nivel_skills != []:
                             nova_skills = Database.skills(personagem_id, persona_id)
                             skills_id = []
+                            nomes_skills = []
                             for skill in nova_skills:
+                                habilidade_id = Database.skill_id(skill)
                                 skills_id.append(Database.skill_id(skill))
+                                nomes_skills.append(Database.nome_skill(habilidade_id))
                             for skill in nivel_skills:
                                 nome_skill = Database.nome_skill(skill)
                                 elemento = Database.elemento(skill)
-                                embed = discord.Embed(
-                                    title=f'**{personagem}** aprendeu uma nova habilidade!',
-                                    description=f'Você já conhece habilidades demais, deseja trocar alguma por **{nome_skill}** {emote[elemento-1]}?',
-                                    colour=discord.Colour.red()
-                                )
-                                emojis_disc = [":one:", ":two:", ":three:", ":four:", ":five:", ":six:", ":seven:", ":eight:"]
-                                emojis_raw = ["1️⃣", "2️⃣", "3️⃣", "4️⃣", "5️⃣", "6️⃣", "7️⃣", "8️⃣"]
-                                for i in range(len(nova_skills)):
-                                    embed.add_field(name=emojis_disc[i], value=Database.nome_skill(skills_id[i]), inline=True)
-                                embed_msg = await canal.send(embed=embed)
-                                for j in range(len(nova_skills)):
-                                    await embed_msg.add_reaction(emoji=emojis_raw[j])
-                                await embed_msg.add_reaction(emoji="❌")
-                                ok = 0
-                                while ok == 0:
-                                    reaction, user = await self.bot.wait_for('reaction_add', timeout=None)
-                                    if str(reaction.emoji) == emojis_raw[0] and str(user) != "Persona Bot#0708":
-                                        ok = 1
-                                    if str(reaction.emoji) == emojis_raw[1] and str(user) != "Persona Bot#0708":
-                                        ok = 2
-                                    if str(reaction.emoji) == emojis_raw[2] and str(user) != "Persona Bot#0708":
-                                        ok = 3
-                                    if str(reaction.emoji) == emojis_raw[3] and str(user) != "Persona Bot#0708":
-                                        ok = 4
-                                    if str(reaction.emoji) == emojis_raw[4] and str(user) != "Persona Bot#0708":
-                                        ok = 5
-                                    if str(reaction.emoji) == emojis_raw[5] and str(user) != "Persona Bot#0708":
-                                        ok = 6
-                                    if str(reaction.emoji) == emojis_raw[6] and str(user) != "Persona Bot#0708":
-                                        ok = 7
-                                    if str(reaction.emoji) == emojis_raw[6] and str(user) != "Persona Bot#0708":
-                                        ok = 8
-                                    if str(reaction.emoji) == "❌" and str(user) != "Persona Bot#0708":
-                                        ok = 9
-                                await embed_msg.delete()
+                                descricao_aprendizado = f'Você já conhece habilidades demais, deseja trocar alguma por **{nome_skill}** {emote[elemento-1]}?'
+                                reacoes = reacoes_padrao[:len(nova_skills)]
+                                reacoes.append("❌")
+                                campos_aprendizado = Gerador.gerador_campos(emojis_disc, nomes_skills)
+                                embed_aprendizado = EmbedComReacao(self.bot, canal, titulo_aprendizado, descricao_aprendizado, cor_aprendizado, False, campos_aprendizado, True, reacoes)
+                                ok = await embed_aprendizado.enviar_embed_reacoes()
                                 if ok < 9:
                                     mudou = Database.mod_skill(skills_id[ok-1], skill, personagem_persona_id)
                                     if mudou:
-                                        confirmacao = discord.Embed(
-                                            title=f'Nova habilidade aprendida: **{nome_skill}**',
-                                            description=f'**{personagem}** esqueceu de **{nova_skills[ok-1]}**',
-                                            colour=discord.Colour.blue()
-                                        )
-                                        await canal.send(embed=confirmacao)
+                                        titulo = f'Nova habilidade aprendida: **{nome_skill}**'
+                                        descricao = f'**{personagem}** esqueceu de **{nova_skills[ok-1]}**'
+                                        cor = "azul"
+                                        embed = Embed(self.bot, canal, titulo, descricao, cor, False)
+                                        await embed.enviar_embed()
                                     else:
                                         await ctx.send("Erro no aprendizado da habilidade")
                                 else:
@@ -159,54 +137,27 @@ class Persona(commands.Cog):
                     else:
                         nova_skills = Database.skills(personagem_id, persona_id)
                         skills_id = []
-                        for skill in skills:
+                        nomes_skills = []
+                        for skill in nova_skills:
                             skills_id.append(Database.skill_id(skill))
+                            nomes_skills.append(Database.nome_skill(habilidade_id))
                         for skill in nivel_skills:
                             nome_skill = Database.nome_skill(skill)
-                            embed = discord.Embed(
-                                title=f'**{personagem}** aprendeu uma nova habilidade!',
-                                description=f'Você já conhece habilidades demais, deseja trocar alguma por **{nome_skill}**?',
-                                colour=discord.Colour.red()
-                            )
-                            emojis_disc = [":one:", ":two:", ":three:", ":four:", ":five:", ":six:", ":seven:", ":eight:"]
-                            emojis_raw = ["1️⃣", "2️⃣", "3️⃣", "4️⃣", "5️⃣", "6️⃣", "7️⃣", "8️⃣"]
-                            for i in range(len(nova_skills)):
-                                embed.add_field(name=emojis_disc[i], value=nova_skills[i], inline=True)
+                            descricao_aprendizado = f'Você já conhece habilidades demais, deseja trocar alguma por **{nome_skill}**?'
+                            reacoes = reacoes_padrao[:len(nova_skills)]
+                            reacoes.append("❌")
+                            campos_aprendizado = Gerador.gerador_campos(emojis_disc, nomes_skills)
+                            embed_aprendizado = EmbedComReacao(self.bot, canal, titulo_aprendizado, descricao_aprendizado, cor_aprendizado, False, campos_aprendizado, True, reacoes)
                             embed_msg = await canal.send(embed=embed)
-                            for j in range(len(nova_skills)):
-                                await embed_msg.add_reaction(emoji=emojis_raw[j])
-                            await embed_msg.add_reaction(emoji="❌")
-                            ok = 0
-                            while ok == 0:
-                                reaction, user = await self.bot.wait_for('reaction_add', timeout=None)
-                                if str(reaction.emoji) == emojis_raw[0] and str(user) != "Persona Bot#0708":
-                                    ok = 1
-                                if str(reaction.emoji) == emojis_raw[1] and str(user) != "Persona Bot#0708":
-                                    ok = 2
-                                if str(reaction.emoji) == emojis_raw[2] and str(user) != "Persona Bot#0708":
-                                    ok = 3
-                                if str(reaction.emoji) == emojis_raw[3] and str(user) != "Persona Bot#0708":
-                                    ok = 4
-                                if str(reaction.emoji) == emojis_raw[4] and str(user) != "Persona Bot#0708":
-                                    ok = 5
-                                if str(reaction.emoji) == emojis_raw[5] and str(user) != "Persona Bot#0708":
-                                    ok = 6
-                                if str(reaction.emoji) == emojis_raw[6] and str(user) != "Persona Bot#0708":
-                                    ok = 7
-                                if str(reaction.emoji) == emojis_raw[6] and str(user) != "Persona Bot#0708":
-                                    ok = 8
-                                if str(reaction.emoji) == "❌" and str(user) != "Persona Bot#0708":
-                                    ok = 9
-                            await embed_msg.delete()
+                            ok = await embed_aprendizado.enviar_embed_reacoes()
                             if ok < 9:
                                 mudou = Database.mod_skill(skills_id[ok-1], skill, personagem_persona_id)
                                 if mudou:
-                                    confirmacao = discord.Embed(
-                                        title=f'Nova habilidade aprendida: **{nome_skill}**',
-                                        description=f'**{personagem}** esqueceu de **{nova_skills[ok-1]}**',
-                                        colour=discord.Colour.blue()
-                                    )
-                                    await canal.send(embed=confirmacao)
+                                    titulo = f'Nova habilidade aprendida: **{nome_skill}**'
+                                    descricao = f'**{personagem}** esqueceu de **{nova_skills[ok-1]}**'
+                                    cor = "azul"
+                                    embed = Embed(self.bot, canal, titulo, descricao, cor, False)
+                                    await embed.enviar_embed()
                                 else:
                                     await ctx.send("Erro no aprendizado da habilidade")
                             else:
@@ -215,20 +166,19 @@ class Persona(commands.Cog):
             else:
                 subiu_nivel = Database.aumentar_nivel_fool(personagem_id)
                 nivel = Database.nivel_fool(personagem_id)
+                descricao_aumento = f'**{personagem}** alcançou o nível ({nivel})'
                 atributos = Database.atributos_iniciais_fool(personagem_id)
                 crescimento_atributo = [0, 0]
                 hp = random.randint(1,6)
                 crescimento_atributo[0] = random.randint(1,6)
                 crescimento_atributo[1] = random.randint(1,4)
                 Database.aumentar_status_fool(personagem_id, nivel, crescimento_atributo)
-                atributos_aumento = discord.Embed(
-                    title="**SUBIU DE NÍVEL!**",
-                    description=f'**{personagem}** alcançou o nível ({nivel})',
-                    colour=discord.Colour.green()
-                )
-                atributos_aumento.add_field(name="**HP**", value=f'+{crescimento_atributo[0]}')
-                atributos_aumento.add_field(name="**SP**", value=f'+{crescimento_atributo[1]}')
-                await canal.send(embed=atributos_aumento)
+                campos_aumento = [
+                    ("**HP**", f'+{crescimento_atributo[0]}'),
+                    ("**SP**", f'+{crescimento_atributo[1]}')
+                ]
+                embed_aumento = EmbedComCampos(self.bot, canal, titulo_aumento, descricao_aumento, cor_aumento, False, campos_aumento, True)
+                await embed_aumento.enviar_embed()
         except:
             await ctx.send("Canal do jogador não registrado.")
     
@@ -276,6 +226,13 @@ class Persona(commands.Cog):
                 personagem_persona_id = Database.personagem_persona_id(personagem_id, persona_id)
                 nivel = Database.nivel(personagem_id, persona_id)
                 atributos = Database.atributos_iniciais(persona_id)
+                titulo_aumento = "**PERSONA SUBIU DE NÍVEL!**"
+                titulo_aprendizado = f'**{Database.nome_persona(persona_id)}** aprendeu uma nova habilidade!'
+                descricao_aumento = f'**{Database.nome_persona(persona_id)}** alcançou o nível ({nivel})'
+                cor_aumento = "verde"
+                cor_aprendizado = "vermelho"
+                emojis_disc = [":one:", ":two:", ":three:", ":four:", ":five:", ":six:", ":seven:", ":eight:"]
+                reacoes_padrao = ["1️⃣", "2️⃣", "3️⃣", "4️⃣", "5️⃣", "6️⃣", "7️⃣", "8️⃣"]
                 fixos = atributos[:2]
                 flex = atributos[2:]
                 crescimento_atributo = [0, 0, 0, 0, 0, 0, 0]
@@ -304,17 +261,15 @@ class Persona(commands.Cog):
                         elif crescimento_atributo[atributo_id - 1] < 1:
                             crescimento_atributo[atributo_id - 1] = 0
                 Database.aumentar_status_fool_persona(personagem_persona_id, nivel, crescimento_atributo)
-                atributos_aumento = discord.Embed(
-                    title="**PERSONA SUBIU DE NÍVEL!**",
-                    description=f'**{Database.nome_persona(persona_id)}** alcançou o nível ({nivel})',
-                    colour=discord.Colour.green()
-                )
-                atributos_aumento.add_field(name="**St**", value=f'+{crescimento_atributo[2]}')
-                atributos_aumento.add_field(name="**Ma**", value=f'+{crescimento_atributo[3]}')
-                atributos_aumento.add_field(name="**En**", value=f'+{crescimento_atributo[4]}')
-                atributos_aumento.add_field(name="**Ag**", value=f'+{crescimento_atributo[5]}')
-                atributos_aumento.add_field(name="**Lu**", value=f'+{crescimento_atributo[6]}')
-                await canal.send(embed=atributos_aumento)
+                campos_aumento = [
+                    ("**St**", f'+{crescimento_atributo[2]}'),
+                    ("**Ma**", f'+{crescimento_atributo[3]}'),
+                    ("**En**", f'+{crescimento_atributo[4]}'),
+                    ("**Ag**", f'+{crescimento_atributo[5]}'),
+                    ("**Lu**", f'+{crescimento_atributo[6]}')
+                ]
+                embed_aumento = EmbedComCampos(self.bot, canal, titulo_aumento, descricao_aumento, cor_aumento, False, campos_aumento, True)
+                await embed_aumento.enviar_embed()
                 nivel_skills = Database.nivel_skills(nivel, persona_id)
                 if nivel_skills != False:
                     skills = Database.skills(personagem_id, persona_id)
@@ -339,104 +294,54 @@ class Persona(commands.Cog):
                             i += 1
                         if nivel_skills != []:
                             nova_skills = Database.skills(personagem_id, persona_id)
+                            nomes_skills = []
+                            for skill in nova_skills:
+                                habilidade_id = Database.skill_id(skill)
+                                skills_id.append(Database.skill_id(skill))
+                                nomes_skills.append(Database.nome_skill(habilidade_id))
                             for skill in nivel_skills:
                                 nome_skill = Database.nome_skill(skill)
-                                embed = discord.Embed(
-                                    title=f'**{Database.nome_persona(persona_id)}** aprendeu uma nova habilidade!',
-                                    description=f'Você já conhece habilidades demais, deseja trocar alguma por **{nome_skill}**?',
-                                    colour=discord.Colour.red()
-                                )
-                                emojis_disc = [":one:", ":two:", ":three:", ":four:", ":five:", ":six:", ":seven:", ":eight:"]
-                                emojis_raw = ["1️⃣", "2️⃣", "3️⃣", "4️⃣", "5️⃣", "6️⃣", "7️⃣", "8️⃣"]
-                                for i in range(len(nova_skills)):
-                                    embed.add_field(name=emojis_disc[i], value=Database.nome_skill(nova_skills[i]), inline=True)
-                                embed_msg = await canal.send(embed=embed)
-                                for j in range(len(nova_skills)):
-                                    await embed_msg.add_reaction(emoji=emojis_raw[j])
-                                await embed_msg.add_reaction(emoji="❌")
-                                ok = 0
-                                while ok == 0:
-                                    reaction, user = await self.bot.wait_for('reaction_add', timeout=None)
-                                    if str(reaction.emoji) == emojis_raw[0] and str(user) != "Persona Bot#0708":
-                                        ok = 1
-                                    if str(reaction.emoji) == emojis_raw[1] and str(user) != "Persona Bot#0708":
-                                        ok = 2
-                                    if str(reaction.emoji) == emojis_raw[2] and str(user) != "Persona Bot#0708":
-                                        ok = 3
-                                    if str(reaction.emoji) == emojis_raw[3] and str(user) != "Persona Bot#0708":
-                                        ok = 4
-                                    if str(reaction.emoji) == emojis_raw[4] and str(user) != "Persona Bot#0708":
-                                        ok = 5
-                                    if str(reaction.emoji) == emojis_raw[5] and str(user) != "Persona Bot#0708":
-                                        ok = 6
-                                    if str(reaction.emoji) == emojis_raw[6] and str(user) != "Persona Bot#0708":
-                                        ok = 7
-                                    if str(reaction.emoji) == emojis_raw[6] and str(user) != "Persona Bot#0708":
-                                        ok = 8
-                                    if str(reaction.emoji) == "❌" and str(user) != "Persona Bot#0708":
-                                        ok = 9
-                                await embed_msg.delete()
+                                descricao_aprendizado = f'Você já conhece habilidades demais, deseja trocar alguma por **{nome_skill}**?'
+                                campos_aprendizado = Gerador.gerador_campos(emojis_disc, nomes_skills)
+                                reacoes = reacoes_padrao[:len(nova_skills)]
+                                reacoes.append("❌")
+                                embed_aprendizado = EmbedComReacao(self.bot, canal, titulo_aprendizado, descricao_aprendizado, cor_aprendizado, False, campos_aprendizado, True, reacoes)
+                                ok = await embed_aprendizado.enviar_embed_reacoes()
                                 if ok < 9:
                                     mudou = Database.mod_skill(nova_skills[ok-1], skill, personagem_persona_id)
                                     if mudou:
-                                        confirmacao = discord.Embed(
-                                            title=f'Nova habilidade aprendida: **{nome_skill}**',
-                                            description=f'**{Database.nome_persona(persona_id)}** esqueceu de **{Database.nome_skill(nova_skills[ok-1])}**',
-                                            colour=discord.Colour.blue()
-                                        )
-                                        await canal.send(embed=confirmacao)
+                                        titulo = f'Nova habilidade aprendida: **{nome_skill}**'
+                                        descricao = f'**{Database.nome_persona(persona_id)}** esqueceu de **{Database.nome_skill(nova_skills[ok-1])}**'
+                                        cor = "azul"
+                                        embed = Embed(self.bot, canal, titulo, descricao, cor, False)
+                                        await embed.enviar_embed()
                                     else:
                                         await ctx.send("Erro no aprendizado da habilidade")
                                 else:
                                     await canal.send(f'**{Database.nome_persona(persona_id)}** ignorou a habilidade **{nome_skill}**')
                                 nova_skills = Database.skills(personagem_id, persona_id)
                     else:
+                        nomes_skills = []
+                        for skill in skills:
+                            habilidade_id = Database.skill_id(skill)
+                            skills_id.append(Database.skill_id(skill))
+                            nomes_skills.append(Database.nome_skill(habilidade_id))
                         for skill in nivel_skills:
                             nome_skill = Database.nome_skill(skill)
-                            embed = discord.Embed(
-                                title=f'**{Database.nome_persona(persona_id)}** aprendeu uma nova habilidade!',
-                                description=f'Você já conhece habilidades demais, deseja trocar alguma por **{nome_skill}**?',
-                                colour=discord.Colour.red()
-                            )
-                            emojis_disc = [":one:", ":two:", ":three:", ":four:", ":five:", ":six:", ":seven:", ":eight:"]
-                            emojis_raw = ["1️⃣", "2️⃣", "3️⃣", "4️⃣", "5️⃣", "6️⃣", "7️⃣", "8️⃣"]
-                            for i in range(len(nova_skills)):
-                                embed.add_field(name=emojis_disc[i], value=Database.nome_skill(nova_skills[i]), inline=True)
-                            embed_msg = await canal.send(embed=embed)
-                            for j in range(len(nova_skills)):
-                                await embed_msg.add_reaction(emoji=emojis_raw[j])
-                            await embed_msg.add_reaction(emoji="❌")
-                            ok = 0
-                            while ok == 0:
-                                reaction, user = await self.bot.wait_for('reaction_add', timeout=None)
-                                if str(reaction.emoji) == emojis_raw[0] and str(user) != "Persona Bot#0708":
-                                    ok = 1
-                                if str(reaction.emoji) == emojis_raw[1] and str(user) != "Persona Bot#0708":
-                                    ok = 2
-                                if str(reaction.emoji) == emojis_raw[2] and str(user) != "Persona Bot#0708":
-                                    ok = 3
-                                if str(reaction.emoji) == emojis_raw[3] and str(user) != "Persona Bot#0708":
-                                    ok = 4
-                                if str(reaction.emoji) == emojis_raw[4] and str(user) != "Persona Bot#0708":
-                                    ok = 5
-                                if str(reaction.emoji) == emojis_raw[5] and str(user) != "Persona Bot#0708":
-                                    ok = 6
-                                if str(reaction.emoji) == emojis_raw[6] and str(user) != "Persona Bot#0708":
-                                    ok = 7
-                                if str(reaction.emoji) == emojis_raw[6] and str(user) != "Persona Bot#0708":
-                                    ok = 8
-                                if str(reaction.emoji) == "❌" and str(user) != "Persona Bot#0708":
-                                    ok = 9
-                            await embed_msg.delete()
+                            descricao_aprendizado = f'Você já conhece habilidades demais, deseja trocar alguma por **{nome_skill}**?'
+                            campos_aprendizado = Gerador.gerador_campos(emojis_disc, nomes_skills)
+                            reacoes = reacoes_padrao[:len(skills)]
+                            reacoes.append("❌")
+                            embed_aprendizado = EmbedComReacao(self.bot, canal, titulo_aprendizado, descricao_aprendizado, cor_aprendizado, False, campos_aprendizado, True, reacoes)
+                            ok = await embed_aprendizado.enviar_embed_reacoes()
                             if ok < 9:
                                 mudou = Database.mod_skill(nova_skills[ok-1], skill, personagem_persona_id)
                                 if mudou:
-                                    confirmacao = discord.Embed(
-                                        title=f'Nova habilidade aprendida: **{nome_skill}**',
-                                        description=f'**{Database.nome_persona(persona_id)}** esqueceu de **{Database.nome_skill(nova_skills[ok-1])}**',
-                                        colour=discord.Colour.blue()
-                                    )
-                                    await canal.send(embed=confirmacao)
+                                    titulo = f'Nova habilidade aprendida: **{nome_skill}**'
+                                    descricao = f'**{Database.nome_persona(persona_id)}** esqueceu de **{Database.nome_skill(nova_skills[ok-1])}**'
+                                    cor = "azul"
+                                    embed = Embed(self.bot, canal, titulo, descricao, cor, False)
+                                    await embed.enviar_embed()
                                 else:
                                     await ctx.send("Erro no aprendizado da habilidade")
                             else:
@@ -487,51 +392,24 @@ class Persona(commands.Cog):
                     persona_nome = Database.nome_persona(persona_id)
                     personas.remove(persona_nome)
                     if personas != []:
-                        embed = discord.Embed(
-                        title="**Troca de Persona**",
-                        description="Reaja com a opção da Persona que deseja equipar",
-                        colour=discord.Colour.red()
-                        )
+                        titulo_troca = "**Troca de Persona**"
+                        descricao_troca = "Reaja com a opção da Persona que deseja equipar"
+                        cor_troca = "vermelho"
                         emojis_disc = [":one:", ":two:", ":three:", ":four:", ":five:", ":six:", ":seven:", ":eight:"]
-                        emojis_raw = ["1️⃣", "2️⃣", "3️⃣", "4️⃣", "5️⃣", "6️⃣", "7️⃣", "8️⃣"]
-                        for i in range(len(personas)):
-                            embed.add_field(name=emojis_disc[i], value=personas[i], inline=True)
-                        embed_msg = await canal.send(embed=embed)
-                        for j in range(len(personas)):
-                            await embed_msg.add_reaction(emoji=emojis_raw[j])
-                        await embed_msg.add_reaction(emoji="❌")
-                        ok = 0
-                        while ok == 0:
-                            reaction, user = await self.bot.wait_for('reaction_add', timeout=None)
-                            if str(reaction.emoji) == emojis_raw[0] and str(user) != "Persona Bot#0708":
-                                ok = 1
-                            if str(reaction.emoji) == emojis_raw[1] and str(user) != "Persona Bot#0708":
-                                ok = 2
-                            if str(reaction.emoji) == emojis_raw[2] and str(user) != "Persona Bot#0708":
-                                ok = 3
-                            if str(reaction.emoji) == emojis_raw[3] and str(user) != "Persona Bot#0708":
-                                ok = 4
-                            if str(reaction.emoji) == emojis_raw[4] and str(user) != "Persona Bot#0708":
-                                ok = 5
-                            if str(reaction.emoji) == emojis_raw[5] and str(user) != "Persona Bot#0708":
-                                ok = 6
-                            if str(reaction.emoji) == emojis_raw[6] and str(user) != "Persona Bot#0708":
-                                ok = 7
-                            if str(reaction.emoji) == emojis_raw[7] and str(user) != "Persona Bot#0708":
-                                ok = 8
-                            if str(reaction.emoji) == "❌" and str(user) != "Persona Bot#0708":
-                                ok = 9
-                        await embed_msg.delete()
+                        reacoes_padrao = ["1️⃣", "2️⃣", "3️⃣", "4️⃣", "5️⃣", "6️⃣", "7️⃣", "8️⃣"]
+                        campos_aprendizado = Gerador.gerador_campos(emojis_disc, personas)
+                        reacoes = reacoes_padrao[:len(personas)]
+                        reacoes.append("❌")
+                        embed_troca = EmbedComReacao(self.bot, canal, titulo_troca, descricao_troca, cor_troca, False, campos_troca, False)
+                        ok = await embed_troca.enviar_embed_reacoes()
                         if ok < 9:
                             p_id = Database.persona_id(personas[ok-1])
                             equipou_persona = Database.equipar_persona(personagem_id, p_id)
                             if equipou_persona:
-                                confirmacao = discord.Embed(
-                                    title="Persona equipada atualizada",
-                                    description=f'**A Persona equipada de {personagem} agora é {personas[ok-1]}**',
-                                    colour=discord.Colour.blue()
-                                )
-                                await canal.send(embed=confirmacao)
+                                titulo_confirmacao = "Persona equipada atualizada"
+                                descricao_confirmacao = f'**A Persona equipada de {personagem} agora é {personas[ok-1]}**'
+                                cor_confirmacao = "azul"
+                                embed_confirmacao = Embed(self.bot, canal, titulo_confirmacao, descricao_confirmacao, cor_confirmacao, False)
                             else:
                                 await ctx.send("Erro na troca de Persona.")
                         else:
@@ -633,12 +511,11 @@ class Persona(commands.Cog):
                 elemento = Database.elemento(skill_id)
                 texto += f'{nome_skill} {emote[elemento-1]}' + "\n"
             texto = texto[:-1]
-            embed = discord.Embed(
-                title=f'Habilidades conhecidas de **{nome}**',
-                description=texto,
-                colour=discord.Colour.blue()
-            )
-            await canal.send(embed=embed)
+            titulo = f'Habilidades conhecidas de **{nome}**'
+            descricao = texto
+            cor = "azul"
+            embed = Embed(self.bot, canal, titulo, descricao, cor, False)
+            await embed.enviar_embed()
         except:
             await ctx.send("Canal do jogador não registrado.")
     
@@ -668,50 +545,24 @@ class Persona(commands.Cog):
                         if aprendeu == True:
                             await canal.send(f'**{personagem}** aprendeu a habilidade **{nome_skill}**')
                     else:
-                        embed = discord.Embed(
-                            title=f'**{personagem}** aprendeu uma nova habilidade!',
-                            description=f'Você já conhece habilidades demais, deseja trocar alguma por **{nome_skill}**?',
-                            colour=discord.Colour.red()
-                        )
+                        titulo_aprendizado = f'**{personagem}** aprendeu uma nova habilidade!'
+                        descricao_aprendizado = f'Você já conhece habilidades demais, deseja trocar alguma por **{nome_skill}**?'
+                        cor_aprendizado = "vermelho"
                         emojis_disc = [":one:", ":two:", ":three:", ":four:", ":five:", ":six:", ":seven:", ":eight:"]
-                        emojis_raw = ["1️⃣", "2️⃣", "3️⃣", "4️⃣", "5️⃣", "6️⃣", "7️⃣", "8️⃣"]
-                        for i in range(len(skills)):
-                            embed.add_field(name=emojis_disc[i], value=Database.nome_skill(skills[i]), inline=True)
-                        embed_msg = await canal.send(embed=embed)
-                        for j in range(len(skills)):
-                            await embed_msg.add_reaction(emoji=emojis_raw[j])
-                        await embed_msg.add_reaction(emoji="❌")
-                        ok = 0
-                        while ok == 0:
-                            reaction, user = await self.bot.wait_for('reaction_add', timeout=None)
-                            if str(reaction.emoji) == emojis_raw[0] and str(user) != "Persona Bot#0708":
-                                ok = 1
-                            if str(reaction.emoji) == emojis_raw[1] and str(user) != "Persona Bot#0708":
-                                ok = 2
-                            if str(reaction.emoji) == emojis_raw[2] and str(user) != "Persona Bot#0708":
-                                ok = 3
-                            if str(reaction.emoji) == emojis_raw[3] and str(user) != "Persona Bot#0708":
-                                ok = 4
-                            if str(reaction.emoji) == emojis_raw[4] and str(user) != "Persona Bot#0708":
-                                ok = 5
-                            if str(reaction.emoji) == emojis_raw[5] and str(user) != "Persona Bot#0708":
-                                ok = 6
-                            if str(reaction.emoji) == emojis_raw[6] and str(user) != "Persona Bot#0708":
-                                ok = 7
-                            if str(reaction.emoji) == emojis_raw[6] and str(user) != "Persona Bot#0708":
-                                ok = 8
-                            if str(reaction.emoji) == "❌" and str(user) != "Persona Bot#0708":
-                                ok = 9
-                        await embed_msg.delete()
+                        reacoes_padrao = ["1️⃣", "2️⃣", "3️⃣", "4️⃣", "5️⃣", "6️⃣", "7️⃣", "8️⃣"]
+                        campos_aprendizado = Gerador.gerador_campos(emojis_disc, skills)
+                        reacoes = reacoes_padrao[:len(skills)]
+                        reacoes.append("❌")
+                        embed_aprendizado = EmbedComReacao(self.bot, canal, titulo_aprendizado, descricao_aprendizado, cor_aprendizado, False, campos_aprendizado, True, reacoes)
+                        ok = await embed_aprendizado.enviar_embed_reacoes()
                         if ok < 9:
                             mudou = Database.mod_skill(skills_id[ok-1], skill_id, personagem_persona_id)
                             if mudou:
-                                confirmacao = discord.Embed(
-                                    title=f'Nova habilidade aprendida: **{nome_skill}**',
-                                    description=f'**{personagem}** esqueceu de **{skills[ok-1]}**',
-                                    colour=discord.Colour.blue()
-                                )
-                                await canal.send(embed=confirmacao)
+                                titulo = f'Nova habilidade aprendida: **{nome_skill}**'
+                                descricao = f'**{personagem}** esqueceu de **{skills[ok-1]}**'
+                                cor = "azul"
+                                embed = Embed(self.bot, canal, titulo, descricao, cor, False)
+                                await embed.enviar_embed()
                             else:
                                 await ctx.send("Erro no aprendizado da habilidade")
                         else:
@@ -735,50 +586,24 @@ class Persona(commands.Cog):
             skills_id = []
             for skill in skills:
                 skills_id.append(Database.skill_id(skill))
-            embed = discord.Embed(
-                title=f'**{personagem}** deseja esquecer uma habilidade de {nome}!',
-                description="Reaja com a opção da habilidade que deseja esquecer.",
-                colour=discord.Colour.red()
-            )
+            titulo_esquecimento = f'**{personagem}** deseja esquecer uma habilidade de {nome}!'
+            descricao_esquecimento = "Reaja com a opção da habilidade que deseja esquecer."
+            cor_esquecimento = "vermelho"
             emojis_disc = [":one:", ":two:", ":three:", ":four:", ":five:", ":six:", ":seven:", ":eight:"]
-            emojis_raw = ["1️⃣", "2️⃣", "3️⃣", "4️⃣", "5️⃣", "6️⃣", "7️⃣", "8️⃣"]
-            for i in range(len(skills)):
-                embed.add_field(name=emojis_disc[i], value=skills[i], inline=True)
-            embed_msg = await canal.send(embed=embed)
-            for j in range(len(skills)):
-                await embed_msg.add_reaction(emoji=emojis_raw[j])
-            await embed_msg.add_reaction(emoji="❌")
-            ok = 0
-            while ok == 0:
-                reaction, user = await self.bot.wait_for('reaction_add', timeout=None)
-                if str(reaction.emoji) == emojis_raw[0] and str(user) != "Persona Bot#0708":
-                    ok = 1
-                if str(reaction.emoji) == emojis_raw[1] and str(user) != "Persona Bot#0708":
-                    ok = 2
-                if str(reaction.emoji) == emojis_raw[2] and str(user) != "Persona Bot#0708":
-                    ok = 3
-                if str(reaction.emoji) == emojis_raw[3] and str(user) != "Persona Bot#0708":
-                    ok = 4
-                if str(reaction.emoji) == emojis_raw[4] and str(user) != "Persona Bot#0708":
-                    ok = 5
-                if str(reaction.emoji) == emojis_raw[5] and str(user) != "Persona Bot#0708":
-                    ok = 6
-                if str(reaction.emoji) == emojis_raw[6] and str(user) != "Persona Bot#0708":
-                    ok = 7
-                if str(reaction.emoji) == emojis_raw[6] and str(user) != "Persona Bot#0708":
-                    ok = 8
-                if str(reaction.emoji) == "❌" and str(user) != "Persona Bot#0708":
-                    ok = 9
-            await embed_msg.delete()
+            reacoes_padrao = ["1️⃣", "2️⃣", "3️⃣", "4️⃣", "5️⃣", "6️⃣", "7️⃣", "8️⃣"]
+            campos_esquecimento = Gerador.gerador_campos(emojis_disc, skills)
+            reacoes = reacoes_padrao[:len(skills)]
+            reacoes.append("❌")
+            embed_esquecimento = EmbedComReacao(self.bot, canal, titulo_esquecimento, descricao_esquecimento, cor_esquecimento, False, campos_esquecimento, True, reacoes)
+            ok = await embed_esquecimento.enviar_embed_reacoes()
             if ok < 9:
                 deletou = Database.del_skill(skills_id[ok-1], personagem_persona_id)
                 if deletou:
-                    confirmacao = discord.Embed(
-                        title=f'Habilidade esquecida: **{skills[ok-1]}**',
-                        description=f'**{personagem}** esqueceu de **{skills[ok-1]}**',
-                        colour=discord.Colour.blue()
-                    )
-                    await canal.send(embed=confirmacao)
+                    titulo = f'Habilidade esquecida: **{skills[ok-1]}**'
+                    descricao = f'**{personagem}** esqueceu de **{skills[ok-1]}**'
+                    cor = "azul"
+                    embed = Embed(self.bot, canal, titulo, descricao, cor, False)
+                    await embed.enviar_embed()
                 else:
                     await ctx.send("Erro no esquecimento da habilidade")
             else:

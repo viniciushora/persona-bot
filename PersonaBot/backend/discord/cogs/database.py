@@ -1,4 +1,3 @@
-import urllib.parse as up
 import psycopg2
 import json
 
@@ -1161,25 +1160,17 @@ where nome = %s
                         return False
         
         @staticmethod
-        def atributos_soma(personagem_id):
+        def atributos_total(tipo_atributo, personagem_id):
                 try:
-                        select = """
+                        select = ""
+                        if tipo_atributo == "soma":
+                                select = """
 select quant from crescimento_personagem
 where fk_personagem_personagem_id = %s and fk_tipo_crescimento_tipo_crescimento_id = 1
 order by fk_atributo_atributo_id
 """
-                        cur.execute(select,(personagem_id,))
-                        atributos = cur.fetchall()
-                        for i in range(len(atributos)):
-                                atributos[i] = atributos[i][0]
-                        return atributos
-                except:
-                        return False
-        
-        @staticmethod
-        def atributos_porcent(personagem_id):
-                try:
-                        select = """
+                        else:
+                                select = """
 select quant from crescimento_personagem
 where fk_personagem_personagem_id = %s and fk_tipo_crescimento_tipo_crescimento_id = 2
 order by fk_atributo_atributo_id

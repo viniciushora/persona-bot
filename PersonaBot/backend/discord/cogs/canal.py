@@ -108,8 +108,8 @@ class Canal(commands.Cog):
         else:
             await ctx.send("Este personagem não existe.")
     
-    @commands.command(name='canal_grupo')
-    async def mod_canal_grupo(self, ctx, canal : discord.TextChannel):
+    @commands.command(name='canal_geral')
+    async def mod_canal_geral(self, ctx, tipo_canal, canal : discord.TextChannel):
         try:
             canais = self.carregar_canais()
             canais_jogadores = canais["jogadores"]
@@ -117,62 +117,15 @@ class Canal(commands.Cog):
             canal_mestre = canais["mestre"]
             canal_grupo = canais["grupo"]
             canal_suporte = canais["suporte"]
-            canal_grupo = canal.id
-            await ctx.send(f"""O canal do grupo agora é o <#{canal.id}>""")
-            canais = {"jogadores": canais_jogadores, "inimigos": canal_inimigos, "grupo": canal_grupo, "mestre": canal_mestre, "suporte": canal_suporte}
-            with open('canais.pickle', 'wb') as handle:
-                pickle.dump(canais, handle, protocol=pickle.HIGHEST_PROTOCOL)
-            handle.close()
-        except:
-            await ctx.send("Canal incorreto.")
-    
-    @commands.command(name='canal_inimigos')
-    async def mod_canal_inimigos(self, ctx, canal : discord.TextChannel):
-        try:
-            canais = self.carregar_canais()
-            canais_jogadores = canais["jogadores"]
-            canal_inimigos = canais["inimigos"]
-            canal_mestre = canais["mestre"]
-            canal_grupo = canais["grupo"]
-            canal_suporte = canais["suporte"]
-            canal_inimigos = canal.id
-            await ctx.send(f"""O canal dos inimigos agora é o <#{canal.id}>""")
-            canais = {"jogadores": canais_jogadores, "inimigos": canal_inimigos, "grupo": canal_grupo, "mestre": canal_mestre, "suporte": canal_suporte}
-            with open('canais.pickle', 'wb') as handle:
-                pickle.dump(canais, handle, protocol=pickle.HIGHEST_PROTOCOL)
-            handle.close()
-        except:
-            await ctx.send("Canal incorreto.")
-
-    @commands.command(name='canal_mestre')
-    async def mod_canal_mestre(self, ctx, canal : discord.TextChannel):
-        try:
-            canais = self.carregar_canais()
-            canais_jogadores = canais["jogadores"]
-            canal_inimigos = canais["inimigos"]
-            canal_mestre = canais["mestre"]
-            canal_grupo = canais["grupo"]
-            canal_suporte = canais["suporte"]
-            canal_mestre = canal.id
-            await ctx.send(f"""O canal do mestre agora é o <#{canal.id}>""")
-            canais = {"jogadores": canais_jogadores, "inimigos": canal_inimigos, "grupo": canal_grupo, "mestre": canal_mestre, "suporte": canal_suporte}
-            with open('canais.pickle', 'wb') as handle:
-                pickle.dump(canais, handle, protocol=pickle.HIGHEST_PROTOCOL)
-            handle.close()
-        except:
-            await ctx.send("Canal incorreto.")
-    
-    @commands.command(name='canal_suporte')
-    async def mod_canal_suporte(self, ctx, canal : discord.TextChannel):
-        try:
-            canais = self.carregar_canais()
-            canais_jogadores = canais["jogadores"]
-            canal_inimigos = canais["inimigos"]
-            canal_mestre = canais["mestre"]
-            canal_grupo = canais["grupo"]
-            canal_suporte = canais["suporte"]
-            canal_suporte = canal.id
-            await ctx.send(f"""O canal do suporte agora é o <#{canal.id}>""")
+            if tipo_canal == "grupo":
+                canal_grupo = canal.id
+            elif tipo_canal == "inimigos":
+                canal_inimigos = canal.id
+            elif tipo_canal == "mestre":
+                canal_mestre = canal.id
+            elif tipo_canal == "suporte":
+                canal_suporte = canal.id
+            await ctx.send(f"""O canal do {tipo_canal} agora é o <#{canal.id}>""")
             canais = {"jogadores": canais_jogadores, "inimigos": canal_inimigos, "grupo": canal_grupo, "mestre": canal_mestre, "suporte": canal_suporte}
             with open('canais.pickle', 'wb') as handle:
                 pickle.dump(canais, handle, protocol=pickle.HIGHEST_PROTOCOL)

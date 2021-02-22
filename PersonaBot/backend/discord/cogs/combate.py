@@ -232,135 +232,133 @@ class Combate(commands.Cog):
 
     @commands.command(name='ataque_fisico')
     async def ataque_fisico(self, ctx):
-        #try:
-        horda_nomes = Reparador.repara_lista(self.horda, 1)
-        atributos_atacante = []
-        atributos_defensor = []
-        ok1 = -1
-        ok2 = -1
-        nome1 = ""
-        nome2 = ""
-        usuario = ""
-        meelee_atacante = None
-        armadura_defensor = None
-        valor = 0
-        dano_mod = 0
-        ataque = 0
-        defesa = 0
-        critico_mod = 0
-        ok = await self.embed_selecionar_grupo(ctx)
-        if ok == 1:
-            ok1 = await self.embed_selecionar_party_unico(ctx, "ataque")
-            nome_party = self.party[ok1-1]
-            nome1 = nome_party
-            canal = self.bot.get_channel(Canal.carregar_canal_jogador(nome_party))
-            informacoes_party = Mensageiro.informacoes_personagem(nome_party)
-            meelee_atacante = informacoes_party["meelee"]
-            atributos_atacante = informacoes_party["atributos"]
-            usuario = informacoes_party["usuario"]
-            ok2 = await self.embed_selecionar_horda_unico(ctx, "defesa")
-            nome_horda = horda_nomes[ok2-1]
-            nome2 = nome_horda
-            if self.horda[ok2-1][0] == "s":
-                informacoes_horda = Mensageiro.informacoes_shadow(nome_horda)
-                fraquezas = informacoes_horda["fraquezas"]
-                atributos_defensor = informacoes_horda["atributos"]
-            else:
-                informacoes_horda = Mensageiro.informacoes_personagem(nome_horda)
-                fraquezas = informacoes_horda["fraquezas"]
-                armadura_defensor = informacoes_horda["armadura"]
-                atributos_defensor = informacoes_horda["atributos"]
-            valor = (self.party_mult_acc[ok1-1], self.horda_mult_evs[ok2-1])
-            critico_mod =  self.party_mult_crit[ok1-1]
-            ataque = self.party_mult_atk[ok1-1]
-            defesa = self.horda_mult_def[ok2-1]
-            dano_mod = self.horda_elem_dano[ok2-1][0]
-        elif ok == 2:
-            canal = self.bot.get_channel(Canal.carregar_canal_inimigos())
-            ok1 = await self.embed_selecionar_horda_unico(ctx, "ataque")
-            nome_horda = self.horda[ok1-1][1]
-            nome1 = nome_horda
-            ok2 = await self.embed_selecionar_party_unico(ctx, "defesa")
-            nome_party = self.party[ok2-1]
-            nome2 = nome_party
-            informacoes_party = Mensageiro.informacoes_personagem(nome_party)
-            armadura_defensor = informacoes_party["armadura"]
-            fraquezas = informacoes_party["fraquezas"]
-            atributos_defensor = informacoes_party["atributos"]
+        try:
+            horda_nomes = Reparador.repara_lista(self.horda, 1)
+            atributos_atacante = []
+            atributos_defensor = []
+            ok1 = -1
+            ok2 = -1
+            nome1 = ""
+            nome2 = ""
+            usuario = ""
             meelee_atacante = None
-            if self.horda[ok1-1][0] == "s":
-                informacoes_horda = Mensageiro.informacoes_shadow(nome_horda)
-                fraquezas = informacoes_horda["fraquezas"]
-                atributos_atacante = informacoes_horda["atributos"]
-                usuario = "Axuáti#9639"
-            else:
-                informacoes_horda = Mensageiro.informacoes_personagem(nome_horda)
-                meelee_atacante = informacoes_horda["meelee"]
-                atributos_atacante = informacoes_horda["atributos"]
-                usuario = informacoes_horda["usuario"]
-            valor = (self.horda_mult_acc[ok1-1], self.party_mult_evs[ok2-1])
-            critico_mod =  self.horda_mult_crit[ok1-1]
-            ataque = self.horda_mult_atk[ok1-1]
-            defesa = self.party_mult_def[ok2-1]
-            dano_mod = self.party_elem_dano[ok2-1][0]
-        if ok < 3:
-            next = 0
-            while next == 0:
-                await ctx.send("Qual o valor critério? (0 a 100)")
-                msg = await self.bot.wait_for('message')
-                mensagem = msg.content
-                try:
-                    var = int(mensagem)
-                    if var > 0 and var <= 100:
-                        next = 1
-                except:
-                    await ctx.send("Digite um número entre 0 e 100.")
-            print(atributos_atacante[5])
-            print(atributos_defensor[6])
-            valor_criterio = var + (5*(atributos_atacante[5]//5)) - (5*(atributos_defensor[6]//5)) + (10 * valor[0]) - (10 * valor[1])
-            await canal.send(f'Você precisa tirar um valor menor que **{valor_criterio}** no dado')
-            dado = await Dado.rolagem_pronta(self.bot, canal, nome1, usuario, 1, 100)
-            critico = 10 + (critico_mod * 10)
-            if dado <= valor_criterio:
-                valor_arma = Mensageiro.info_meelee(meelee_atacante)
-                valor_armadura = Mensageiro.info_armadura(armadura_defensor)
-                dano = int(20 + math.sqrt(valor_arma) * math.sqrt(atributos_atacante[2])) * ((0.3 * ataque) + 1) 
-                dano_mitigado = int(dano / math.sqrt((atributos_defensor[4]*8) + valor_armadura)) * ((0.3 * defesa) + 1)
-                dano = dano - dano_mitigado
-                interacoes = {
-                    1: f'**FRACO!** **{nome1}** causou **{int(dano * 2)}** de dano e derrubou **{nome2}**!',
-                    2: f'**RESISTIU!** {nome1}** causou **{int(dano / 2)}** de dano em **{nome2}**!',
-                    3: f'**NULIFICOU!** **{nome2}** nulificou todo o dano causado!',
-                    4: f'**DRENOU!** **{nome2}** se curou em **{int(dano)}**!',
-                    5: f'**REFLETIU!** **{nome2}** refletiu **{int(dano)}** de dano em **{nome1}**!',
-                    6: f'**{nome1}** causou **{int(dano)}** de dano em **{nome2}**!',
-                    7: f'**CRÍTICO!** {nome1}** causou **{int(dano * 2)}** de dano e derrubou **{nome2}**!'
-                }  
-                if dano_mod > 0:
-                    await canal.send(interacoes[dano_mod])
-                elif dado <= critico:
-                    await canal.send(interacoes[7])
+            armadura_defensor = None
+            valor = 0
+            dano_mod = 0
+            ataque = 0
+            defesa = 0
+            critico_mod = 0
+            ok = await self.embed_selecionar_grupo(ctx)
+            if ok == 1:
+                ok1 = await self.embed_selecionar_unico(ctx, "party", "ataque")
+                nome_party = self.party[ok1-1]
+                nome1 = nome_party
+                canal = self.bot.get_channel(Canal.carregar_canal_jogador(nome_party))
+                informacoes_party = Mensageiro.informacoes_personagem(nome_party)
+                meelee_atacante = informacoes_party["meelee"]
+                atributos_atacante = informacoes_party["atributos"]
+                usuario = informacoes_party["usuario"]
+                ok2 = await self.embed_selecionar_unico(ctx, "horda", "defesa")
+                nome_horda = horda_nomes[ok2-1]
+                nome2 = nome_horda
+                if self.horda[ok2-1][0] == "s":
+                    informacoes_horda = Mensageiro.informacoes_shadow(nome_horda)
+                    fraquezas = informacoes_horda["fraquezas"]
+                    atributos_defensor = informacoes_horda["atributos"]
                 else:
-                    await canal.send(interacoes[fraquezas[0]])
+                    informacoes_horda = Mensageiro.informacoes_personagem(nome_horda)
+                    fraquezas = informacoes_horda["fraquezas"]
+                    armadura_defensor = informacoes_horda["armadura"]
+                    atributos_defensor = informacoes_horda["atributos"]
+                valor = (self.party_mult_acc[ok1-1], self.horda_mult_evs[ok2-1])
+                critico_mod =  self.party_mult_crit[ok1-1]
+                ataque = self.party_mult_atk[ok1-1]
+                defesa = self.horda_mult_def[ok2-1]
+                dano_mod = self.horda_elem_dano[ok2-1][0]
+            elif ok == 2:
+                canal = self.bot.get_channel(Canal.carregar_canal_inimigos())
+                ok1 = await self.embed_selecionar_unico(ctx, "horda", "ataque")
+                nome_horda = self.horda[ok1-1][1]
+                nome1 = nome_horda
+                ok2 = await self.embed_selecionar_unico(ctx, "party", "defesa")
+                nome_party = self.party[ok2-1]
+                nome2 = nome_party
+                informacoes_party = Mensageiro.informacoes_personagem(nome_party)
+                armadura_defensor = informacoes_party["armadura"]
+                fraquezas = informacoes_party["fraquezas"]
+                atributos_defensor = informacoes_party["atributos"]
+                meelee_atacante = None
+                if self.horda[ok1-1][0] == "s":
+                    informacoes_horda = Mensageiro.informacoes_shadow(nome_horda)
+                    fraquezas = informacoes_horda["fraquezas"]
+                    atributos_atacante = informacoes_horda["atributos"]
+                    usuario = "Axuáti#9639"
+                else:
+                    informacoes_horda = Mensageiro.informacoes_personagem(nome_horda)
+                    meelee_atacante = informacoes_horda["meelee"]
+                    atributos_atacante = informacoes_horda["atributos"]
+                    usuario = informacoes_horda["usuario"]
+                valor = (self.horda_mult_acc[ok1-1], self.party_mult_evs[ok2-1])
+                critico_mod =  self.horda_mult_crit[ok1-1]
+                ataque = self.horda_mult_atk[ok1-1]
+                defesa = self.party_mult_def[ok2-1]
+                dano_mod = self.party_elem_dano[ok2-1][0]
+            if ok < 3:
+                next = 0
+                while next == 0:
+                    await ctx.send("Qual o valor critério? (0 a 100)")
+                    msg = await self.bot.wait_for('message')
+                    mensagem = msg.content
+                    try:
+                        var = int(mensagem)
+                        if var > 0 and var <= 100:
+                            next = 1
+                    except:
+                        await ctx.send("Digite um número entre 0 e 100.")
+                valor_criterio = var + (5*(atributos_atacante[5]//5)) - (5*(atributos_defensor[6]//5)) + (10 * valor[0]) - (10 * valor[1])
+                await canal.send(f'Você precisa tirar um valor menor que **{valor_criterio}** no dado')
+                dado = await Dado.rolagem_pronta(self.bot, canal, nome1, usuario, 1, 100)
+                critico = 10 + (critico_mod * 10)
+                if dado <= valor_criterio:
+                    valor_arma = Mensageiro.info_meelee(meelee_atacante)
+                    valor_armadura = Mensageiro.info_armadura(armadura_defensor)
+                    dano = int(20 + math.sqrt(valor_arma) * math.sqrt(atributos_atacante[2])) * ((0.3 * ataque) + 1) 
+                    dano_mitigado = int(dano / math.sqrt((atributos_defensor[4]*8) + valor_armadura)) * ((0.3 * defesa) + 1)
+                    dano = dano - dano_mitigado
+                    interacoes = {
+                        1: f'**FRACO!** **{nome1}** causou **{int(dano * 2)}** de dano e derrubou **{nome2}**!',
+                        2: f'**RESISTIU!** {nome1}** causou **{int(dano / 2)}** de dano em **{nome2}**!',
+                        3: f'**NULIFICOU!** **{nome2}** nulificou todo o dano causado!',
+                        4: f'**DRENOU!** **{nome2}** se curou em **{int(dano)}**!',
+                        5: f'**REFLETIU!** **{nome2}** refletiu **{int(dano)}** de dano em **{nome1}**!',
+                        6: f'**{nome1}** causou **{int(dano)}** de dano em **{nome2}**!',
+                        7: f'**CRÍTICO!** **{nome1}** causou **{int(dano * 2)}** de dano e derrubou **{nome2}**!'
+                    }  
+                    if dano_mod > 0:
+                        await canal.send(interacoes[dano_mod])
+                    elif dado <= critico:
+                        await canal.send(interacoes[7])
+                    else:
+                        await canal.send(interacoes[fraquezas[0]])
+                else:
+                    await canal.send(f'**{nome1}** errou o ataque físico  em **{nome2}**')
             else:
-                await canal.send(f'**{nome1}** errou o ataque físico  em **{nome2}**')
-        else:
-            await ctx.send("Ataque físico cancelado.")
-        #except:
-        #    await ctx.send("Ataque cancelado ou Algo está incorreto.")
+                await ctx.send("Ataque físico cancelado.")
+        except:
+            await ctx.send("Ataque cancelado ou Algo está incorreto.")
 
     @commands.command(name='tiro')
     async def tiro(self, ctx):
         try:
             horda_nomes = Reparador.repara_lista(self.horda, 1)
-            ok1 = await self.embed_selecionar_party_unico(ctx, "ataque")
+            ok1 = await self.embed_selecionar_unico(ctx, "party", "ataque")
             nome_party = self.party[ok1-1]
             canal = self.bot.get_channel(Canal.carregar_canal_jogador(nome_party))
             informacoes_party = Mensageiro.informacoes_personagem(nome_party)
             ranged = informacoes_party["ranged"]
             atributos_atacante = informacoes_party["atributos"]
             usuario = informacoes_party["usuario"]
-            ok2 = await self.embed_selecionar_horda_unico(ctx, "defesa")
+            ok2 = await self.embed_selecionar_unico(ctx, "horda", "defesa")
             nome_horda = horda_nomes[ok2-1]
             armadura_defensor = None
             if self.horda[ok2-1][0] == "s":
@@ -400,7 +398,7 @@ class Combate(commands.Cog):
                     4: f'**DRENOU!** **{nome_horda}** se curou em **{int(dano)}**!',
                     5: f'**REFLETIU!** **{nome_horda}** refletiu **{int(dano)}** de dano em **{nome_party}**!',
                     6: f'**{nome_party}** causou **{int(dano)}** de dano em **{nome_horda}**!',
-                    7: f'**CRÍTICO!** {nome_party}** causou **{int(dano * 2)}** de dano e derrubou **{nome_horda}**!'
+                    7: f'**CRÍTICO!** **{nome_party}** causou **{int(dano * 2)}** de dano e derrubou **{nome_horda}**!'
                 }  
                 if self.horda_elem_dano[ok2-1][1] > 0:
                     await canal.send(interacoes[self.horda_elem_dano[ok2-1][1]])
@@ -439,7 +437,7 @@ class Combate(commands.Cog):
                 ataque = 0
                 ok = await self.embed_selecionar_grupo(ctx)
                 if ok == 1:
-                    ok1 = await self.embed_selecionar_party_unico(ctx, "ataque")
+                    ok1 = await self.embed_selecionar_unico(ctx, "party", "ataque")
                     nome_party = self.party[ok1-1]
                     nome1 = nome_party
                     canal = self.bot.get_channel(Canal.carregar_canal_jogador(nome_party))
@@ -452,7 +450,7 @@ class Combate(commands.Cog):
                         nome_elemento = Database.nome_elemento(elemento)
                         usuario = informacoes_party["usuario"]
                         atributos_atacante = informacoes_party["atributos"]
-                        resultado = await self.embed_selecionar_horda_multiplo(ctx)
+                        resultado = await self.embed_selecionar_multiplo(ctx, "horda")
                         defensores = resultado[1]
                         if defensores != []:
                             ataque = self.party_mult_atk[ok1-1]
@@ -475,7 +473,7 @@ class Combate(commands.Cog):
                                 defensor_info = (defensor, atributos_defensor, armadura_defensor, valor, defesa, dano_mod, fraquezas, nome_horda)
                                 defensores_info.append(defensor_info)
                 elif ok == 2:
-                    ok1 = await self.embed_selecionar_horda_unico(ctx, "ataque")
+                    ok1 = await self.embed_selecionar_unico(ctx, "horda", "ataque")
                     canal = self.bot.get_channel(Canal.carregar_canal_inimigos())
                     nome_horda = self.horda[ok1-1][1]
                     nome1 = nome_horda
@@ -492,7 +490,7 @@ class Combate(commands.Cog):
                         atributos_atacante = informacoes_horda["atributos"]
                         usuario = informacoes_horda["usuario"]
                     if skill_id in skills:
-                        resultado = await self.embed_selecionar_party_multiplo(ctx)
+                        resultado = await self.embed_selecionar_multiplo(ctx, "party")
                         defensores = resultado[1]
                         if defensores != []:
                             for defensor in defensores:
@@ -610,68 +608,54 @@ class Combate(commands.Cog):
         opcao = await embed.enviar_embed_reacoes()
         return opcao
     
-    async def embed_selecionar_party_unico(self, ctx, modo):
+    async def embed_selecionar_unico(self, ctx, grupo, modo):
+        grupo_controlador = {
+            "party": {
+                "ataque": "Qual personagem da Party irá atacar?",
+                "defesa": "Qual personagem da Party será atacado?",
+                "cura": "Quem vai conjurar?"
+            },
+            "horda": {
+                "ataque": "Qual elemento da Horda irá atacar?",
+                "defesa": "Queal da horda será atacado?"
+            }
+        }
         opcao = -1
-        titulo = ""
-        if modo == "ataque":
-            titulo = "Qual personagem da Party irá atacar?"
-        elif modo == "defesa":
-            titulo = "Qual personagem da Party será atacado?"
-        else:
-            titulo = "Quem vai conjurar?"
+        titulo = grupo_controlador[grupo][modo]
         descricao = "Reaja com a opção desejada"
         emojis_campo = [":one:", ":two:", ":three:", ":four:", ":five:"]
-        campos = Gerador.gerador_campos(emojis_campo, self.party)
-        cor = "azul"
+        campos = []
         reacoes = ["1️⃣", "2️⃣", "3️⃣", "4️⃣", "5️⃣"]
-        reacoes = reacoes[:len(self.party)]
+        cor = "azul"
+        if grupo == "party":
+            campos = Gerador.gerador_campos(emojis_campo, self.party)
+            reacoes = reacoes[:len(self.party)]
+        else:
+            horda_nomes = Reparador.repara_lista(self.horda, 1)
+            campos = Gerador.gerador_campos(emojis_campo, horda_nomes)
+            reacoes = reacoes[:len(self.horda)]
         reacoes.append("❌")
         embed = EmbedComReacao(self.bot, ctx, titulo, descricao, cor, False, campos, False, reacoes)
         opcao = await embed.enviar_embed_reacoes()
         return opcao
     
-    async def embed_selecionar_horda_unico(self, ctx, modo):
-        opcao = -1
-        titulo = ""
-        if modo == "ataque":
-            titulo = "Qual elemento da Horda irá atacar?"
+    async def embed_selecionar_multiplo(self, ctx, grupo):
+        grupo_controlador = {
+            "party": "Quem/Quais da party serão atacado(s)?",
+            "horda": "Quem/Quais da horda serão atacado(s)?"
+        }
+        cor = "azul"
+        titulo = grupo_controlador[grupo]
+        descricao = "Reaja com a opções desejadas e confirme"
+        emojis_campo = [":one:", ":two:", ":three:", ":four:", ":five:"]
+        reacoes = ["1️⃣", "2️⃣", "3️⃣", "4️⃣", "5️⃣"]
+        if grupo == "party":
+            campos = Gerador.gerador_campos(emojis_campo, self.party)
+            reacoes = reacoes[:len(self.party)]
         else:
-            titulo = "Queal da horda será atacado?"
-        descricao = "Reaja com a opção desejada"
-        cor = "azul"
-        horda_nomes = Reparador.repara_lista(self.horda, 1)
-        emojis_campo = [":one:", ":two:", ":three:", ":four:", ":five:"]
-        campos = Gerador.gerador_campos(emojis_campo, horda_nomes)
-        reacoes = ["1️⃣", "2️⃣", "3️⃣", "4️⃣", "5️⃣"]
-        reacoes = reacoes[:len(self.horda)]
-        reacoes.append("❌")
-        embed = EmbedComReacao(self.bot, ctx, titulo, descricao, cor, False, campos, False, reacoes)
-        opcao = await embed.enviar_embed_reacoes()
-        return opcao
-    
-    async def embed_selecionar_horda_multiplo(self, ctx):
-        cor = "azul"
-        titulo = "Quem/Quais da horda serão atacado(s)?"
-        descricao = "Reaja com a opções desejadas e confirme"
-        horda_nomes = Reparador.repara_lista(self.horda, 1)
-        emojis_campo = [":one:", ":two:", ":three:", ":four:", ":five:"]
-        campos = Gerador.gerador_campos(emojis_campo, horda_nomes)
-        reacoes = ["1️⃣", "2️⃣", "3️⃣", "4️⃣", "5️⃣"]
-        reacoes = reacoes[:len(self.horda)]
-        reacoes.append("✅")
-        reacoes.append("❌")
-        embed = EmbedComReacao(self.bot, ctx, titulo, descricao, cor, False, campos, False, reacoes)
-        resultado = await embed.enviar_embed_reacoes_multiplas()
-        return resultado
-    
-    async def embed_selecionar_party_multiplo(self, ctx):
-        cor = "azul"
-        titulo = "Quem/Quais da party serão atacado(s)?"
-        descricao = "Reaja com a opções desejadas e confirme"
-        emojis_campo = [":one:", ":two:", ":three:", ":four:", ":five:"]
-        campos = Gerador.gerador_campos(emojis_campo, self.party)
-        reacoes = ["1️⃣", "2️⃣", "3️⃣", "4️⃣", "5️⃣"]
-        reacoes = reacoes[:len(self.party)]
+            horda_nomes = Reparador.repara_lista(self.horda, 1)
+            campos = Gerador.gerador_campos(emojis_campo, horda_nomes)
+            reacoes = reacoes[:len(self.horda)]
         reacoes.append("✅")
         reacoes.append("❌")
         embed = EmbedComReacao(self.bot, ctx, titulo, descricao, cor, False, campos, False, reacoes)
@@ -756,7 +740,6 @@ class Combate(commands.Cog):
         if ok == 1:
             tamanho = len(self.party)
             conjurador = await self.embed_selecionar_party_unico(ctx, "cura")
-            print(conjurador)
             if conjurador < 6:
                 nome = self.party[conjurador-1]
                 canal = self.bot.get_channel(Canal.carregar_canal_jogador(self.party[conjurador-1]))
