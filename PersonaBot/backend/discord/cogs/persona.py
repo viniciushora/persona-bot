@@ -19,11 +19,9 @@ class Persona(commands.Cog):
             titulo_aumento = titulo_aumento = "**SUBIU DE NÍVEL!**"
             descricao_aumento = ""
             cor_aumento = "verde"
-            cor_aprendizado = "vermelho"
             reacoes_padrao = ["1️⃣", "2️⃣", "3️⃣", "4️⃣", "5️⃣", "6️⃣", "7️⃣", "8️⃣"]
             emojis_disc = [":one:", ":two:", ":three:", ":four:", ":five:", ":six:", ":seven:", ":eight:"]
             campos_aumento = []
-            titulo_aprendizado = f'**{personagem}** aprendeu uma nova habilidade!'
             emote = ["<:phys:790320130810839101>", "<:gun:790320131028287488>", "<:fire:790320130483421245>", "<:ice:790320130738356224>", "<:elec:790320130151809047>", "<:wind:790320130521169922>", "<:psy:790320130772566046>", "<:nuclear:790320130584084532>", "<:bless:790320130746744892>", "<:curse:790320130387214336>", "<:almighty:790320130297954374>", "<:ailment:790320130286551060>", "<:healing:790320130508718100>", "<:support:790320130323775518>", "<:passive:790320130780561408>", "<:navigator:798197909761556521>"]
             if eh_fool != True:
                 persona_id = Database.persona_equipada(personagem_id)
@@ -107,61 +105,21 @@ class Persona(commands.Cog):
                                     tam += 1
                         if nivel_skills != []:
                             nova_skills = Database.skills(personagem_id, persona_id)
-                            skills_id = []
-                            nomes_skills = []
-                            for skill in nova_skills:
-                                habilidade_id = Database.skill_id(skill)
-                                skills_id.append(Database.skill_id(skill))
-                                nomes_skills.append(Database.nome_skill(habilidade_id))
+                            info = self.info_skills(nova_skills)
+                            skills_id = info[0]
+                            nomes_skills = info[1]
                             for skill in nivel_skills:
-                                nome_skill = Database.nome_skill(skill)
-                                elemento = Database.elemento(skill)
-                                descricao_aprendizado = f'Você já conhece habilidades demais, deseja trocar alguma por **{nome_skill}** {emote[elemento-1]}?'
-                                reacoes = reacoes_padrao[:len(nova_skills)]
-                                reacoes.append("❌")
-                                campos_aprendizado = Gerador.gerador_campos(emojis_disc, nomes_skills)
-                                embed_aprendizado = EmbedComReacao(self.bot, canal, titulo_aprendizado, descricao_aprendizado, cor_aprendizado, False, campos_aprendizado, True, reacoes)
-                                ok = await embed_aprendizado.enviar_embed_reacoes()
-                                if ok < 9:
-                                    mudou = Database.mod_skill(skills_id[ok-1], skill, personagem_persona_id)
-                                    if mudou:
-                                        titulo = f'Nova habilidade aprendida: **{nome_skill}**'
-                                        descricao = f'**{personagem}** esqueceu de **{nova_skills[ok-1]}**'
-                                        cor = "azul"
-                                        embed = Embed(self.bot, canal, titulo, descricao, cor, False)
-                                        await embed.enviar_embed()
-                                    else:
-                                        await ctx.send("Erro no aprendizado da habilidade")
-                                else:
-                                    await canal.send(f'**{personagem}** ignorou a habilidade **{nome_skill}**')
+                                await self.aprendizado(False, skill, personagem, False, personagem_persona_id, nova_skills, nome_skills)
                                 nova_skills = Database.skills(personagem_id, persona_id)
                     else:
                         nova_skills = Database.skills(personagem_id, persona_id)
                         skills_id = []
                         nomes_skills = []
-                        for skill in nova_skills:
-                            skills_id.append(Database.skill_id(skill))
-                            nomes_skills.append(Database.nome_skill(habilidade_id))
+                        info = self.info_skills(nova_skills)
+                        skills_id = info[0]
+                        nomes_skills = info[1]
                         for skill in nivel_skills:
-                            nome_skill = Database.nome_skill(skill)
-                            descricao_aprendizado = f'Você já conhece habilidades demais, deseja trocar alguma por **{nome_skill}**?'
-                            reacoes = reacoes_padrao[:len(nova_skills)]
-                            reacoes.append("❌")
-                            campos_aprendizado = Gerador.gerador_campos(emojis_disc, nomes_skills)
-                            embed_aprendizado = EmbedComReacao(self.bot, canal, titulo_aprendizado, descricao_aprendizado, cor_aprendizado, False, campos_aprendizado, True, reacoes)
-                            ok = await embed_aprendizado.enviar_embed_reacoes()
-                            if ok < 9:
-                                mudou = Database.mod_skill(skills_id[ok-1], skill, personagem_persona_id)
-                                if mudou:
-                                    titulo = f'Nova habilidade aprendida: **{nome_skill}**'
-                                    descricao = f'**{personagem}** esqueceu de **{nova_skills[ok-1]}**'
-                                    cor = "azul"
-                                    embed = Embed(self.bot, canal, titulo, descricao, cor, False)
-                                    await embed.enviar_embed()
-                                else:
-                                    await ctx.send("Erro no aprendizado da habilidade")
-                            else:
-                                await canal.send(f'**{personagem}** ignorou a habilidade **{nome_skill}**')
+                            await self.aprendizado(False, skill, personagem, False, personagem_persona_id, nova_skills, nome_skills)
                             nova_skills = Database.skills(personagem_id, persona_id)
             else:
                 subiu_nivel = Database.aumentar_nivel_fool(personagem_id)
@@ -227,10 +185,8 @@ class Persona(commands.Cog):
                 nivel = Database.nivel(personagem_id, persona_id)
                 atributos = Database.atributos_iniciais(persona_id)
                 titulo_aumento = "**PERSONA SUBIU DE NÍVEL!**"
-                titulo_aprendizado = f'**{Database.nome_persona(persona_id)}** aprendeu uma nova habilidade!'
                 descricao_aumento = f'**{Database.nome_persona(persona_id)}** alcançou o nível ({nivel})'
                 cor_aumento = "verde"
-                cor_aprendizado = "vermelho"
                 emojis_disc = [":one:", ":two:", ":three:", ":four:", ":five:", ":six:", ":seven:", ":eight:"]
                 reacoes_padrao = ["1️⃣", "2️⃣", "3️⃣", "4️⃣", "5️⃣", "6️⃣", "7️⃣", "8️⃣"]
                 fixos = atributos[:2]
@@ -294,58 +250,19 @@ class Persona(commands.Cog):
                             i += 1
                         if nivel_skills != []:
                             nova_skills = Database.skills(personagem_id, persona_id)
-                            nomes_skills = []
-                            for skill in nova_skills:
-                                habilidade_id = Database.skill_id(skill)
-                                skills_id.append(Database.skill_id(skill))
-                                nomes_skills.append(Database.nome_skill(habilidade_id))
+                            info = self.info_skills(nova_skills)
+                            skills_id = info[0]
+                            nomes_skills = info[1]
                             for skill in nivel_skills:
-                                nome_skill = Database.nome_skill(skill)
-                                descricao_aprendizado = f'Você já conhece habilidades demais, deseja trocar alguma por **{nome_skill}**?'
-                                campos_aprendizado = Gerador.gerador_campos(emojis_disc, nomes_skills)
-                                reacoes = reacoes_padrao[:len(nova_skills)]
-                                reacoes.append("❌")
-                                embed_aprendizado = EmbedComReacao(self.bot, canal, titulo_aprendizado, descricao_aprendizado, cor_aprendizado, False, campos_aprendizado, True, reacoes)
-                                ok = await embed_aprendizado.enviar_embed_reacoes()
-                                if ok < 9:
-                                    mudou = Database.mod_skill(nova_skills[ok-1], skill, personagem_persona_id)
-                                    if mudou:
-                                        titulo = f'Nova habilidade aprendida: **{nome_skill}**'
-                                        descricao = f'**{Database.nome_persona(persona_id)}** esqueceu de **{Database.nome_skill(nova_skills[ok-1])}**'
-                                        cor = "azul"
-                                        embed = Embed(self.bot, canal, titulo, descricao, cor, False)
-                                        await embed.enviar_embed()
-                                    else:
-                                        await ctx.send("Erro no aprendizado da habilidade")
-                                else:
-                                    await canal.send(f'**{Database.nome_persona(persona_id)}** ignorou a habilidade **{nome_skill}**')
+                                await self.aprendizado(True, skill, personagem, persona_id, personagem_persona_id, nova_skills, nome_skills)
                                 nova_skills = Database.skills(personagem_id, persona_id)
                     else:
-                        nomes_skills = []
-                        for skill in skills:
-                            habilidade_id = Database.skill_id(skill)
-                            skills_id.append(Database.skill_id(skill))
-                            nomes_skills.append(Database.nome_skill(habilidade_id))
+                        nova_skills = Database.skills(personagem_id, persona_id)
+                        info = self.info_skills(nova_skills)
+                        skills_id = info[0]
+                        nomes_skills = info[1]
                         for skill in nivel_skills:
-                            nome_skill = Database.nome_skill(skill)
-                            descricao_aprendizado = f'Você já conhece habilidades demais, deseja trocar alguma por **{nome_skill}**?'
-                            campos_aprendizado = Gerador.gerador_campos(emojis_disc, nomes_skills)
-                            reacoes = reacoes_padrao[:len(skills)]
-                            reacoes.append("❌")
-                            embed_aprendizado = EmbedComReacao(self.bot, canal, titulo_aprendizado, descricao_aprendizado, cor_aprendizado, False, campos_aprendizado, True, reacoes)
-                            ok = await embed_aprendizado.enviar_embed_reacoes()
-                            if ok < 9:
-                                mudou = Database.mod_skill(nova_skills[ok-1], skill, personagem_persona_id)
-                                if mudou:
-                                    titulo = f'Nova habilidade aprendida: **{nome_skill}**'
-                                    descricao = f'**{Database.nome_persona(persona_id)}** esqueceu de **{Database.nome_skill(nova_skills[ok-1])}**'
-                                    cor = "azul"
-                                    embed = Embed(self.bot, canal, titulo, descricao, cor, False)
-                                    await embed.enviar_embed()
-                                else:
-                                    await ctx.send("Erro no aprendizado da habilidade")
-                            else:
-                                await canal.send(f'**{Database.nome_persona(persona_id)}** ignorou a habilidade **{nome_skill}**')
+                            await self.aprendizado(True, skill, personagem, persona_id, personagem_persona_id, nova_skills, nome_skills)
                             nova_skills = Database.skills(personagem_id, persona_id)
             else:
                 await ctx.send("Este personagem não é da Arcana Fool")
@@ -522,7 +439,6 @@ class Persona(commands.Cog):
     
     @commands.command(name='aprender_habilidade')
     async def aprender_skill(self, ctx, personagem, *skill):
-        global canais_jogadores
         try:
             nome = ""
             for palavra in skill:
@@ -535,9 +451,9 @@ class Persona(commands.Cog):
             personagem_persona_id = Database.personagem_persona_id(personagem_id, persona_id)
             skills = Database.skills(personagem_id, persona_id)
             skill_id = Database.skill_id(skill)
-            skills_id = []
-            for skill in skills:
-                skills_id.append(Database.skill_id(skill))
+            info = self.info_skills(skills)
+            skills_id = info[0]
+            nomes_skills = info[1]
             if skill_id != False:
                 nome_skill = Database.nome_skill(skill_id)
                 if skill_id not in skills:
@@ -546,30 +462,9 @@ class Persona(commands.Cog):
                         if aprendeu == True:
                             await canal.send(f'**{personagem}** aprendeu a habilidade **{nome_skill}**')
                     else:
-                        titulo_aprendizado = f'**{personagem}** aprendeu uma nova habilidade!'
-                        descricao_aprendizado = f'Você já conhece habilidades demais, deseja trocar alguma por **{nome_skill}**?'
-                        cor_aprendizado = "vermelho"
-                        emojis_disc = [":one:", ":two:", ":three:", ":four:", ":five:", ":six:", ":seven:", ":eight:"]
-                        reacoes_padrao = ["1️⃣", "2️⃣", "3️⃣", "4️⃣", "5️⃣", "6️⃣", "7️⃣", "8️⃣"]
-                        campos_aprendizado = Gerador.gerador_campos(emojis_disc, skills)
-                        reacoes = reacoes_padrao[:len(skills)]
-                        reacoes.append("❌")
-                        embed_aprendizado = EmbedComReacao(self.bot, canal, titulo_aprendizado, descricao_aprendizado, cor_aprendizado, False, campos_aprendizado, True, reacoes)
-                        ok = await embed_aprendizado.enviar_embed_reacoes()
-                        if ok < 9:
-                            mudou = Database.mod_skill(skills_id[ok-1], skill_id, personagem_persona_id)
-                            if mudou:
-                                titulo = f'Nova habilidade aprendida: **{nome_skill}**'
-                                descricao = f'**{personagem}** esqueceu de **{skills[ok-1]}**'
-                                cor = "azul"
-                                embed = Embed(self.bot, canal, titulo, descricao, cor, False)
-                                await embed.enviar_embed()
-                            else:
-                                await ctx.send("Erro no aprendizado da habilidade")
-                        else:
-                            await canal.send(f'**{personagem}** ignorou a habilidade **{nome_skill}**')
+                        await self.aprendizado(False, skill, personagem, persona_id, personagem_persona_id, skills, nome_skills)
                 else:
-                    await ctx.send("**{personagem}** já conhece essa habildade.")
+                    await ctx.send(f'**{personagem}** já conhece essa habildade.')
             else:
                 await ctx.send("Esta habilidade não existe.")
         except:
@@ -661,6 +556,43 @@ class Persona(commands.Cog):
     
     def takeSecond(self, elem):
         return elem[1]
+    
+    def info_skills(self, skills):
+        skills_id = []
+        nomes_skills = []
+        for skill in skills:
+            habilidade_id = Database.skill_id(skill)
+            skills_id.append(habilidade_id)
+            nomes_skills.append(Database.nome_skill(habilidade_id))
+        info = (skills_id, nomes_skills)
+        return info
+    
+    async def aprendizado(self, fool, skill, personagem, persona_id, personagem_persona_id, id_skills_personagem, nome_skills_personagem):
+        reacoes_padrao = ["1️⃣", "2️⃣", "3️⃣", "4️⃣", "5️⃣", "6️⃣", "7️⃣", "8️⃣"]
+        nome_skill = Database.nome_skill(skill)
+        titulo_aprendizado = f'**{personagem}** aprendeu uma nova habilidade!'
+        descricao_aprendizado = f'Você já conhece habilidades demais, deseja trocar alguma por **{nome_skill}**?'
+        cor_aprendizado = "vermelho"
+        campos_aprendizado = Gerador.gerador_campos(emojis_disc, id_skills_personagem)
+        reacoes = reacoes_padrao[:len(id_skills_personagem)]
+        reacoes.append("❌")
+        embed_aprendizado = EmbedComReacao(self.bot, canal, titulo_aprendizado, descricao_aprendizado, cor_aprendizado, False, campos_aprendizado, True, reacoes)
+        ok = await embed_aprendizado.enviar_embed_reacoes()
+        if ok < 9:
+            mudou = Database.mod_skill(id_skills_personagem[ok-1], skill, personagem_persona_id)
+            if mudou:
+                titulo = f'Nova habilidade aprendida: **{nome_skill}**'
+                if fool:
+                    descricao = f'**{Database.nome_persona(persona_id)}** esqueceu de **{Database.nome_skill(id_skills_personagem[ok-1])}**'
+                else:
+                    descricao = f'**{personagem}** esqueceu de **{id_skills_personagem[ok-1]}**'
+                cor = "azul"
+                embed = Embed(self.bot, canal, titulo, descricao, cor, False)
+                await embed.enviar_embed()
+            else:
+                await ctx.send("Erro no aprendizado da habilidade")
+        else:
+            await canal.send(f'**{personagem}** ignorou a habilidade **{nome_skill}**')
 
 def setup(bot):
     bot.add_cog(Persona(bot))
