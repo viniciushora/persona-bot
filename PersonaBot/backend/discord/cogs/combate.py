@@ -207,16 +207,16 @@ class Combate(commands.Cog):
             atributos_defensor = []
             ok1 = -1
             ok2 = -1
-            nome1 = ""
-            nome2 = ""
-            usuario = ""
-            meelee_atacante = None
-            armadura_defensor = None
             valor = 0
             dano_mod = 0
             ataque = 0
             defesa = 0
             critico_mod = 0
+            nome1 = ""
+            nome2 = ""
+            usuario = ""
+            meelee_atacante = None
+            armadura_defensor = None
             ok = await self.embed_selecionar_grupo(ctx)
             if ok == 1:
                 ok1 = await self.embed_selecionar_unico(ctx, "party", "ataque")
