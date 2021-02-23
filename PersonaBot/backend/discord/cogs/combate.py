@@ -156,7 +156,7 @@ class Combate(commands.Cog):
             canal = self.bot.get_channel(Canal.carregar_canal_grupo())
             ordem = []
             if self.horda != [] and self.party != []:
-                titulo = "Qual a forma de interação pós combate?"
+                titulo = "Qual a forma de interação pré combate?"
                 descricao ="Reaja com a opção desejada"
                 cor = "azul"
                 campos = [(":one:", "Emboscada"), (":two:","Disputa")]
@@ -166,9 +166,7 @@ class Combate(commands.Cog):
                 titulo = "**Ordem de turnos**"
                 if ok == 1:
                     valor_criterio = await self.definir_valor_criterio(ctx, "**EMBOSCADA**: Qual o valor critério? (0 a 100)")
-                    lider_id = Database.personagem_id(self.party[0])
-                    usuario = Database.discord_user(lider_id)
-                    dado = await Dado.rolagem_pronta(self.bot, canal, self.party[0], usuario, 1, 100)
+                    dado = await self.encaminhar_dado(canal)
                     if dado <= valor_criterio:
                         await canal.send(f'O grupo tirou um dado de {dado} e conseguiu emboscar a Shadow, vocês atacarão primeiro.')
                         ordem = Ordenacao.ordenacao_emboscada(self.party, self.horda)
@@ -177,9 +175,7 @@ class Combate(commands.Cog):
                         ordem = Ordenacao.ordenacao_disputa(self.party, self.horda)
                 elif ok == 2:
                     valor_criterio = await self.definir_valor_criterio(ctx, "**DISPUTA**: Qual o valor critério? (0 a 100)")
-                    lider_id = Database.personagem_id(self.party[0])
-                    usuario = Database.discord_user(lider_id)
-                    dado = await Dado.rolagem_pronta(self.bot, canal, self.party[0], usuario, 1, 100)
+                    dado = await self.encaminhar_dado(canal)
                     if dado <= valor_criterio:
                         await canal.send(f'O grupo tirou um dado de {dado} e conseguiu evitar ser emboscado, vocês atacarão de acordo com a sua agilidade.')
                         ordem = Ordenacao.ordenacao_disputa(self.party, self.horda)
@@ -727,6 +723,12 @@ class Combate(commands.Cog):
         info["atributos"] = atributos_defensor
         info["armadura"] = armadura_defensor
         return info
+    
+    async def encaminhar_dado(self, canal):
+        lider_id = Database.personagem_id(self.party[0])
+        usuario = Database.discord_user(lider_id)
+        dado = await Dado.rolagem_pronta(self.bot, canal, self.party[0], usuario, 1, 100)
+        return dado
 
 def setup(bot):
     bot.add_cog(Combate(bot))
