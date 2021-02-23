@@ -109,7 +109,7 @@ class Persona(commands.Cog):
                             skills_id = info[0]
                             nomes_skills = info[1]
                             for skill in nivel_skills:
-                                await self.aprendizado(False, skill, personagem, False, personagem_persona_id, nova_skills, nome_skills)
+                                await self.aprendizado(ctx, canal, False, skill, personagem, False, personagem_persona_id, nova_skills, nomes_skills)
                                 nova_skills = Database.skills(personagem_id, persona_id)
                     else:
                         nova_skills = Database.skills(personagem_id, persona_id)
@@ -119,7 +119,7 @@ class Persona(commands.Cog):
                         skills_id = info[0]
                         nomes_skills = info[1]
                         for skill in nivel_skills:
-                            await self.aprendizado(False, skill, personagem, False, personagem_persona_id, nova_skills, nome_skills)
+                            await self.aprendizado(ctx, canal, False, skill, personagem, False, personagem_persona_id, nova_skills, nomes_skills)
                             nova_skills = Database.skills(personagem_id, persona_id)
             else:
                 subiu_nivel = Database.aumentar_nivel_fool(personagem_id)
@@ -254,15 +254,14 @@ class Persona(commands.Cog):
                             skills_id = info[0]
                             nomes_skills = info[1]
                             for skill in nivel_skills:
-                                await self.aprendizado(True, skill, personagem, persona_id, personagem_persona_id, nova_skills, nome_skills)
+                                await self.aprendizado(ctx, canal, True, skill, personagem, persona_id, personagem_persona_id, nova_skills, nomes_skills)
                                 nova_skills = Database.skills(personagem_id, persona_id)
                     else:
                         nova_skills = Database.skills(personagem_id, persona_id)
                         info = self.info_skills(nova_skills)
-                        skills_id = info[0]
                         nomes_skills = info[1]
                         for skill in nivel_skills:
-                            await self.aprendizado(True, skill, personagem, persona_id, personagem_persona_id, nova_skills, nome_skills)
+                            await self.aprendizado(ctx, canal, True, skill, personagem, persona_id, personagem_persona_id, nova_skills, nomes_skills)
                             nova_skills = Database.skills(personagem_id, persona_id)
             else:
                 await ctx.send("Este personagem não é da Arcana Fool")
@@ -462,7 +461,7 @@ class Persona(commands.Cog):
                         if aprendeu == True:
                             await canal.send(f'**{personagem}** aprendeu a habilidade **{nome_skill}**')
                     else:
-                        await self.aprendizado(False, skill, personagem, persona_id, personagem_persona_id, skills, nome_skills)
+                        await self.aprendizado(ctx, canal, False, skill, personagem, persona_id, personagem_persona_id, skills, nomes_skills)
                 else:
                     await ctx.send(f'**{personagem}** já conhece essa habildade.')
             else:
@@ -567,7 +566,7 @@ class Persona(commands.Cog):
         info = (skills_id, nomes_skills)
         return info
     
-    async def aprendizado(self, fool, skill, personagem, persona_id, personagem_persona_id, id_skills_personagem, nome_skills_personagem):
+    async def aprendizado(self, ctx, canal, fool, skill, personagem, persona_id, personagem_persona_id, id_skills_personagem, nome_skills_personagem):
         reacoes_padrao = ["1️⃣", "2️⃣", "3️⃣", "4️⃣", "5️⃣", "6️⃣", "7️⃣", "8️⃣"]
         nome_skill = Database.nome_skill(skill)
         titulo_aprendizado = f'**{personagem}** aprendeu uma nova habilidade!'
