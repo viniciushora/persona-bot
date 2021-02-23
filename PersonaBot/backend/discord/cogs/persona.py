@@ -445,7 +445,6 @@ class Persona(commands.Cog):
             skills = Database.skills(personagem_id, persona_id)
             skill_id = Database.skill_id(skill)
             info = self.info_skills(skills)
-            skills_id = info[0]
             nomes_skills = info[1]
             if skill_id != False:
                 nome_skill = Database.nome_skill(skill_id)
