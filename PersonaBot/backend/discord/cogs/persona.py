@@ -185,8 +185,6 @@ class Persona(commands.Cog):
                 titulo_aumento = "**PERSONA SUBIU DE NÍVEL!**"
                 descricao_aumento = f'**{Database.nome_persona(persona_id)}** alcançou o nível ({nivel})'
                 cor_aumento = "verde"
-                emojis_disc = [":one:", ":two:", ":three:", ":four:", ":five:", ":six:", ":seven:", ":eight:"]
-                reacoes_padrao = ["1️⃣", "2️⃣", "3️⃣", "4️⃣", "5️⃣", "6️⃣", "7️⃣", "8️⃣"]
                 fixos = atributos[:2]
                 flex = atributos[2:]
                 crescimento_atributo = [0, 0, 0, 0, 0, 0, 0]
@@ -249,7 +247,6 @@ class Persona(commands.Cog):
                         if nivel_skills != []:
                             nova_skills = Database.skills(personagem_id, persona_id)
                             info = self.info_skills(nova_skills)
-                            skills_id = info[0]
                             nomes_skills = info[1]
                             for skill in nivel_skills:
                                 await self.aprendizado(ctx, canal, True, skill, personagem, persona_id, personagem_persona_id, nova_skills, nomes_skills)
