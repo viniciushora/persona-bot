@@ -538,7 +538,7 @@ class Combate(commands.Cog):
                 'crit': self.modifica_critico(tipo_grupo, codigo, canal, quant)
             }
             await execucao[tipo_marcador]
-        except:
+        except ValueError:
             await ctx.send("Erro")
 
     async def embed_selecionar_grupo(self, ctx):
@@ -726,7 +726,7 @@ class Combate(commands.Cog):
                 2: "curou em área os alvos",
                 3: "curou seu alvo",
                 4: "curou em área os alvos"
-            }     
+            }
             await canal.send(f'**{nome}** {area_controlador[skill]} em **{skill_controlador[skill]}**')
         else:
             await ctx.send("Cura cancelada.")
