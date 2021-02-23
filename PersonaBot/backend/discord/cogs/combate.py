@@ -498,7 +498,7 @@ class Combate(commands.Cog):
                             4: f'**DRENOU!** **{nome2}** se curou em **{int(dano)} de {nome_elemento}**!',
                             5: f'**REFLETIU!** **{nome2}** refletiu **{int(dano)}** de dano de {nome_elemento} em **{nome1}**!',
                             6: f'**{nome1}** causou **{int(dano)}** de dano de {nome_elemento} em **{nome2}**!'
-                        }  
+                        }
                         for dado in dados:
                             if dado <= valores[i]:
                                 if dano_mod > 0:
@@ -509,7 +509,7 @@ class Combate(commands.Cog):
                                 await canal.send(f'**{nome1}** errou a habilidade **{nome_skill}** em **{nome2}**')
                 else:
                     await ctx.send("Habilidade cancelada.")
-        except:
+        except ValueError:
             await ctx.send("Algo está incorreto.")
 
     @commands.command(name='lider')
