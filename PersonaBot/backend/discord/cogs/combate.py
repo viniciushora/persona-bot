@@ -307,7 +307,7 @@ class Combate(commands.Cog):
                     await canal.send(f'**{nome1}** errou o ataque físico  em **{nome2}**')
             else:
                 await ctx.send("Ataque físico cancelado.")
-        except:
+        except AttributeError:
             await ctx.send("Ataque cancelado ou Algo está incorreto.")
 
     @commands.command(name='tiro')
@@ -352,7 +352,7 @@ class Combate(commands.Cog):
                     5: f'**REFLETIU!** **{nome_horda}** refletiu **{int(dano)}** de dano em **{nome_party}**!',
                     6: f'**{nome_party}** causou **{int(dano)}** de dano em **{nome_horda}**!',
                     7: f'**CRÍTICO!** **{nome_party}** causou **{int(dano * 2)}** de dano e derrubou **{nome_horda}**!'
-                }  
+                }
                 if self.horda_elem_dano[ok2-1][1] > 0:
                     await canal.send(interacoes[self.horda_elem_dano[ok2-1][1]])
                 elif dado <= critico:
@@ -361,7 +361,7 @@ class Combate(commands.Cog):
                     await canal.send(interacoes[fraquezas[0]])
             else:
                 await canal.send(f'**{nome_party}** errou o tiro em **{nome_horda}**')
-        except:
+        except AttributeError:
             await ctx.send("Algo está incorreto.")
 
     @commands.command(name='habilidade')
