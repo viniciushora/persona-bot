@@ -1,1 +1,7 @@
-PersonaBot\config.json
+config.json
+knexfile.js
+node_modules
+ambiente
+_pycache_
+.idea
+
