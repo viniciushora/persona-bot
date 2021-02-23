@@ -234,15 +234,11 @@ class Combate(commands.Cog):
                 ok2 = await self.embed_selecionar_unico(ctx, "horda", "defesa")
                 nome_horda = horda_nomes[ok2-1]
                 nome2 = nome_horda
-                if self.horda[ok2-1][0] == "s":
-                    informacoes_horda = Mensageiro.informacoes_shadow(nome_horda)
-                    fraquezas = informacoes_horda["fraquezas"]
-                    atributos_defensor = informacoes_horda["atributos"]
-                else:
-                    informacoes_horda = Mensageiro.informacoes_personagem(nome_horda)
-                    fraquezas = informacoes_horda["fraquezas"]
+                informacoes_horda = await self.info_horda_defensor(ok2, nome_horda)
+                atributos_defensor = informacoes_horda["atributos"]
+                fraquezas = informacoes_horda["fraquezas"]
+                if informacoes_horda["armadura"] != -1:
                     armadura_defensor = informacoes_horda["armadura"]
-                    atributos_defensor = informacoes_horda["atributos"]
                 valor = (self.party_mult_acc[ok1-1], self.horda_mult_evs[ok2-1])
                 critico_mod =  self.party_mult_crit[ok1-1]
                 ataque = self.party_mult_atk[ok1-1]
@@ -324,15 +320,11 @@ class Combate(commands.Cog):
             ok2 = await self.embed_selecionar_unico(ctx, "horda", "defesa")
             nome_horda = horda_nomes[ok2-1]
             armadura_defensor = None
-            if self.horda[ok2-1][0] == "s":
-                informacoes_horda = Mensageiro.informacoes_shadow(nome_horda)
-                fraquezas = informacoes_horda["fraquezas"]
-                atributos_defensor = informacoes_horda["atributos"]
-            else:
-                informacoes_horda = Mensageiro.informacoes_personagem(nome_horda)
-                fraquezas = informacoes_horda["fraquezas"]
+            informacoes_horda = await self.info_horda_defensor(ok2, nome_horda)
+            atributos_defensor = informacoes_horda["atributos"]
+            fraquezas = informacoes_horda["fraquezas"]
+            if informacoes_horda["armadura"] != -1:
                 armadura_defensor = informacoes_horda["armadura"]
-                atributos_defensor = informacoes_horda["atributos"]
             var = await self.definir_valor_criterio(ctx, "Qual o valor critério? (0 a 100)")
             valor_criterio = var + (5*(atributos_atacante[5]//5)) - (5*(atributos_defensor[6]//5)) + (10*self.party_mult_acc[ok1-1]) - (10*self.horda_mult_evs[ok2-1])
             await canal.send(f'Você precisa tirar um valor menor que **{valor_criterio}** no dado')
@@ -411,15 +403,11 @@ class Combate(commands.Cog):
                             for defensor in defensores:
                                 nome_horda = self.horda[defensor-1][1]
                                 armadura_defensor = None
-                                if self.horda[defensor-1][0] == "s":
-                                    informacoes_horda = Mensageiro.informacoes_shadow(nome_horda)
-                                    fraquezas = informacoes_horda["fraquezas"]
-                                    atributos_defensor = informacoes_horda["atributos"]
-                                else:
-                                    informacoes_horda = Mensageiro.informacoes_personagem(nome_horda)
-                                    fraquezas = informacoes_horda["fraquezas"]
+                                informacoes_horda = await self.info_horda_defensor(defensor, nome_horda)
+                                atributos_defensor = informacoes_horda["atributos"]
+                                fraquezas = informacoes_horda["fraquezas"]
+                                if informacoes_horda["armadura"] != -1:
                                     armadura_defensor = informacoes_horda["armadura"]
-                                    atributos_defensor = informacoes_horda["atributos"]
                                 defesa = self.horda_mult_def[defensor-1]
                                 dano_mod = self.horda_elem_dano[defensor-1][elemento]
                                 valor = self.horda_mult_evs[defensor-1]
@@ -718,7 +706,26 @@ class Combate(commands.Cog):
             except ValueError:
                 await ctx.send("Digite um número entre 0 e 100.")
         return valor_criterio
-        
+    
+    async def info_horda_defensor(self, opcao, nome_horda):
+        info = {}
+        fraquezas = 0
+        atributos_defensor = 0
+        armadura_defensor = -1
+        if self.horda[opcao-1][0] == "s":
+            informacoes_horda = Mensageiro.informacoes_shadow(nome_horda)
+            fraquezas = informacoes_horda["fraquezas"]
+            atributos_defensor = informacoes_horda["atributos"]
+        else:
+            informacoes_horda = Mensageiro.informacoes_personagem(nome_horda)
+            fraquezas = informacoes_horda["fraquezas"]
+            armadura_defensor = informacoes_horda["armadura"]
+            info["fraquezas"] = armadura_defensor
+            atributos_defensor = informacoes_horda["atributos"]
+        info["fraquezas"] = fraquezas
+        info["atributos"] = atributos_defensor
+        info["armadura"] = armadura_defensor
+        return info
 
 def setup(bot):
     bot.add_cog(Combate(bot))
