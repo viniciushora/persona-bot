@@ -31,10 +31,16 @@ class Combate(commands.Cog):
         for palavra in personagem:
             nome += palavra + " "
         nome = nome[:-1]
-        if tipo == "shadow"  or tipo == "s":
-            shadow_id = Database.shadow_id(nome)
-            if shadow_id != False:
-                self.horda.append(("s",nome))
+        id_controlador = {
+            "s": Database.shadow_id,
+            "shadow": Database.shadow_id,
+            "p": Database.personagem_id,
+            "personagem": Database.personagem_id
+        }
+        if tipo == "p" or tipo == "s":
+            elemento_id = id_controlador[tipo](nome)
+            if elemento_id != False:
+                self.horda.append((tipo,nome))
                 self.horda_mult_atk.append(0)
                 self.horda_mult_def.append(0)
                 self.horda_mult_acc.append(0)
@@ -43,20 +49,7 @@ class Combate(commands.Cog):
                 self. horda_elem_dano.append([0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0])
                 await ctx.send(f'**{nome}** foi adicionado à horda.')
             else:
-                await ctx.send("Shadow não existente.")
-        elif tipo == "personagem" or tipo == "p":
-            personagem_id = Database.personagem_id(nome)
-            if personagem_id != False:
-                self.horda.append(("p",nome))
-                self.horda_mult_atk.append(0)
-                self.horda_mult_def.append(0)
-                self.horda_mult_acc.append(0)
-                self.horda_mult_evs.append(0)
-                self.horda_mult_crit.append(0)
-                self.horda_elem_dano.append([0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0])
-                await ctx.send(f'**{nome}** foi adicionado à horda.')
-            else:
-                await ctx.send("Personagem não existente.")
+                await ctx.send("Elemento não existente.")
         else:
             await ctx.send("Tipo incorreto.")
     
@@ -172,17 +165,7 @@ class Combate(commands.Cog):
                 ok = await embed.enviar_embed_reacoes()
                 titulo = "**Ordem de turnos**"
                 if ok == 1:
-                    next = 0
-                    while next == 0:
-                        await ctx.send("**EMBOSCADA**: Qual o valor critério? (0 a 100)")
-                        msg = await self.bot.wait_for('message')
-                        mensagem = msg.content
-                        try:
-                            valor_criterio = int(mensagem)
-                            if valor_criterio > 0 and valor_criterio <= 100:
-                                next = 1
-                        except:
-                            await ctx.send("Digite um número entre 0 e 100.")
+                    valor_criterio = await self.definir_valor_criterio(ctx, "**EMBOSCADA**: Qual o valor critério? (0 a 100)")
                     lider_id = Database.personagem_id(self.party[0])
                     usuario = Database.discord_user(lider_id)
                     dado = await Dado.rolagem_pronta(self.bot, canal, self.party[0], usuario, 1, 100)
@@ -193,17 +176,7 @@ class Combate(commands.Cog):
                         await canal.send(f'O grupo tirou um dado de {dado} e falhou em emboscar a shadow, vocês atacarão de acordo com a sua agilidade.')
                         ordem = Ordenacao.ordenacao_disputa(self.party, self.horda)
                 elif ok == 2:
-                    next = 0
-                    while next == 0:
-                        await ctx.send("**DISPUTA**: Qual o valor critério? (0 a 100)")
-                        msg = await self.bot.wait_for('message')
-                        mensagem = msg.content
-                        try:
-                            valor_criterio = int(mensagem)
-                            if valor_criterio > 0 and valor_criterio <= 100:
-                                next = 1
-                        except:
-                            await ctx.send("Digite um número entre 0 e 100.")
+                    valor_criterio = await self.definir_valor_criterio(ctx, "**DISPUTA**: Qual o valor critério? (0 a 100)")
                     lider_id = Database.personagem_id(self.party[0])
                     usuario = Database.discord_user(lider_id)
                     dado = await Dado.rolagem_pronta(self.bot, canal, self.party[0], usuario, 1, 100)
@@ -219,7 +192,7 @@ class Combate(commands.Cog):
                     for elem in ordem:
                         texto += f'{i}. {elem}' + "\n"
                         i += 1
-                    texto[:-1]
+                    texto = texto[:-1]
                     campos = [("ORDEM:", texto)]
                     embed = EmbedComCampos(self.bot, canal, titulo, False, cor, False, campos, False)
                     await embed.enviar_embed()
@@ -227,7 +200,7 @@ class Combate(commands.Cog):
                     await ctx.send("Cálculo cancelado.")
             else:
                 await ctx.send("Sem requisitos mínimos para iniciar um combate.")
-        except:
+        except AttributeError:
             await ctx.send("Canal do grupo não está registrado.")
 
     @commands.command(name='ataque_fisico')
@@ -304,17 +277,7 @@ class Combate(commands.Cog):
                 defesa = self.party_mult_def[ok2-1]
                 dano_mod = self.party_elem_dano[ok2-1][0]
             if ok < 3:
-                next = 0
-                while next == 0:
-                    await ctx.send("Qual o valor critério? (0 a 100)")
-                    msg = await self.bot.wait_for('message')
-                    mensagem = msg.content
-                    try:
-                        var = int(mensagem)
-                        if var > 0 and var <= 100:
-                            next = 1
-                    except:
-                        await ctx.send("Digite um número entre 0 e 100.")
+                var = await self.definir_valor_criterio(ctx, "Qual o valor critério? (0 a 100)")
                 valor_criterio = var + (5*(atributos_atacante[5]//5)) - (5*(atributos_defensor[6]//5)) + (10 * valor[0]) - (10 * valor[1])
                 await canal.send(f'Você precisa tirar um valor menor que **{valor_criterio}** no dado')
                 dado = await Dado.rolagem_pronta(self.bot, canal, nome1, usuario, 1, 100)
@@ -322,7 +285,7 @@ class Combate(commands.Cog):
                 if dado <= valor_criterio:
                     valor_arma = Mensageiro.info_meelee(meelee_atacante)
                     valor_armadura = Mensageiro.info_armadura(armadura_defensor)
-                    dano = int(20 + math.sqrt(valor_arma) * math.sqrt(atributos_atacante[2])) * ((0.3 * ataque) + 1) 
+                    dano = int(20 + math.sqrt(valor_arma) * math.sqrt(atributos_atacante[2])) * ((0.3 * ataque) + 1)
                     dano_mitigado = int(dano / math.sqrt((atributos_defensor[4]*8) + valor_armadura)) * ((0.3 * defesa) + 1)
                     dano = dano - dano_mitigado
                     interacoes = {
@@ -333,7 +296,7 @@ class Combate(commands.Cog):
                         5: f'**REFLETIU!** **{nome2}** refletiu **{int(dano)}** de dano em **{nome1}**!',
                         6: f'**{nome1}** causou **{int(dano)}** de dano em **{nome2}**!',
                         7: f'**CRÍTICO!** **{nome1}** causou **{int(dano * 2)}** de dano e derrubou **{nome2}**!'
-                    }  
+                    }
                     if dano_mod > 0:
                         await canal.send(interacoes[dano_mod])
                     elif dado <= critico:
@@ -370,17 +333,7 @@ class Combate(commands.Cog):
                 fraquezas = informacoes_horda["fraquezas"]
                 armadura_defensor = informacoes_horda["armadura"]
                 atributos_defensor = informacoes_horda["atributos"]
-            next = 0
-            while next == 0:
-                await ctx.send("Qual o valor critério? (0 a 100)")
-                msg = await self.bot.wait_for('message')
-                mensagem = msg.content
-                try:
-                    var = int(mensagem)
-                    if var > 0 and var <= 100:
-                        next = 1
-                except:
-                    await ctx.send("Digite um número entre 0 e 100.")
+            var = await self.definir_valor_criterio(ctx, "Qual o valor critério? (0 a 100)")
             valor_criterio = var + (5*(atributos_atacante[5]//5)) - (5*(atributos_defensor[6]//5)) + (10*self.party_mult_acc[ok1-1]) - (10*self.horda_mult_evs[ok2-1])
             await canal.send(f'Você precisa tirar um valor menor que **{valor_criterio}** no dado')
             critico = 10 + (self.party_mult_crit[ok1-1] * 10)
@@ -506,17 +459,7 @@ class Combate(commands.Cog):
                                 defensores_info.append(defensor_info)
                             ataque = self.horda_mult_atk[ok1-1]
                 if defensores_info != []:
-                    next = 0
-                    while next == 0:
-                        await ctx.send("Qual o valor critério? (0 a 100)")
-                        msg = await self.bot.wait_for('message')
-                        mensagem = msg.content
-                        try:
-                            var = int(mensagem)
-                            if var > 0 and var <= 100:
-                                next = 1
-                        except:
-                            await ctx.send("Digite um número entre 0 e 100.")
+                    var = await self.definir_valor_criterio(ctx, "Qual o valor critério? (0 a 100)")
                     valores = []
                     for defensor_info in defensores_info:
                         atributos_defensor = defensor_info[1]
@@ -529,7 +472,7 @@ class Combate(commands.Cog):
                     texto = texto[:-2]
                     await canal.send(f'Você precisa tirar valor(es) menor(es) que **{texto}** no dado')
                     dados = []
-                    for i in range(vezes):   
+                    for i in range(vezes):
                         dado = await Dado.rolagem_pronta(self.bot, canal, nome1, usuario, 1, 100)
                         dados.append(dado)
                     habilidade_controlador = {
@@ -799,6 +742,22 @@ class Combate(commands.Cog):
                 await ctx.send("Tipo incorreto.")
         except:
             await ctx.send("Erro")
+    
+    async def definir_valor_criterio(self, ctx, titulo):
+        next = 0
+        valor_criterio = -1
+        while next == 0:
+            await ctx.send(titulo)
+            msg = await self.bot.wait_for('message')
+            mensagem = msg.content
+            try:
+                valor_criterio = int(mensagem)
+                if valor_criterio > 0 and valor_criterio <= 100:
+                    next = 1
+            except ValueError:
+                await ctx.send("Digite um número entre 0 e 100.")
+        return valor_criterio
+        
 
 def setup(bot):
     bot.add_cog(Combate(bot))
