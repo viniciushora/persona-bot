@@ -1,9 +1,10 @@
-import discord
 import random
 from discord.ext import commands
 
 from cogs.database import Database
 from cogs.canal import Canal
+from cogs.embed import Embed, EmbedComCampos, EmbedComReacao
+from cogs.utilitarios import Gerador
 
 class Item(commands.Cog):
     def __init__(self, bot):
@@ -98,9 +99,9 @@ class Item(commands.Cog):
                 if novo_dinheiro:
                     await canal.send(f'O dinheiro do grupo agora é **R$ {quant}**')
                 else:
-                    await ctx.send(f'Erro interno')
+                    await ctx.send("Erro interno")
             except:
-                await ctx.send(f'Valor incorreto')
+                await ctx.send("Valor incorreto")
         except:
             await ctx.send("Canal do grupo não registrado.")
     
@@ -127,11 +128,9 @@ class Item(commands.Cog):
             dinheiro_grupo = Database.dinheiro_grupo()
             dinheiro = dinheiro_grupo + dinheiro1
             add_dinheiro = Database.modificar_dinheiro(dinheiro)
-            embed_drops = discord.Embed(
-                    title=f'**Drops de {nome}**',
-                    description=f'Dinheiro: R$ {dinheiro1} ; Experiência : {exp}',
-                    colour=discord.Colour.green()
-            )
+            titulo = f'**Drops de {nome}**'
+            descricao = f'Dinheiro: R$ {dinheiro1} ; Experiência : {exp}'
+            cor = "verde"
             texto = ""
             if lista_drops != []:
                 for drop in lista_drops:
@@ -139,84 +138,85 @@ class Item(commands.Cog):
                 texto = texto[:-2]
             else:
                 texto = "Sem itens dropados"
-            embed_drops.add_field(name="Itens dropados", value=texto, inline=False)
-            await canal.send(embed=embed_drops)
+            campos = ["Itens dropados", texto]
+            embed = EmbedComCampos(self.bot, canal, titulo, descricao, cor, False, campos, False)
+            await embed.enviar_embed()
         except:
             await ctx.send("Canal do grupo não registrado ou informações do dado erradas.")
     
     @commands.command(name='equipar')
     async def equipar(self, ctx, personagem, *item):
-        try:
-            nome = ""
-            for palavra in item:
-                nome+=palavra + " "
-            nome = nome[:-1]
-            personagem_id = Database.personagem_id(personagem)
-            if personagem_id != False:
-                canal = self.bot.get_channel(Canal.carregar_canal_jogador(personagem))
-                item_id = Database.item_id(nome)
-                if item_id != False:
-                    contem_item = Database.item_no_inventario(nome)
-                    if contem_item != False:
-                        tipo_item_id = Database.tipo_item_id(item_id)
-                        equip = Database.equipar_item(personagem_id, item_id, tipo_item_id)
-                        if equip == False:
-                            await canal.send("Este item não é equipável")
-                        elif tipo_item_id == 7:
-                            await canal.send(f'**{nome}** agora é a arma corpo-a-corpo equipada de **{personagem}**')
-                        elif tipo_item_id == 8:
-                            await canal.send(f'**{nome}** agora é a arma à distância equipada de **{personagem}**')
-                        elif tipo_item_id == 9:
-                            await canal.send(f'**{nome}** agora é a armadura equipado de **{personagem}**')
-                        else:
-                            await canal.send(f'**{nome}** agora é o acessório equipado de **{personagem}**')
+        #try:
+        nome = ""
+        for palavra in item:
+            nome+=palavra + " "
+        nome = nome[:-1]
+        personagem_id = Database.personagem_id(personagem)
+        if personagem_id != False:
+            canal = self.bot.get_channel(Canal.carregar_canal_jogador(personagem))
+            item_id = Database.item_id(nome)
+            if item_id != False:
+                contem_item = Database.item_no_inventario(nome)
+                if contem_item != False:
+                    tipo_item_id = Database.tipo_item_id(item_id)
+                    equip = Database.equipar_item(personagem_id, item_id, tipo_item_id)
+                    texto_controlador = {
+                        7: f'**{nome}** agora é a arma corpo-a-corpo equipada de **{personagem}**',
+                        8: f'**{nome}** agora é a arma à distância equipada de **{personagem}**',
+                        9: f'**{nome}** agora é a armadura equipado de **{personagem}**',
+                        10: f'**{nome}** agora é o acessório equipado de **{personagem}**'
+                    }
+                    if equip == False:
+                        await canal.send("Este item não é equipável")
                     else:
-                        await ctx.send("Este item não está no inventário do grupo.")
+                        await canal.send(texto_controlador[tipo_item_id])
                 else:
-                    await ctx.send("Este item não existe.")
+                    await ctx.send("Este item não está no inventário do grupo.")
             else:
-                await ctx.send("Este personagem não existe.")
-        except:
-            await ctx.send("Canal do jogador não registrado.")
+                await ctx.send("Este item não existe.")
+        else:
+            await ctx.send("Este personagem não existe.")
+        #except:
+        #    await ctx.send("Canal do jogador não registrado.")
     
     @commands.command(name='desequipar')
     async def desequipar(self, ctx, personagem, *item):
-        try:
-            nome = ""
-            for palavra in item:
-                nome+=palavra + " "
-            nome = nome[:-1]
-            personagem_id = Database.personagem_id(personagem)
-            if personagem_id != False:
-                canal = self.bot.get_channel(Canal.carregar_canal_jogador(personagem))
-                item_id = Database.item_id(nome)
-                if item_id != False:
-                    contem_item = Database.item_no_inventario(nome)
-                    if contem_item != False:
-                        tipo_item_id = Database.tipo_item_id(item_id)
-                        item_equipado = Database.item_equipado(personagem_id, item_id, tipo_item_id)
-                        if item_equipado:
-                            desequip = Database.desequipar_item(personagem_id, tipo_item_id)
-                            if desequip == False:
-                                await canal.send("Este item não é equipável")
-                            elif tipo_item_id == 7:
-                                await canal.send(f'**{nome}** não está mais equipado(a) como arma corpo-a-corpo de **{personagem}**')
-                            elif tipo_item_id == 8:
-                                await canal.send(f'**{nome}** não está mais equipado(a) como arma à distância equipada de **{personagem}**')
-                            elif tipo_item_id == 9:
-                                await canal.send(f'**{nome}** não está mais equipado(a) como armadura equipada de **{personagem}**')
-                            else:
-                                await canal.send(f'**{nome}** não está mais equipado(a) como acessório equipado de **{personagem}**')
+        #try:
+        nome = ""
+        for palavra in item:
+            nome+=palavra + " "
+        nome = nome[:-1]
+        personagem_id = Database.personagem_id(personagem)
+        if personagem_id != False:
+            canal = self.bot.get_channel(Canal.carregar_canal_jogador(personagem))
+            item_id = Database.item_id(nome)
+            if item_id != False:
+                contem_item = Database.item_no_inventario(nome)
+                if contem_item != False:
+                    tipo_item_id = Database.tipo_item_id(item_id)
+                    item_equipado = Database.item_equipado(personagem_id, item_id, tipo_item_id)
+                    if item_equipado:
+                        desequip = Database.desequipar_item(personagem_id, tipo_item_id)
+                        texto_controlador = {
+                            7: f'**{nome}** não está mais equipado(a) como arma corpo-a-corpo de **{personagem}**',
+                            8: f'**{nome}** não está mais equipado(a) como arma à distância equipada de **{personagem}**',
+                            9: f'**{nome}** não está mais equipado(a) como armadura equipada de **{personagem}**',
+                            10: f'**{nome}** não está mais equipado(a) como acessório equipado de **{personagem}**'
+                        }
+                        if desequip == False:
+                            await canal.send("Este item não é equipável")
                         else:
-                            await ctx.send("Este item não está equipado.")
+                            await canal.send(texto_controlador[tipo_item_id])
                     else:
-                        await ctx.send("Este item não está no inventário do grupo.")
+                        await ctx.send("Este item não está equipado.")
                 else:
-                    await ctx.send("Este item não existe.")
+                    await ctx.send("Este item não está no inventário do grupo.")
             else:
-                await ctx.send("Este personagem não existe.")
-        except:
-            await ctx.send("Canal do jogador não registrado.")
+                await ctx.send("Este item não existe.")
+        else:
+            await ctx.send("Este personagem não existe.")
+        #except:
+        #    await ctx.send("Canal do jogador não registrado.")
 
     @commands.command(name='inventario')
     async def inventario(self, ctx):
@@ -235,102 +235,72 @@ class Item(commands.Cog):
             armaduras = []
             acessorios = []
             roupas = []
+            lista_controlador = {
+                "Consumíveis": consumiveis.append,
+                "Cartas de Habilidade": cartas.append,
+                "Materiais": materiais.append,
+                "Tesouros": tesouros.append,
+                "Essenciais": essenciais.append,
+                "Itens-chave": itens_chave.append,
+                "Armas Corpo-a-corpo": armas_meelee.append,
+                "Armas à distância": armas_ranged.append,
+                "Armadura": armaduras.append,
+                "Acessórios": acessorios.append,
+                "Roupas": acessorios.append
+            }
             for item, tipo_item, quant in itens:
-                if tipo_item == "Consumíveis":
-                    consumiveis.append((item,quant))
-                elif tipo_item == "Cartas de Habilidade":
-                    cartas.append((item,quant))
-                elif tipo_item == "Materiais":
-                    materiais.append((item,quant))
-                elif tipo_item == "Tesouros":
-                    tesouros.append((item,quant))
-                elif tipo_item == "Essenciais":
-                    essenciais.append((item,quant))
-                elif tipo_item == "Itens-chave":
-                    itens_chave.append((item,quant))
-                elif tipo_item == "Armas Corpo-a-corpo":
-                    armas_meelee.append((item,quant))
-                elif tipo_item == "Armas à distância":
-                    armas_ranged.append((item,quant))
-                elif tipo_item == "Armadura":
-                    armaduras.append((item,quant))
-                elif tipo_item == "Acessórios":
-                    acessorios.append((item,quant))
-                else:
-                    roupas.append((item,quant))
+                lista_controlador[tipo_item]((item,quant))
             dinheiro = Database.dinheiro_grupo()
-            inventario = discord.Embed(
-                    title="**Inventário do grupo**",
-                    description=f'Dinheiro: R$ {dinheiro}',
-                    colour=discord.Colour.blue()
-            )
+            titulo = "**Inventário do grupo**"
+            descricao = f'Dinheiro: R$ {dinheiro}'
+            cor = "azul"
+            campos = []
             if consumiveis != []:
-                texto = ""
-                for item, quant in consumiveis:
-                    texto += f'{item} x{quant}; '
-                texto = texto[:-2]
-                inventario.add_field(name="Consumíveis", value=texto, inline=False)
+                texto = Gerador.gerador_texto(consumiveis)
+                campo = ("Consumíveis", texto)
+                campos.append(campo)
             if cartas != []:
-                texto = ""
-                for item, quant in cartas:
-                    texto += f'{item} x{quant}; '
-                texto = texto[:-2]
-                inventario.add_field(name="Cartas de Habilidade", value=texto, inline=False)
+                texto = Gerador.gerador_texto(cartas)
+                campo = ("Cartas", texto)
+                campos.append(campo)
             if materiais != []:
-                texto = ""
-                for item, quant in materiais:
-                    texto += f'{item} x{quant}; '
-                texto = texto[:-2]
-                inventario.add_field(name="Materiais", value=texto, inline=False)
+                texto = Gerador.gerador_texto(materiais)
+                campo = ("Materiais", texto)
+                campos.append(campo)
             if tesouros != []:
-                texto = ""
-                for item, quant in tesouros:
-                    texto += f'{item} x{quant}; '
-                texto = texto[:-2]
-                inventario.add_field(name="Tesouros", value=texto, inline=False)
+                texto = Gerador.gerador_texto(tesouros)
+                campo = ("Tesouros", texto)
+                campos.append(campo)
             if essenciais != []:
-                texto = ""
-                for item, quant in essenciais:
-                    texto += f'{item} x{quant}; '
-                texto = texto[:-2]
-                inventario.add_field(name="Essenciais", value=texto, inline=False)
+                texto = Gerador.gerador_texto(essenciais)
+                campo = ("Essenciais", texto)
+                campos.append(campo)
             if itens_chave != []:
-                texto = ""
-                for item, quant in itens_chave:
-                    texto += f'{item} x{quant}; '
-                texto = texto[:-2]
-                inventario.add_field(name="Itens-chave", value=texto, inline=False)
+                texto = Gerador.gerador_texto(itens_chave)
+                campo = ("Itens-Chave", texto)
+                campos.append(campo)
             if armas_meelee != []:
-                texto = ""
-                for item, quant in armas_meelee:
-                    texto += f'{item} x{quant}; '
-                texto = texto[:-2]
-                inventario.add_field(name="Armas Corpo-a-corpo", value=texto, inline=False)
+                texto = Gerador.gerador_texto(armas_meelee)
+                campo = ("Armas corpo à corpo", texto)
+                campos.append(campo)
             if armas_ranged != []:
-                texto = ""
-                for item, quant in armas_ranged:
-                    texto += f'{item} x{quant}; '
-                texto = texto[:-2]
-                inventario.add_field(name="Armas à distância", value=texto, inline=False)
+                texto = Gerador.gerador_texto(armas_ranged)
+                campo = ("Armas à distância", texto)
+                campos.append(campo)
             if armaduras != []:
-                texto = ""
-                for item, quant in armaduras:
-                    texto += f'{item} x{quant}; '
-                texto = texto[:-2]
-                inventario.add_field(name="Armaduras", value=texto, inline=False)
+                texto = Gerador.gerador_texto(armaduras)
+                campo = ("Armaduras", texto)
+                campos.append(campo)
             if acessorios != []:
-                texto = ""
-                for item, quant in acessorios:
-                    texto += f'{item} x{quant}; '
-                texto = texto[:-2]
-                inventario.add_field(name="Acessórios", value=texto, inline=False)
+                texto = Gerador.gerador_texto(acessorios)
+                campo = ("Acessórios", texto)
+                campos.append(campo)
             if roupas != []:
-                texto = ""
-                for item, quant in roupas:
-                    texto += f'{item} x{quant}; '
-                texto = texto[:-2]
-                inventario.add_field(name="Roupas", value=texto, inline=False)
-            await canal.send(embed=inventario)
+                texto = Gerador.gerador_texto(roupas)
+                campo = ("Roupas", texto)
+                campos.append(campo)
+            embed = EmbedComCampos(self.bot, canal, titulo, descricao, cor, False, campos, False)
+            await embed.enviar_embed()
         except:
             await ctx.send("Canal do grupo não registrado.")
 
