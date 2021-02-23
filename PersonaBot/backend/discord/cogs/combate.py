@@ -740,7 +740,7 @@ class Combate(commands.Cog):
                 self.party_elem_dano[codigo-1][elemento] == tipo_interacao
             else:
                 await ctx.send("Tipo incorreto.")
-        except:
+        except ValueError:
             await ctx.send("Erro")
     
     async def definir_valor_criterio(self, ctx, titulo):
