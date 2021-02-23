@@ -2,6 +2,6 @@ config.json
 knexfile.js
 node_modules
 ambiente
-_pycache_
+__pycache__
 .idea
 
