@@ -60,7 +60,7 @@ class EmbedComReacao(EmbedComCampos):
                         break
         await embed_msg.delete()
         return opcao
-    
+
     async def enviar_embed_reacoes_multiplas(self):
         controlador = 0
         embed_msg = await self.enviar_embed()
