@@ -45,7 +45,7 @@ class EmbedComReacao(EmbedComCampos):
     def __init__(self,bot, ctx, titulo, descricao, cor, imagem, campos, alinhamento, reacoes):
         super().__init__(bot, ctx, titulo, descricao, cor, imagem, campos, alinhamento)
         self.reacoes = reacoes
-    
+
     async def enviar_embed_reacoes(self):
         embed_msg = await self.enviar_embed()
         for reacao in self.reacoes:
@@ -62,24 +62,24 @@ class EmbedComReacao(EmbedComCampos):
         return opcao
     
     async def enviar_embed_reacoes_multiplas(self):
+        controlador = 0
         embed_msg = await self.enviar_embed()
         for reacao in self.reacoes:
             await embed_msg.add_reaction(emoji=reacao)
         opcoes = []
-        opcao = 0
-        while opcao == 0:
+        while controlador == 0:
             reaction, user = await self.bot.wait_for('reaction_add', timeout=None)
             if str(reaction.emoji) != None and str(user) != "Persona Bot#0708":
-                for i in range(len(self.reacoes)-2):
+                for i in range(len(self.reacoes) - 2):
                     if str(reaction.emoji) == self.reacoes[i]:
                         opcoes.append(i + 1)
                 if str(reaction.emoji) == self.reacoes[len(self.reacoes) - 1]:
-                        opcao = len(self.reacoes)
+                        controlador = len(self.reacoes)
                 elif str(reaction.emoji) == self.reacoes[len(self.reacoes) - 2]:
-                        opcao = len(self.reacoes) - 1
-        if opcao == len(self.reacoes):
+                        controlador = len(self.reacoes) - 1
+        if controlador == len(self.reacoes):
             opcoes = []
-        final = (opcao, opcoes)
+        final = (controlador, opcoes)
         await embed_msg.delete()
         return final
 
