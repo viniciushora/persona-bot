@@ -82,9 +82,3 @@ class EmbedComReacao(EmbedComCampos):
         final = (controlador, opcoes)
         await embed_msg.delete()
         return final
-
-
-    
-        
-
-    
