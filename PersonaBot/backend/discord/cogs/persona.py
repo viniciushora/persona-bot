@@ -565,6 +565,7 @@ class Persona(commands.Cog):
         return info
     
     async def aprendizado(self, ctx, canal, fool, skill, personagem, persona_id, personagem_persona_id, id_skills_personagem, nome_skills_personagem):
+        emojis_disc = [":one:", ":two:", ":three:", ":four:", ":five:", ":six:", ":seven:", ":eight:"]
         reacoes_padrao = ["1️⃣", "2️⃣", "3️⃣", "4️⃣", "5️⃣", "6️⃣", "7️⃣", "8️⃣"]
         nome_skill = Database.nome_skill(skill)
         titulo_aprendizado = f'**{personagem}** aprendeu uma nova habilidade!'
