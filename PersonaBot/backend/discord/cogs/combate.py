@@ -530,14 +530,7 @@ class Combate(commands.Cog):
                 canal = self.bot.get_channel(Canal.carregar_canal_jogador(self.party[codigo-1]))
             elif tipo_grupo == "horda":
                 canal = self.bot.get_channel(Canal.carregar_canal_inimigos())
-            execucao = {
-                'atk': self.modifica_ataque(tipo_grupo, codigo, canal, quant),
-                'def': self.modifica_defesa(tipo_grupo, codigo, canal, quant),
-                'acc': self.modifica_acuracia(tipo_grupo, codigo, canal, quant),
-                'evs': self.modifica_evasao(tipo_grupo, codigo, canal, quant),
-                'crit': self.modifica_critico(tipo_grupo, codigo, canal, quant)
-            }
-            await execucao[tipo_marcador]
+            await self.modifica_marcador(ctx, canal, tipo_grupo, tipo_marcador, codigo, quant)
         except ValueError:
             await ctx.send("Erro")
 
@@ -604,76 +597,44 @@ class Combate(commands.Cog):
         embed = EmbedComReacao(self.bot, ctx, titulo, descricao, cor, False, campos, False, reacoes)
         resultado = await embed.enviar_embed_reacoes_multiplas()
         return resultado
-
-    async def modifica_ataque(self, tipo_grupo, codigo, canal, quant):
-        if tipo_grupo == "party":
-            self.party_mult_atk[codigo-1] += quant
-            if quant > 0:
-                await canal.send(f'**{self.party[codigo-1]}** teve seu ataque aumentado em {quant}.')
-            elif quant < 0:
-                await canal.send(f'**{self.party[codigo-1]}** teve seu ataque diminuido em {quant}.')
-        else:
-            self.horda_mult_atk[codigo-1] += quant
-            if quant > 0:
-                await canal.send(f'**{self.horda[codigo-1][1]}** teve seu ataque aumentado em {quant}.')
-            elif quant < 0:
-                await canal.send(f'**{self.horda[codigo-1][1]}** teve seu ataque diminuido em {quant}.')
     
-    async def modifica_defesa(self, tipo_grupo, codigo, canal, quant):
-        if tipo_grupo == "party":
-            self.party_mult_def[codigo-1] += quant
-            if quant > 0:
-                await canal.send(f'**{self.party[codigo-1]}** teve sua defesa aumentada em {quant}.')
-            elif quant < 0:
-                await canal.send(f'**{self.party[codigo-1]}** teve sua defesa diminuida em {quant}.')
-        else:
-            self.horda_mult_atk[codigo-1] += quant
-            if quant > 0:
-                await canal.send(f'**{self.horda[codigo-1][1]}** teve sua defesa aumentada em {quant}.')
-            elif quant < 0:
-                await canal.send(f'**{self.horda[codigo-1][1]}** teve sua defesa diminuida em {quant}.')
-    
-    async def modifica_acuracia(self, tipo_grupo, codigo, canal, quant):
-        if tipo_grupo == "party":
-            self.party_mult_acc[codigo-1] += quant
-            if quant > 0:
-                await canal.send(f'**{self.party[codigo-1]}** teve sua acurácia aumentada em {quant}.')
-            elif quant < 0:
-                await canal.send(f'**{self.party[codigo-1]}** teve sua acurácia diminuida em {quant}.')
-        else:
-            self.horda_mult_acc[codigo-1] += quant
-            if quant > 0:
-                await canal.send(f'**{self.horda[codigo-1][1]}** teve sua acurácia aumentada em {quant}.')
-            elif quant < 0:
-                await canal.send(f'**{self.horda[codigo-1][1]}** teve sua acurácia diminuida em {quant}.')
-    
-    async def modifica_evasao(self, tipo_grupo, codigo, canal, quant):
-        if tipo_grupo == "party":
-            self.party_mult_evs[codigo-1] += quant
-            if quant > 0:
-                await canal.send(f'**{self.party[codigo-1]}** teve sua evasão aumentada em {quant}.')
-            elif quant < 0:
-                await canal.send(f'**{self.party[codigo-1]}** teve sua evasão diminuida em {quant}.')
-        else:
-            self.horda_mult_evs[codigo-1] += quant
-            if quant > 0:
-                await canal.send(f'**{self.horda[codigo-1][1]}** teve sua evasão aumentada em {quant}.')
-            elif quant < 0:
-                await canal.send(f'**{self.horda[codigo-1][1]}** teve sua evasão diminuida em {quant}.')
-    
-    async def modifica_critico(self, tipo_grupo, codigo, canal, quant):
-        if tipo_grupo == "party":
-            self.party_mult_evs[codigo-1] += quant
-            if quant > 0:
-                await canal.send(f'**{self.party[codigo-1]}** teve sua evasão aumentada em {quant}.')
-            elif quant < 0:
-                await canal.send(f'**{self.party[codigo-1]}** teve sua evasão diminuida em {quant}.')
-        else:
-            self.horda_mult_evs[codigo-1] += quant
-            if quant > 0:
-                await canal.send(f'**{self.horda[codigo-1][1]}** teve sua evasão aumentada em {quant}.')
-            elif quant < 0:
-                await canal.send(f'**{self.horda[codigo-1][1]}** teve sua evasão diminuida em {quant}.')
+    async def modifica_marcador(self, ctx, canal, tipo_grupo, marcador, codigo, quant):
+        try:
+            operador = ""
+            if quant < 0:
+                operador = "aumentado(a)"
+            else:
+                operador = "diminuído(a)"
+            texto_controlador = {}
+            if tipo_grupo == "party":
+                texto_controlador = {
+                    "atk": f'**{self.party[codigo-1]}** teve seu ataque {operador} em {quant}.',
+                    "def": f'**{self.party[codigo-1]}** teve sua defesa {operador} em {quant}.',
+                    "acc": f'**{self.party[codigo-1]}** teve sua acurácia {operador} em {quant}.',
+                    "evs": f'**{self.party[codigo-1]}** teve sua evasão {operador} em {quant}.',
+                    "crit": f'**{self.party[codigo-1]}** teve seu crítico {operador} em {quant}.'
+                }
+            else:
+                texto_controlador = {
+                    "atk": f'**{self.horda[codigo-1][1]}** teve seu ataque {operador} em {quant}.',
+                    "def": f'**{self.horda[codigo-1][1]}** teve sua defesa {operador} em {quant}.',
+                    "acc": f'**{self.horda[codigo-1][1]}** teve sua acurácia {operador} em {quant}.',
+                    "evs": f'**{self.horda[codigo-1][1]}** teve sua evasão {operador} em {quant}.',
+                    "crit": f'**{self.horda[codigo-1][1]}** teve seu crítico {operador} em {quant}.'
+                }
+            if marcador == "atk":
+                self.party_mult_atk[codigo-1] += quant
+            elif marcador == "def":
+                self.party_mult_def[codigo-1] += quant
+            elif marcador == "acc":
+                self.party_mult_acc[codigo-1] += quant
+            elif marcador == "evs":
+                self.party_mult_evs[codigo-1] += quant
+            else:
+                self.party_mult_crit[codigo-1] += quant
+            await canal.send(texto_controlador[marcador])
+        except ValueError:
+            await ctx.send("Erro em algum valor, tente novamente")
 
     @commands.command(name='cura')
     async def cura(self, ctx, bonus=0.0):
