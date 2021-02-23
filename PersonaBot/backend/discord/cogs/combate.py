@@ -380,11 +380,11 @@ class Combate(commands.Cog):
                 if ok == 1:
                     ok1 = await self.embed_selecionar_unico(ctx, "party", "ataque")
                     nome_party = self.party[ok1-1]
-                    nome1 = nome_party
                     canal = self.bot.get_channel(Canal.carregar_canal_jogador(nome_party))
-                    informacoes_party = Mensageiro.informacoes_personagem(nome1)
+                    informacoes_party = Mensageiro.informacoes_personagem(nome_party)
                     skills = informacoes_party["skills"]
                     valor1 = self.party_mult_acc[ok1-1]
+                    nome1 = nome_party
                     if skill_id in skills:
                         intensidade = Database.intensidade(skill_id)
                         elemento = Database.elemento(skill_id)
