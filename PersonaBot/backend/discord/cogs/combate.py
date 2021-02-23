@@ -546,18 +546,12 @@ class Combate(commands.Cog):
         }
         opcao = -1
         titulo = grupo_controlador[grupo][modo]
-        descricao = "Reaja com a opção desejada"
-        emojis_campo = [":one:", ":two:", ":three:", ":four:", ":five:"]
-        campos = []
-        reacoes = ["1️⃣", "2️⃣", "3️⃣", "4️⃣", "5️⃣"]
         cor = "azul"
-        if grupo == "party":
-            campos = Gerador.gerador_campos(emojis_campo, self.party)
-            reacoes = reacoes[:len(self.party)]
-        else:
-            horda_nomes = Reparador.repara_lista(self.horda, 1)
-            campos = Gerador.gerador_campos(emojis_campo, horda_nomes)
-            reacoes = reacoes[:len(self.horda)]
+        descricao = "Reaja com a opção desejada"
+        campos = []
+        info = await self.gerar_campos_reacoes(grupo)
+        campos = info[0]
+        reacoes = info[1]
         reacoes.append("❌")
         embed = EmbedComReacao(self.bot, ctx, titulo, descricao, cor, False, campos, False, reacoes)
         opcao = await embed.enviar_embed_reacoes()
@@ -571,6 +565,16 @@ class Combate(commands.Cog):
         cor = "azul"
         titulo = grupo_controlador[grupo]
         descricao = "Reaja com a opções desejadas e confirme"
+        info = await self.gerar_campos_reacoes(grupo)
+        campos = info[0]
+        reacoes = info[1]
+        reacoes.append("✅")
+        reacoes.append("❌")
+        embed = EmbedComReacao(self.bot, ctx, titulo, descricao, cor, False, campos, False, reacoes)
+        resultado = await embed.enviar_embed_reacoes_multiplas()
+        return resultado
+    
+    async def gerar_campos_reacoes(self, grupo):
         emojis_campo = [":one:", ":two:", ":three:", ":four:", ":five:"]
         reacoes = ["1️⃣", "2️⃣", "3️⃣", "4️⃣", "5️⃣"]
         if grupo == "party":
@@ -580,11 +584,8 @@ class Combate(commands.Cog):
             horda_nomes = Reparador.repara_lista(self.horda, 1)
             campos = Gerador.gerador_campos(emojis_campo, horda_nomes)
             reacoes = reacoes[:len(self.horda)]
-        reacoes.append("✅")
-        reacoes.append("❌")
-        embed = EmbedComReacao(self.bot, ctx, titulo, descricao, cor, False, campos, False, reacoes)
-        resultado = await embed.enviar_embed_reacoes_multiplas()
-        return resultado
+        info = (campos, reacoes)
+        return info
     
     async def modifica_marcador(self, ctx, canal, tipo_grupo, marcador, codigo, quant):
         try:
