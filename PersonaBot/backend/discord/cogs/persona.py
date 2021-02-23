@@ -104,17 +104,15 @@ class Persona(commands.Cog):
                         if nivel_skills != []:
                             nova_skills = Database.skills(personagem_id, persona_id)
                             info = self.info_skills(nova_skills)
-                            skills_id = info[0]
                             nomes_skills = info[1]
+                            fool = False
                             for skill in nivel_skills:
-                                await self.aprendizado(ctx, canal, False, skill, personagem, False, personagem_persona_id, nova_skills, nomes_skills)
+                                await self.aprendizado(ctx, canal, fool, skill, personagem, False, personagem_persona_id, nova_skills, nomes_skills)
                                 nova_skills = Database.skills(personagem_id, persona_id)
                     else:
                         nova_skills = Database.skills(personagem_id, persona_id)
-                        skills_id = []
                         nomes_skills = []
                         info = self.info_skills(nova_skills)
-                        skills_id = info[0]
                         nomes_skills = info[1]
                         for skill in nivel_skills:
                             await self.aprendizado(ctx, canal, False, skill, personagem, False, personagem_persona_id, nova_skills, nomes_skills)
@@ -247,9 +245,10 @@ class Persona(commands.Cog):
                         if nivel_skills != []:
                             nova_skills = Database.skills(personagem_id, persona_id)
                             info = self.info_skills(nova_skills)
+                            fool = True
                             nomes_skills = info[1]
                             for skill in nivel_skills:
-                                await self.aprendizado(ctx, canal, True, skill, personagem, persona_id, personagem_persona_id, nova_skills, nomes_skills)
+                                await self.aprendizado(ctx, canal, fool, skill, personagem, persona_id, personagem_persona_id, nova_skills, nomes_skills)
                                 nova_skills = Database.skills(personagem_id, persona_id)
                     else:
                         nova_skills = Database.skills(personagem_id, persona_id)
