@@ -3,7 +3,7 @@ from discord.ext import commands
 
 from cogs.database import Database
 from cogs.canal import Canal
-from cogs.embed import Embed, EmbedComCampos, EmbedComReacao
+from cogs.embed import EmbedComCampos
 from cogs.utilitarios import Gerador
 
 class Item(commands.Cog):
