@@ -122,7 +122,7 @@ class Gerador:
             texto += f'{elem} x{quant}; '
         texto = texto[:-2]
         return texto
-    
+
     @staticmethod
     def gerador_campos_fraquezas(ficha):
         campos_fraquezas = [
