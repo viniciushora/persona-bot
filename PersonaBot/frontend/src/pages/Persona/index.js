@@ -62,8 +62,6 @@ export default function Persona() {
         try{
             e.preventDefault();
 
-            console.log(nivel)
-
             const data = {
                 nome,
                 link_foto,

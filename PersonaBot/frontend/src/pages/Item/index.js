@@ -30,8 +30,6 @@ export default function Item() {
             valor_item
         };
 
-        console.log(data)
-
         try {
             const response = await api.post('item', data);
 

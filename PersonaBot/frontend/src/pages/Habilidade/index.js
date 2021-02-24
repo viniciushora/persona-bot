@@ -21,8 +21,6 @@ export default function Habilidade() {
             vezes
         };
 
-        console.log(data)
-
         try {
             const response = await api.post('habilidade', data);
 
