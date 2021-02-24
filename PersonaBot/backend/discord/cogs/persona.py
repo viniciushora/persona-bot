@@ -34,7 +34,7 @@ class Persona(commands.Cog):
                 embed_aumento = EmbedComCampos(self.bot, canal, titulo_aumento, descricao_aumento, cor_aumento, False, campos_aumento, True)
                 await embed_aumento.enviar_embed()
                 nivel_skills = Database.nivel_skills(nivel, persona_id)
-                if nivel_skills != False:
+                if not nivel_skills:
                     skills = Database.skills(personagem_id, persona_id)
                     info = info_skills(skills)
                     skills_id = info[0]
@@ -130,7 +130,7 @@ class Persona(commands.Cog):
             personagem_id = Database.personagem_id(personagem)
             canal = self.bot.get_channel(Canal.carregar_canal_jogador(personagem))
             eh_fool = Database.eh_fool(personagem_id)
-            if eh_fool == True:
+            if eh_fool:
                 persona_id = Database.persona_equipada(personagem_id)
                 Database.aumentar_nivel(personagem_id)
                 personagem_persona_id = Database.personagem_persona_id(personagem_id, persona_id)
@@ -358,8 +358,8 @@ class Persona(commands.Cog):
             persona_id = Database.persona_equipada(personagem_id)
             nome = Database.nome_persona(persona_id)
             personagem_persona_id = Database.personagem_persona_id(personagem_id, persona_id)
-            skills = Database.skills(personagem_id, persona_id)
             skill_id = Database.skill_id(skill)
+            skills = Database.skills(personagem_id, persona_id)
             info = info_skills(skills)
             nomes_skills = info[1]
             if skill_id != False:
@@ -419,9 +419,9 @@ class Persona(commands.Cog):
     async def add_atributo(self, ctx, personagem, tipo, quant, atributo):
         canal = self.bot.get_channel(Canal.carregar_canal_jogador(personagem))
         personagem_id = Database.personagem_id(personagem)
-        if personagem_id != False:
+        if not personagem_id:
             atributo_id = Database.atributo_id(atributo)
-            if atributo_id != False:
+            if not atributo_id:
                 try:
                     quant = int(quant)
                     if quant >= 0:

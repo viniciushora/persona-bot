@@ -147,7 +147,7 @@ class Gerador:
             ("<:almighty:790320130297954374>", ficha[2][10][1])
         ]
         return campos_fraquezas
-    
+
     @staticmethod
     def gerador_campos_atributos(fool, atributos):
         campos = []
