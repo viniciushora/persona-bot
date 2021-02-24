@@ -9,19 +9,11 @@ from cogs.utilitarios import Gerador, Reparador
 class Item(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-    
-    def add_item(self, quant, item_id):
-        contem_item = Database.item_no_inventario2(item_id)
-        if contem_item != False:
-            soma_item = Database.soma_item_database(item_id, contem_item[1], quant)
-        else:
-            add_item = Database.add_item_database(item_id, quant)
 
     @commands.command(name='add_item')
-    async def adicionar_item(self, ctx, quant, *item):
+    async def adicionar_item(self, ctx, quant=0, *item):
         try:
             canal = self.bot.get_channel(Canal.carregar_canal_grupo())
-            quant = int(quant)
             nome = Reparador.repara_nome(item)
             item_id = Database.item_id(nome)
             if item_id != False:
@@ -38,9 +30,9 @@ class Item(commands.Cog):
                         await ctx.send("**Erro interno**")
             else:
                 await ctx.send(f'**{nome} não existe.**"')
-        except:
+        except ValueError:
             await ctx.send("Canal do grupo não registrado.")
-    
+
     @commands.command(name='del_item')
     async def deletar_item(self, ctx, quant, *item):
         try:
@@ -52,19 +44,18 @@ class Item(commands.Cog):
                 contem_item = Database.item_no_inventario(nome)
                 if contem_item != False:
                     if contem_item[1] > quant:
-                        subtrai_item = Database.subtrai_item_database(item_id, contem_item[1], quant)
-                        print(subtrai_item)
+                        Database.subtrai_item_database(item_id, contem_item[1], quant)
                         await canal.send(f'**{quant} {nome}** removido(s) no inventário do grupo. Quantidade atual: ({contem_item[1]-quant})')
                     else:
-                        delete_item = Database.del_item_database(item_id)
+                        Database.del_item_database(item_id)
                         await canal.send(f'**{nome}** removido completamente do inventário do grupo.')
                 else:
                     await ctx.send(f'**{nome}** não encontrado no inventário do grupo.')
             else:
                 await ctx.send(f'**{nome} não existe.**')
-        except:
+        except ValueError:
             await ctx.send("Canal do grupo não registrado.")
-    
+
     @commands.command(name='modificar_dinheiro')
     async def modificar_dinheiro(self, ctx, quant):
         try:
@@ -80,9 +71,9 @@ class Item(commands.Cog):
                     await ctx.send("Erro interno")
             except:
                 await ctx.send("Valor incorreto")
-        except:
+        except ValueError:
             await ctx.send("Canal do grupo não registrado.")
-    
+
     @commands.command(name='setar_dinheiro')
     async def setar_dinheiro(self, ctx, quant):
         try:
@@ -96,9 +87,9 @@ class Item(commands.Cog):
                     await ctx.send("Erro interno")
             except:
                 await ctx.send("Valor incorreto")
-        except:
+        except ValueError:
             await ctx.send("Canal do grupo não registrado.")
-    
+
     @commands.command(name='drop')
     async def drop(self, ctx, *shadow):
         try:
@@ -110,7 +101,7 @@ class Item(commands.Cog):
             for item_id, chance in drops:
                 dado = random.randint(0, 100)
                 if dado <= chance:
-                    self.add_item(1, item_id)
+                    add_item(1, item_id)
                     lista_drops.append(Database.nome_item(item_id))
             dinheiro_exp = Database.dinheiro_exp(shadow_id)
             dinheiro_inicial = dinheiro_exp[0]
@@ -118,7 +109,7 @@ class Item(commands.Cog):
             dinheiro1 = random.randint(dinheiro_inicial * 0.5, dinheiro_inicial)
             dinheiro_grupo = Database.dinheiro_grupo()
             dinheiro = dinheiro_grupo + dinheiro1
-            add_dinheiro = Database.modificar_dinheiro(dinheiro)
+            Database.modificar_dinheiro(dinheiro)
             titulo = f'**Drops de {nome}**'
             descricao = f'Dinheiro: R$ {dinheiro1} ; Experiência : {exp}'
             cor = "verde"
@@ -132,14 +123,16 @@ class Item(commands.Cog):
             campos = ["Itens dropados", texto]
             embed = EmbedComCampos(self.bot, canal, titulo, descricao, cor, False, campos, False)
             await embed.enviar_embed()
-        except:
+        except ValueError:
             await ctx.send("Canal do grupo não registrado ou informações do dado erradas.")
-    
+        except TypeError:
+            await ctx.send("Shadow não existente.")
+
     @commands.command(name='equipar')
     async def equipar(self, ctx, personagem, *item):
         try:
-            nome = Reparador.repara_nome(item)
             personagem_id = Database.personagem_id(personagem)
+            nome = Reparador.repara_nome(item)
             if personagem_id != False:
                 canal = self.bot.get_channel(Canal.carregar_canal_jogador(personagem))
                 item_id = Database.item_id(nome)
@@ -164,9 +157,9 @@ class Item(commands.Cog):
                     await ctx.send("Este item não existe.")
             else:
                 await ctx.send("Este personagem não existe.")
-        except:
+        except ValueError:
             await ctx.send("Canal do jogador não registrado.")
-    
+
     @commands.command(name='desequipar')
     async def desequipar(self, ctx, personagem, *item):
         try:
@@ -200,12 +193,11 @@ class Item(commands.Cog):
                     await ctx.send("Este item não existe.")
             else:
                 await ctx.send("Este personagem não existe.")
-        except:
+        except ValueError:
             await ctx.send("Canal do jogador não registrado.")
 
     @commands.command(name='inventario')
     async def inventario(self, ctx):
-        global canal_grupo
         try:
             canal = self.bot.get_channel(Canal.carregar_canal_grupo())
             itens = Database.inventario_grupo()
@@ -286,8 +278,15 @@ class Item(commands.Cog):
                 campos.append(campo)
             embed = EmbedComCampos(self.bot, canal, titulo, descricao, cor, False, campos, False)
             await embed.enviar_embed()
-        except:
+        except ValueError:
             await ctx.send("Canal do grupo não registrado.")
+
+def add_item(quant, item_id):
+    contem_item = Database.item_no_inventario2(item_id)
+    if contem_item != False:
+        Database.soma_item_database(item_id, contem_item[1], quant)
+    else:
+        Database.add_item_database(item_id, quant)
 
 def setup(bot):
     bot.add_cog(Item(bot))
