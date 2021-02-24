@@ -104,7 +104,7 @@ class Reparador:
         for i in range(len(lista)):
             nova_lista.append(lista[i][indice])
         return nova_lista
-    
+
     @staticmethod
     def repara_nome(texto):
         nome = ""
@@ -147,6 +147,29 @@ class Gerador:
             ("<:almighty:790320130297954374>", ficha[2][10][1])
         ]
         return campos_fraquezas
+    
+    @staticmethod
+    def gerador_campos_atributos(fool, atributos):
+        campos = []
+        if fool:
+            campos = [
+                ("**St**", f'+{atributos[2]}'),
+                ("**Ma**", f'+{atributos[3]}'),
+                ("**En**", f'+{atributos[4]}'),
+                ("**Ag**", f'+{atributos[5]}'),
+                ("**Lu**", f'+{atributos[6]}')
+            ]
+        else:
+            campos = [
+                ("**HP**", f'+{atributos[0]}'),
+                ("**SP**", f'+{atributos[1]}'),
+                ("**St**", f'+{atributos[2]}'),
+                ("**Ma**", f'+{atributos[3]}'),
+                ("**En**", f'+{atributos[4]}'),
+                ("**Ag**", f'+{atributos[5]}'),
+                ("**Lu**", f'+{atributos[6]}')
+            ]
+        return campos
 
 class Mensageiro:
 

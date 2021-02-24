@@ -30,24 +30,14 @@ class Persona(commands.Cog):
                 atributos = Database.atributos_iniciais(persona_id)
                 crescimento_atributo = crescimento_atributos(atributos)
                 Database.aumentar_status(personagem_persona_id, nivel, crescimento_atributo)
-                campos_aumento = [
-                    ("**HP**", f'+{crescimento_atributo[0]}'),
-                    ("**SP**", f'+{crescimento_atributo[1]}'),
-                    ("**St**", f'+{crescimento_atributo[2]}'),
-                    ("**Ma**", f'+{crescimento_atributo[3]}'),
-                    ("**En**", f'+{crescimento_atributo[4]}'),
-                    ("**Ag**", f'+{crescimento_atributo[5]}'),
-                    ("**Lu**", f'+{crescimento_atributo[6]}')
-                ]
+                campos_aumento = Gerador.gerador_campos_atributos(False, crescimento_atributo)
                 embed_aumento = EmbedComCampos(self.bot, canal, titulo_aumento, descricao_aumento, cor_aumento, False, campos_aumento, True)
                 await embed_aumento.enviar_embed()
                 nivel_skills = Database.nivel_skills(nivel, persona_id)
                 if nivel_skills != False:
                     skills = Database.skills(personagem_id, persona_id)
-                    skills_id = []
-                    for skill in skills:
-                        habilidade_id = Database.skill_id(skill)
-                        skills_id.append(habilidade_id)
+                    info = info_skills(skills)
+                    skills_id = info[0]
                     if len(skills) + len(nivel_skills) < 8:
                         for skill in nivel_skills:
                             if skill not in skills_id:
@@ -58,6 +48,7 @@ class Persona(commands.Cog):
                                     await canal.send(f'**{personagem}** aprendeu a habilidade **{nome_skill}** {emote[elemento-1]}')
                     elif len(skills_id) + len(nivel_skills) > 8 and len(skills) < 8:
                         tam = len(skills_id)
+                        i = 0
                         while tam < 8:
                             if nivel_skills[i] not in skills_id:
                                 aprendeu = Database.add_skill(nivel_skills[0], personagem_persona_id)
@@ -67,6 +58,7 @@ class Persona(commands.Cog):
                                     await canal.send(f'**{personagem}** aprendeu a habilidade **{nome_skill}** {emote[elemento-1]}')
                                     del nivel_skills[i]
                                     tam += 1
+                            i += 1
                         if nivel_skills != []:
                             nova_skills = Database.skills(personagem_id, persona_id)
                             info = info_skills(nova_skills)
@@ -84,12 +76,10 @@ class Persona(commands.Cog):
                             await self.aprendizado(ctx, canal, False, skill, personagem, False, personagem_persona_id, nova_skills, nomes_skills)
                             nova_skills = Database.skills(personagem_id, persona_id)
             else:
-                subiu_nivel = Database.aumentar_nivel_fool(personagem_id)
+                Database.aumentar_nivel_fool(personagem_id)
                 nivel = Database.nivel_fool(personagem_id)
                 descricao_aumento = f'**{personagem}** alcançou o nível ({nivel})'
                 atributos = Database.atributos_iniciais_fool(personagem_id)
-                crescimento_atributo = [0, 0]
-                hp = random.randint(1,6)
                 crescimento_atributo[0] = random.randint(1,6)
                 crescimento_atributo[1] = random.randint(1,4)
                 Database.aumentar_status_fool(personagem_id, nivel, crescimento_atributo)
@@ -101,7 +91,7 @@ class Persona(commands.Cog):
                 await embed_aumento.enviar_embed()
         except ValueError:
             await ctx.send("Canal do jogador não registrado.")
-    
+
     @commands.command(name='desupar')
     async def diminuir_nivel(self, ctx, personagem):
         try:
@@ -142,7 +132,7 @@ class Persona(commands.Cog):
             eh_fool = Database.eh_fool(personagem_id)
             if eh_fool == True:
                 persona_id = Database.persona_equipada(personagem_id)
-                subiu_nivel = Database.aumentar_nivel(personagem_id)
+                Database.aumentar_nivel(personagem_id)
                 personagem_persona_id = Database.personagem_persona_id(personagem_id, persona_id)
                 nivel = Database.nivel(personagem_id, persona_id)
                 atributos = Database.atributos_iniciais(persona_id)
@@ -151,13 +141,7 @@ class Persona(commands.Cog):
                 cor_aumento = "verde"
                 crescimento_atributo = crescimento_atributos(atributos)
                 Database.aumentar_status_fool_persona(personagem_persona_id, nivel, crescimento_atributo)
-                campos_aumento = [
-                    ("**St**", f'+{crescimento_atributo[2]}'),
-                    ("**Ma**", f'+{crescimento_atributo[3]}'),
-                    ("**En**", f'+{crescimento_atributo[4]}'),
-                    ("**Ag**", f'+{crescimento_atributo[5]}'),
-                    ("**Lu**", f'+{crescimento_atributo[6]}')
-                ]
+                campos_aumento = Gerador.gerador_campos_atributos(True, crescimento_atributo)
                 embed_aumento = EmbedComCampos(self.bot, canal, titulo_aumento, descricao_aumento, cor_aumento, False, campos_aumento, True)
                 await embed_aumento.enviar_embed()
                 nivel_skills = Database.nivel_skills(nivel, persona_id)
@@ -201,7 +185,7 @@ class Persona(commands.Cog):
                 await ctx.send("Este personagem não é da Arcana Fool")
         except ValueError:
             await ctx.send("Canal do jogador não registrado.")
-    
+
     @commands.command(name='desupar_persona')
     async def diminuir_nivel_persona(self, ctx, personagem):
         try:
@@ -364,11 +348,11 @@ class Persona(commands.Cog):
             await embed.enviar_embed()
         except ValueError:
             await ctx.send("Canal do jogador não registrado.")
-    
+
     @commands.command(name='aprender_habilidade')
     async def aprender_skill(self, ctx, personagem, *skill):
         try:
-            nome = Reparador.repara_nome(skill)
+            skill = Reparador.repara_nome(skill)
             personagem_id = Database.personagem_id(personagem)
             canal = self.bot.get_channel(Canal.carregar_canal_jogador(personagem))
             persona_id = Database.persona_equipada(personagem_id)
@@ -384,7 +368,7 @@ class Persona(commands.Cog):
                     if len(skills) < 8:
                         aprendeu = Database.add_skill(skill_id, personagem_persona_id)
                         if aprendeu == True:
-                            await canal.send(f'**{personagem}** aprendeu a habilidade **{nome_skill}**')
+                            await canal.send(f'**{personagem}** aprendeu a habilidade **{nome_skill}** com **{nome}**')
                     else:
                         await self.aprendizado(ctx, canal, False, skill, personagem, persona_id, personagem_persona_id, skills, nomes_skills)
                 else:
@@ -420,7 +404,7 @@ class Persona(commands.Cog):
                 deletou = Database.del_skill(skills_id[ok-1], personagem_persona_id)
                 if deletou:
                     titulo = f'Habilidade esquecida: **{skills[ok-1]}**'
-                    descricao = f'**{personagem}** esqueceu de **{skills[ok-1]}**'
+                    descricao = f'**{personagem}** esqueceu de **{skills[ok-1]}** com **{nome}**'
                     cor = "azul"
                     embed = Embed(self.bot, canal, titulo, descricao, cor, False)
                     await embed.enviar_embed()
@@ -430,7 +414,7 @@ class Persona(commands.Cog):
                 await canal.send("**Esquecimento cancelado**")
         except ValueError:
             await ctx.send("Canal do jogador não registrado.")
-    
+
     @commands.command(name='add_atributo')
     async def add_atributo(self, ctx, personagem, tipo, quant, atributo):
         canal = self.bot.get_channel(Canal.carregar_canal_jogador(personagem))
@@ -477,7 +461,7 @@ class Persona(commands.Cog):
                     await ctx.send("Valor incorreto.")
         else:
             await ctx.send("Este personagem não existe.")
-    
+
     async def aprendizado(self, ctx, canal, fool, skill, personagem, persona_id, personagem_persona_id, id_skills_personagem, nome_skills_personagem):
         emojis_disc = [":one:", ":two:", ":three:", ":four:", ":five:", ":six:", ":seven:", ":eight:"]
         reacoes_padrao = ["1️⃣", "2️⃣", "3️⃣", "4️⃣", "5️⃣", "6️⃣", "7️⃣", "8️⃣"]
@@ -508,7 +492,7 @@ class Persona(commands.Cog):
 
 def takeSecond(elem):
     return elem[1]
-    
+
 def info_skills(skills):
     skills_id = []
     nomes_skills = []
