@@ -733,7 +733,7 @@ select personagem.nivel from personagem where personagem.personagem_id = %s
 select persona.nome from persona inner join personagem_persona on
 personagem_persona.fk_persona_persona_id = persona.persona_id
 where personagem_persona.fk_personagem_personagem_id = %s and personagem_persona.compendium = false
-""" 
+"""
                         cur.execute(select,(personagem_id,))
                         personas = cur.fetchall()
                         lista_personas = []
