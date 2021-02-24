@@ -31,7 +31,7 @@ class Dado(commands.Cog):
         mensagem = msg.content
         try:
             quant_dados = int(mensagem)
-        except:
+        except ValueError:
             await ctx.send("Incorrect parameter.")
         if quant_dados > 0 and quant_dados < 25:
             await ctx.send("Digite a quantidade de lados:")
