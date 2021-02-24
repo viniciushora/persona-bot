@@ -13,7 +13,7 @@ class Canal(commands.Cog):
         try:
             with open('canais.pickle', 'rb') as handle:
                 canais = pickle.load(handle)
-        except:
+        except EOFError:
             canais = {"jogadores": {}, "inimigos": 0, "grupo": 0, "mestre": 0, "suporte": 0}
             with open('canais.pickle', 'wb') as handle:
                 pickle.dump(canais, handle, protocol=pickle.HIGHEST_PROTOCOL)
@@ -34,7 +34,7 @@ class Canal(commands.Cog):
         try:
             with open('canais.pickle', 'rb') as handle:
                 canais = pickle.load(handle)
-            canais_jogadores = canais["jogadores"]  
+            canais_jogadores = canais["jogadores"]
             return canais_jogadores
         except:
             print("Erro nos canais.")
@@ -54,11 +54,11 @@ class Canal(commands.Cog):
         try:
             with open('canais.pickle', 'rb') as handle:
                 canais = pickle.load(handle)
-            canais_inimigos = canais["inimigos"]  
+            canais_inimigos = canais["inimigos"]
             return canais_inimigos
         except:
             print("Erro nos canais.")
-    
+
     @classmethod
     def carregar_canal_grupo(self):
         try:
@@ -74,7 +74,7 @@ class Canal(commands.Cog):
         try:
             with open('canais.pickle', 'rb') as handle:
                 canais = pickle.load(handle)
-            canal_mestre = canais["mestre"]  
+            canal_mestre = canais["mestre"]
             return canal_mestre
         except:
             print("Erro nos canais.")
@@ -84,7 +84,7 @@ class Canal(commands.Cog):
         try:
             with open('canais.pickle', 'rb') as handle:
                 canais = pickle.load(handle)
-            canal_suporte = canais["suporte"]  
+            canal_suporte = canais["suporte"]
             return canal_suporte
         except:
             print("Erro nos canais.")
@@ -102,9 +102,7 @@ class Canal(commands.Cog):
             canais_jogadores[personagem] = canal.id
             await ctx.send(f"""O canal de **{personagem}** agora é o <#{canal.id}>""")
             canais = {"jogadores": canais_jogadores, "inimigos": canal_inimigos, "grupo": canal_grupo, "mestre": canal_mestre, "suporte": canal_suporte}
-            with open('canais.pickle', 'wb') as handle:
-                pickle.dump(canais, handle, protocol=pickle.HIGHEST_PROTOCOL)
-            handle.close()
+            self.atualizacao_canal(canais)
         else:
             await ctx.send("Este personagem não existe.")
     
@@ -127,11 +125,14 @@ class Canal(commands.Cog):
                 canal_suporte = canal.id
             await ctx.send(f"""O canal do {tipo_canal} agora é o <#{canal.id}>""")
             canais = {"jogadores": canais_jogadores, "inimigos": canal_inimigos, "grupo": canal_grupo, "mestre": canal_mestre, "suporte": canal_suporte}
-            with open('canais.pickle', 'wb') as handle:
-                pickle.dump(canais, handle, protocol=pickle.HIGHEST_PROTOCOL)
-            handle.close()
+            self.atualizacao_canal(canais)
         except:
             await ctx.send("Canal incorreto.")
+
+    def atualizacao_canal(self, canais):
+        with open('canais.pickle', 'wb') as handle:
+            pickle.dump(canais, handle, protocol=pickle.HIGHEST_PROTOCOL)
+        handle.close()
         
     @commands.command(name='canais')
     async def canais(self, ctx):
