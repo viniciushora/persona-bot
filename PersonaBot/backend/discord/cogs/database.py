@@ -3,7 +3,6 @@ import json
 
 f = open('./config.json')
 data = json.load(f)
-
 conn = psycopg2.connect(f"""dbname='{data['dbname']}' user='{data['user']}' host='{data['host']}' password='{data['password']}'""")
 cur = conn.cursor()
 
