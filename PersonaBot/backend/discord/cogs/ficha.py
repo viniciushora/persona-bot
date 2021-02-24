@@ -5,7 +5,7 @@ from discord.ext import commands
 from cogs.database import Database
 from cogs.canal import Canal
 from cogs.embed import Embed, EmbedComCampos, EmbedComReacao
-from cogs.utilitarios import Gerador
+from cogs.utilitarios import Gerador, Reparador
 
 class Ficha(commands.Cog):
     def __init__(self, bot):
@@ -64,9 +64,7 @@ class Ficha(commands.Cog):
     @commands.command(name='mostrar_ficha')
     async def mostrar_ficha(self, ctx,  canal : discord.TextChannel, *persona):
         nome = ""
-        for palavra in persona:
-            nome+=palavra + " "
-        nome = nome[:-1]
+        nome = Reparador.repara_nome(persona)
         try:
             ficha = Database.ficha_persona(nome)
             nome = ficha[0][0]
@@ -100,10 +98,7 @@ class Ficha(commands.Cog):
     async def info_shadow(self, ctx, *shadow):
         try:
             canal = self.bot.get_channel(Canal.carregar_canal_suporte())
-            nome = ""
-            for palavra in shadow:
-                nome += palavra + " "
-            nome = nome[:-1]
+            nome = Reparador.repara_nome(shadow)
             info = ler_arquivo()
             try:
                 ficha = Database.ficha_shadow(nome)
@@ -151,9 +146,7 @@ class Ficha(commands.Cog):
     @commands.command(name='revelar_afinidade')
     async def revelar_afinidade(self, ctx, *shadow):
         nome = ""
-        for palavra in shadow:
-            nome+=palavra + " "
-        nome = nome[:-1]
+        nome = Reparador.repara_nome(shadow)
         descricao = "Reaja com o elemento desejado (:arrow_up_small: para revelação completa)"
         cor = "azul"
         shadow_id = Database.shadow_id(nome)
@@ -188,10 +181,7 @@ class Ficha(commands.Cog):
     async def esconder_afinidade(self, ctx, *shadow):
         descricao = "Reaja com o elemento desejado (:arrow_up_small: para revelação completa)"
         cor = "azul"
-        nome = ""
-        for palavra in shadow:
-            nome+=palavra + " "
-        nome = nome[:-1]
+        nome = Reparador.repara_nome(shadow)
         shadow_id = Database.shadow_id(nome)
         info = {}
         if shadow_id != False:

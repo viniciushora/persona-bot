@@ -104,6 +104,14 @@ class Reparador:
         for i in range(len(lista)):
             nova_lista.append(lista[i][indice])
         return nova_lista
+    
+    @staticmethod
+    def repara_nome(texto):
+        nome = ""
+        for palavra in texto:
+            nome += palavra + " "
+        nome = nome[:-1]
+        return nome
 
 class Gerador:
 

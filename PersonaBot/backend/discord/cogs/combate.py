@@ -28,9 +28,7 @@ class Combate(commands.Cog):
     @commands.command(name='add_horda')
     async def adicionar_horda(self, ctx, tipo, *personagem):
         nome = ""
-        for palavra in personagem:
-            nome += palavra + " "
-        nome = nome[:-1]
+        nome = Reparador.repara_nome(personagem)
         id_controlador = {
             "s": Database.shadow_id,
             "shadow": Database.shadow_id,
@@ -91,10 +89,7 @@ class Combate(commands.Cog):
     
     @commands.command(name='del_horda')
     async def remover_horda(self, ctx, *personagem):
-        nome = ""
-        for palavra in personagem:
-            nome += palavra + " "
-        nome = nome[:-1]
+        nome = Reparador.repara_nome(personagem)
         if self.horda != []:
             achou = 0
             i = 0
@@ -355,10 +350,7 @@ class Combate(commands.Cog):
     @commands.command(name='habilidade')
     async def habilidade(self, ctx, bonus=0.0, *habilidade):
         try:
-            nome = ""
-            for palavra in habilidade:
-                nome += palavra + " "
-            nome = nome[:-1]
+            nome = Reparador.repara_nome(habilidade)
             skill_id = Database.skill_id(nome)
             if skill_id != False:
                 intensidade = Database.intensidade(skill_id)

@@ -4,7 +4,7 @@ from discord.ext import commands
 from cogs.database import Database
 from cogs.canal import Canal
 from cogs.embed import EmbedComCampos
-from cogs.utilitarios import Gerador
+from cogs.utilitarios import Gerador, Reparador
 
 class Item(commands.Cog):
     def __init__(self, bot):
@@ -22,10 +22,7 @@ class Item(commands.Cog):
         try:
             canal = self.bot.get_channel(Canal.carregar_canal_grupo())
             quant = int(quant)
-            nome = ""
-            for palavra in item:
-                nome+=palavra + " "
-            nome = nome[:-1]
+            nome = Reparador.repara_nome(item)
             item_id = Database.item_id(nome)
             if item_id != False:
                 contem_item = Database.item_no_inventario(nome)
@@ -49,10 +46,7 @@ class Item(commands.Cog):
         try:
             canal = self.bot.get_channel(Canal.carregar_canal_grupo())
             quant = int(quant)
-            nome = ""
-            for palavra in item:
-                nome+=palavra + " "
-            nome = nome[:-1]
+            nome = Reparador.repara_nome(item)
             item_id = Database.item_id(nome)
             if item_id != False:
                 contem_item = Database.item_no_inventario(nome)
@@ -109,10 +103,7 @@ class Item(commands.Cog):
     async def drop(self, ctx, *shadow):
         try:
             canal = self.bot.get_channel(Canal.carregar_canal_grupo())
-            nome = ""
-            for palavra in shadow:
-                nome+=palavra + " "
-            nome = nome[:-1]
+            nome = Reparador.repara_nome(shadow)
             shadow_id = Database.shadow_id(nome)
             drops = Database.itens_drop(shadow_id)
             lista_drops = []
@@ -146,77 +137,71 @@ class Item(commands.Cog):
     
     @commands.command(name='equipar')
     async def equipar(self, ctx, personagem, *item):
-        #try:
-        nome = ""
-        for palavra in item:
-            nome+=palavra + " "
-        nome = nome[:-1]
-        personagem_id = Database.personagem_id(personagem)
-        if personagem_id != False:
-            canal = self.bot.get_channel(Canal.carregar_canal_jogador(personagem))
-            item_id = Database.item_id(nome)
-            if item_id != False:
-                contem_item = Database.item_no_inventario(nome)
-                if contem_item != False:
-                    tipo_item_id = Database.tipo_item_id(item_id)
-                    equip = Database.equipar_item(personagem_id, item_id, tipo_item_id)
-                    texto_controlador = {
-                        7: f'**{nome}** agora é a arma corpo-a-corpo equipada de **{personagem}**',
-                        8: f'**{nome}** agora é a arma à distância equipada de **{personagem}**',
-                        9: f'**{nome}** agora é a armadura equipado de **{personagem}**',
-                        10: f'**{nome}** agora é o acessório equipado de **{personagem}**'
-                    }
-                    if equip == False:
-                        await canal.send("Este item não é equipável")
-                    else:
-                        await canal.send(texto_controlador[tipo_item_id])
-                else:
-                    await ctx.send("Este item não está no inventário do grupo.")
-            else:
-                await ctx.send("Este item não existe.")
-        else:
-            await ctx.send("Este personagem não existe.")
-        #except:
-        #    await ctx.send("Canal do jogador não registrado.")
-    
-    @commands.command(name='desequipar')
-    async def desequipar(self, ctx, personagem, *item):
-        #try:
-        nome = ""
-        for palavra in item:
-            nome+=palavra + " "
-        nome = nome[:-1]
-        personagem_id = Database.personagem_id(personagem)
-        if personagem_id != False:
-            canal = self.bot.get_channel(Canal.carregar_canal_jogador(personagem))
-            item_id = Database.item_id(nome)
-            if item_id != False:
-                contem_item = Database.item_no_inventario(nome)
-                if contem_item != False:
-                    tipo_item_id = Database.tipo_item_id(item_id)
-                    item_equipado = Database.item_equipado(personagem_id, item_id, tipo_item_id)
-                    if item_equipado:
-                        desequip = Database.desequipar_item(personagem_id, tipo_item_id)
+        try:
+            nome = Reparador.repara_nome(item)
+            personagem_id = Database.personagem_id(personagem)
+            if personagem_id != False:
+                canal = self.bot.get_channel(Canal.carregar_canal_jogador(personagem))
+                item_id = Database.item_id(nome)
+                if item_id != False:
+                    contem_item = Database.item_no_inventario(nome)
+                    if contem_item != False:
+                        tipo_item_id = Database.tipo_item_id(item_id)
+                        equip = Database.equipar_item(personagem_id, item_id, tipo_item_id)
                         texto_controlador = {
-                            7: f'**{nome}** não está mais equipado(a) como arma corpo-a-corpo de **{personagem}**',
-                            8: f'**{nome}** não está mais equipado(a) como arma à distância equipada de **{personagem}**',
-                            9: f'**{nome}** não está mais equipado(a) como armadura equipada de **{personagem}**',
-                            10: f'**{nome}** não está mais equipado(a) como acessório equipado de **{personagem}**'
+                            7: f'**{nome}** agora é a arma corpo-a-corpo equipada de **{personagem}**',
+                            8: f'**{nome}** agora é a arma à distância equipada de **{personagem}**',
+                            9: f'**{nome}** agora é a armadura equipado de **{personagem}**',
+                            10: f'**{nome}** agora é o acessório equipado de **{personagem}**'
                         }
-                        if desequip == False:
+                        if equip == False:
                             await canal.send("Este item não é equipável")
                         else:
                             await canal.send(texto_controlador[tipo_item_id])
                     else:
-                        await ctx.send("Este item não está equipado.")
+                        await ctx.send("Este item não está no inventário do grupo.")
                 else:
-                    await ctx.send("Este item não está no inventário do grupo.")
+                    await ctx.send("Este item não existe.")
             else:
-                await ctx.send("Este item não existe.")
-        else:
-            await ctx.send("Este personagem não existe.")
-        #except:
-        #    await ctx.send("Canal do jogador não registrado.")
+                await ctx.send("Este personagem não existe.")
+        except:
+            await ctx.send("Canal do jogador não registrado.")
+    
+    @commands.command(name='desequipar')
+    async def desequipar(self, ctx, personagem, *item):
+        try:
+            nome = Reparador.repara_nome(item)
+            personagem_id = Database.personagem_id(personagem)
+            if personagem_id != False:
+                canal = self.bot.get_channel(Canal.carregar_canal_jogador(personagem))
+                item_id = Database.item_id(nome)
+                if item_id != False:
+                    contem_item = Database.item_no_inventario(nome)
+                    if contem_item != False:
+                        tipo_item_id = Database.tipo_item_id(item_id)
+                        item_equipado = Database.item_equipado(personagem_id, item_id, tipo_item_id)
+                        if item_equipado:
+                            desequip = Database.desequipar_item(personagem_id, tipo_item_id)
+                            texto_controlador = {
+                                7: f'**{nome}** não está mais equipado(a) como arma corpo-a-corpo de **{personagem}**',
+                                8: f'**{nome}** não está mais equipado(a) como arma à distância equipada de **{personagem}**',
+                                9: f'**{nome}** não está mais equipado(a) como armadura equipada de **{personagem}**',
+                                10: f'**{nome}** não está mais equipado(a) como acessório equipado de **{personagem}**'
+                            }
+                            if desequip == False:
+                                await canal.send("Este item não é equipável")
+                            else:
+                                await canal.send(texto_controlador[tipo_item_id])
+                        else:
+                            await ctx.send("Este item não está equipado.")
+                    else:
+                        await ctx.send("Este item não está no inventário do grupo.")
+                else:
+                    await ctx.send("Este item não existe.")
+            else:
+                await ctx.send("Este personagem não existe.")
+        except:
+            await ctx.send("Canal do jogador não registrado.")
 
     @commands.command(name='inventario')
     async def inventario(self, ctx):

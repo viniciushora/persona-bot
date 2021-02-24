@@ -4,12 +4,12 @@ from discord.ext import commands
 from cogs.database import Database
 from cogs.canal import Canal
 from cogs.embed import Embed, EmbedComCampos, EmbedComReacao
-from cogs.utilitarios import Gerador
+from cogs.utilitarios import Gerador, Reparador
 
 class Persona(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-    
+
     @commands.command(name='upar')
     async def subir_nivel(self, ctx, personagem):
         try:
@@ -23,46 +23,12 @@ class Persona(commands.Cog):
             emote = ["<:phys:790320130810839101>", "<:gun:790320131028287488>", "<:fire:790320130483421245>", "<:ice:790320130738356224>", "<:elec:790320130151809047>", "<:wind:790320130521169922>", "<:psy:790320130772566046>", "<:nuclear:790320130584084532>", "<:bless:790320130746744892>", "<:curse:790320130387214336>", "<:almighty:790320130297954374>", "<:ailment:790320130286551060>", "<:healing:790320130508718100>", "<:support:790320130323775518>", "<:passive:790320130780561408>", "<:navigator:798197909761556521>"]
             if eh_fool != True:
                 persona_id = Database.persona_equipada(personagem_id)
-                subiu_nivel = Database.aumentar_nivel(personagem_id)
+                Database.aumentar_nivel(personagem_id)
                 personagem_persona_id = Database.personagem_persona_id(personagem_id, persona_id)
                 nivel = Database.nivel(personagem_id, persona_id)
                 descricao_aumento = f'**{personagem}** alcançou o nível ({nivel})'
                 atributos = Database.atributos_iniciais(persona_id)
-                fixos = atributos[:2]
-                flex = atributos[2:]
-                crescimento_atributo = [0, 0, 0, 0, 0, 0, 0]
-                for atributo_id, quant_inicial in fixos:
-                    if atributo_id == 1:
-                        hp = random.randint(1,6)
-                        crescimento_atributo[0] = hp
-                    elif atributo_id == 2:
-                        sp = random.randint(1,4)
-                        crescimento_atributo[1] = sp
-                flex.sort(key=self.takeSecond, reverse=True)
-                nao_repetidos = list(dict.fromkeys(flex))
-                pontos = 3
-                valor_controlador = {
-                    1: [90],
-                    2: [90, 45],
-                    3: [90, 60, 30],
-                    4: [90, 68, 44, 22],
-                    5: [90, 72, 54, 36, 18]
-                }
-                valores_criterio = valor_controlador[len(nao_repetidos)]
-                while pontos > 0:
-                    for atributo_id, quant_inicial in flex:
-                        pos = -1
-                        for i in range(len(nao_repetidos)):
-                            if quant_inicial == nao_repetidos[i]:
-                                pos = i
-                                break
-                        valor_criterio = valores_criterio[pos]
-                        dado = random.randint(1,100)
-                        if dado < valor_criterio and pontos > 0 and crescimento_atributo[atributo_id - 1] == 0:
-                            crescimento_atributo[atributo_id - 1] = 1
-                            pontos -= 1
-                        elif crescimento_atributo[atributo_id - 1] < 1:
-                            crescimento_atributo[atributo_id - 1] = 0
+                crescimento_atributo = crescimento_atributos(atributos)
                 Database.aumentar_status(personagem_persona_id, nivel, crescimento_atributo)
                 campos_aumento = [
                     ("**HP**", f'+{crescimento_atributo[0]}'),
@@ -103,7 +69,7 @@ class Persona(commands.Cog):
                                     tam += 1
                         if nivel_skills != []:
                             nova_skills = Database.skills(personagem_id, persona_id)
-                            info = self.info_skills(nova_skills)
+                            info = info_skills(nova_skills)
                             nomes_skills = info[1]
                             fool = False
                             for skill in nivel_skills:
@@ -112,7 +78,7 @@ class Persona(commands.Cog):
                     else:
                         nova_skills = Database.skills(personagem_id, persona_id)
                         nomes_skills = []
-                        info = self.info_skills(nova_skills)
+                        info = info_skills(nova_skills)
                         nomes_skills = info[1]
                         for skill in nivel_skills:
                             await self.aprendizado(ctx, canal, False, skill, personagem, False, personagem_persona_id, nova_skills, nomes_skills)
@@ -133,7 +99,7 @@ class Persona(commands.Cog):
                 ]
                 embed_aumento = EmbedComCampos(self.bot, canal, titulo_aumento, descricao_aumento, cor_aumento, False, campos_aumento, True)
                 await embed_aumento.enviar_embed()
-        except:
+        except ValueError:
             await ctx.send("Canal do jogador não registrado.")
     
     @commands.command(name='desupar')
@@ -165,7 +131,7 @@ class Persona(commands.Cog):
                 apagar = Database.apagar_crecimento_fool(personagem_id, nivel)
                 if apagar:
                     await canal.send(f'Atributos de **{personagem}** resetado para os do {nivel -1}')
-        except:
+        except ValueError:
             await ctx.send("Canal do jogador não registrado.")
 
     @commands.command(name='upar_persona')
@@ -183,33 +149,7 @@ class Persona(commands.Cog):
                 titulo_aumento = "**PERSONA SUBIU DE NÍVEL!**"
                 descricao_aumento = f'**{Database.nome_persona(persona_id)}** alcançou o nível ({nivel})'
                 cor_aumento = "verde"
-                fixos = atributos[:2]
-                flex = atributos[2:]
-                crescimento_atributo = [0, 0, 0, 0, 0, 0, 0]
-                for atributo_id, quant_inicial in fixos:
-                    if atributo_id == 1:
-                        hp = random.randint(1,6)
-                        crescimento_atributo[0] = hp
-                    elif atributo_id == 2:
-                        sp = random.randint(1,4)
-                        crescimento_atributo[1] = sp
-                flex.sort(key=self.takeSecond, reverse=True)
-                pontos = 3
-                while pontos > 0:
-                    for atributo_id, quant_inicial in flex:
-                        valor_criterio = 0
-                        if quant_inicial == 3:
-                            valor_criterio = 90
-                        elif quant_inicial == 2:
-                            valor_criterio = 60
-                        elif quant_inicial == 1:
-                            valor_criterio = 30
-                        dado = random.randint(1,100)
-                        if dado < valor_criterio and pontos > 0 and crescimento_atributo[atributo_id - 1] == 0:
-                            crescimento_atributo[atributo_id - 1] = 1
-                            pontos -= 1
-                        elif crescimento_atributo[atributo_id - 1] < 1:
-                            crescimento_atributo[atributo_id - 1] = 0
+                crescimento_atributo = crescimento_atributos(atributos)
                 Database.aumentar_status_fool_persona(personagem_persona_id, nivel, crescimento_atributo)
                 campos_aumento = [
                     ("**St**", f'+{crescimento_atributo[2]}'),
@@ -244,7 +184,7 @@ class Persona(commands.Cog):
                             i += 1
                         if nivel_skills != []:
                             nova_skills = Database.skills(personagem_id, persona_id)
-                            info = self.info_skills(nova_skills)
+                            info = info_skills(nova_skills)
                             fool = True
                             nomes_skills = info[1]
                             for skill in nivel_skills:
@@ -252,14 +192,14 @@ class Persona(commands.Cog):
                                 nova_skills = Database.skills(personagem_id, persona_id)
                     else:
                         nova_skills = Database.skills(personagem_id, persona_id)
-                        info = self.info_skills(nova_skills)
+                        info = info_skills(nova_skills)
                         nomes_skills = info[1]
                         for skill in nivel_skills:
                             await self.aprendizado(ctx, canal, True, skill, personagem, persona_id, personagem_persona_id, nova_skills, nomes_skills)
                             nova_skills = Database.skills(personagem_id, persona_id)
             else:
                 await ctx.send("Este personagem não é da Arcana Fool")
-        except:
+        except ValueError:
             await ctx.send("Canal do jogador não registrado.")
     
     @commands.command(name='desupar_persona')
@@ -286,7 +226,7 @@ class Persona(commands.Cog):
                         await canal.send(f'Habilidade: **{Database.nome_skill(skill)}** foi desaprendida.')
             else:
                 await ctx.send("Este personagem não é da Arcana Fool")
-        except:
+        except ValueError:
             await ctx.send("Canal do jogador não registrado.")
 
     @commands.command(name='equipar_persona')
@@ -310,7 +250,7 @@ class Persona(commands.Cog):
                         campos_troca = Gerador.gerador_campos(emojis_disc, personas)
                         reacoes = reacoes_padrao[:len(personas)]
                         reacoes.append("❌")
-                        embed_troca = EmbedComReacao(self.bot, canal, titulo_troca, descricao_troca, cor_troca, False, campos_troca, False)
+                        embed_troca = EmbedComReacao(self.bot, canal, titulo_troca, descricao_troca, cor_troca, False, campos_troca, False, reacoes)
                         ok = await embed_troca.enviar_embed_reacoes()
                         if ok < 9:
                             p_id = Database.persona_id(personas[ok-1])
@@ -331,7 +271,7 @@ class Persona(commands.Cog):
                     await ctx.send("Este personagem não possui Arcana Fool")
             else:
                 await ctx.send("Este personagem não existe.")
-        except:
+        except ValueError:
             await ctx.send("Canal do jogador não registrado.")
 
     @commands.command(name='tomar_persona')
@@ -340,10 +280,7 @@ class Persona(commands.Cog):
             personagem_id = Database.personagem_id(personagem)
             canal = self.bot.get_channel(Canal.carregar_canal_jogador(personagem))
             eh_fool = Database.eh_fool(personagem_id)
-            nome = ""
-            for palavra in persona:
-                nome+=palavra + " "
-            nome = nome[:-1]
+            nome = Reparador.repara_nome(persona)
             persona_id = Database.persona_id(nome)
             if personagem_id != False:
                 if persona_id != False:
@@ -369,7 +306,7 @@ class Persona(commands.Cog):
                     await ctx.send("Esta Persona não existe")
             else:
                 await ctx.send("Este personagem não existe.")
-        except:
+        except ValueError:
             await ctx.send("Canal do jogador não registrado.")
 
     @commands.command(name='soltar_persona')
@@ -379,9 +316,7 @@ class Persona(commands.Cog):
             canal = self.bot.get_channel(Canal.carregar_canal_jogador(personagem))
             eh_fool = Database.eh_fool(personagem_id)
             nome = ""
-            for palavra in persona:
-                nome+=palavra + " "
-            nome = nome[:-1]
+            nome = Reparador.repara_nome(persona)
             persona_id = Database.persona_id(nome)
             if personagem_id != False:
                 if persona_id != False:
@@ -402,7 +337,7 @@ class Persona(commands.Cog):
                     await ctx.send("Esta Persona não existe")
             else:
                 await ctx.send("Este personagem não existe.")
-        except:
+        except ValueError:
             await ctx.send("Canal do jogador não registrado.")
 
     @commands.command(name='habilidades_conhecidas')
@@ -427,16 +362,13 @@ class Persona(commands.Cog):
             cor = "azul"
             embed = Embed(self.bot, canal, titulo, descricao, cor, False)
             await embed.enviar_embed()
-        except:
+        except ValueError:
             await ctx.send("Canal do jogador não registrado.")
     
     @commands.command(name='aprender_habilidade')
     async def aprender_skill(self, ctx, personagem, *skill):
         try:
-            nome = ""
-            for palavra in skill:
-                nome += palavra + " "
-            nome = nome[:-1]
+            nome = Reparador.repara_nome(skill)
             personagem_id = Database.personagem_id(personagem)
             canal = self.bot.get_channel(Canal.carregar_canal_jogador(personagem))
             persona_id = Database.persona_equipada(personagem_id)
@@ -444,7 +376,7 @@ class Persona(commands.Cog):
             personagem_persona_id = Database.personagem_persona_id(personagem_id, persona_id)
             skills = Database.skills(personagem_id, persona_id)
             skill_id = Database.skill_id(skill)
-            info = self.info_skills(skills)
+            info = info_skills(skills)
             nomes_skills = info[1]
             if skill_id != False:
                 nome_skill = Database.nome_skill(skill_id)
@@ -459,7 +391,7 @@ class Persona(commands.Cog):
                     await ctx.send(f'**{personagem}** já conhece essa habildade.')
             else:
                 await ctx.send("Esta habilidade não existe.")
-        except:
+        except ValueError:
             await ctx.send("Canal do jogador não registrado.")
 
     @commands.command(name='esquecer_habilidade')
@@ -496,7 +428,7 @@ class Persona(commands.Cog):
                     await ctx.send("Erro no esquecimento da habilidade")
             else:
                 await canal.send("**Esquecimento cancelado**")
-        except:
+        except ValueError:
             await ctx.send("Canal do jogador não registrado.")
     
     @commands.command(name='add_atributo')
@@ -546,19 +478,6 @@ class Persona(commands.Cog):
         else:
             await ctx.send("Este personagem não existe.")
     
-    def takeSecond(self, elem):
-        return elem[1]
-    
-    def info_skills(self, skills):
-        skills_id = []
-        nomes_skills = []
-        for skill in skills:
-            habilidade_id = Database.skill_id(skill)
-            skills_id.append(habilidade_id)
-            nomes_skills.append(Database.nome_skill(habilidade_id))
-        info = (skills_id, nomes_skills)
-        return info
-    
     async def aprendizado(self, ctx, canal, fool, skill, personagem, persona_id, personagem_persona_id, id_skills_personagem, nome_skills_personagem):
         emojis_disc = [":one:", ":two:", ":three:", ":four:", ":five:", ":six:", ":seven:", ":eight:"]
         reacoes_padrao = ["1️⃣", "2️⃣", "3️⃣", "4️⃣", "5️⃣", "6️⃣", "7️⃣", "8️⃣"]
@@ -586,6 +505,57 @@ class Persona(commands.Cog):
                 await ctx.send("Erro no aprendizado da habilidade")
         else:
             await canal.send(f'**{personagem}** ignorou a habilidade **{nome_skill}**')
+
+def takeSecond(elem):
+    return elem[1]
+    
+def info_skills(skills):
+    skills_id = []
+    nomes_skills = []
+    for skill in skills:
+        habilidade_id = Database.skill_id(skill)
+        skills_id.append(habilidade_id)
+        nomes_skills.append(Database.nome_skill(habilidade_id))
+    info = (skills_id, nomes_skills)
+    return info
+
+def crescimento_atributos(atributos):
+    fixos = atributos[:2]
+    flex = atributos[2:]
+    crescimento_atributo = [0, 0, 0, 0, 0, 0, 0]
+    for atributo_id, quant_inicial in fixos:
+        if atributo_id == 1:
+            hp = random.randint(1,6)
+            crescimento_atributo[0] = hp
+        elif atributo_id == 2:
+            sp = random.randint(1,4)
+            crescimento_atributo[1] = sp
+    flex.sort(key=takeSecond, reverse=True)
+    nao_repetidos = list(dict.fromkeys(flex))
+    pontos = 3
+    valor_controlador = {
+        1: [90],
+        2: [90, 45],
+        3: [90, 60, 30],
+        4: [90, 68, 44, 22],
+        5: [90, 72, 54, 36, 18]
+    }
+    valores_criterio = valor_controlador[len(nao_repetidos)]
+    while pontos > 0:
+        for atributo_id, quant_inicial in flex:
+            pos = -1
+            for i in range(len(nao_repetidos)):
+                if quant_inicial == nao_repetidos[i]:
+                    pos = i
+                    break
+            valor_criterio = valores_criterio[pos]
+            dado = random.randint(1,100)
+            if dado < valor_criterio and pontos > 0 and crescimento_atributo[atributo_id - 1] == 0:
+                crescimento_atributo[atributo_id - 1] = 1
+                pontos -= 1
+            elif crescimento_atributo[atributo_id - 1] < 1:
+                crescimento_atributo[atributo_id - 1] = 0
+    return crescimento_atributo
 
 def setup(bot):
     bot.add_cog(Persona(bot))
