@@ -169,7 +169,7 @@ class Combate(commands.Cog):
                     dado = await self.encaminhar_dado(canal)
                     if dado <= valor_criterio:
                         await canal.send(f'O grupo tirou um dado de {dado} e conseguiu emboscar a Shadow, vocês atacarão primeiro.')
-                        ordem = Ordenacao.ordenacao_emboscada(self.party, self.horda)
+                        ordem = Ordenacao.ordenacao_emboscada(self.party, self.horda, "party")
                     else:
                         await canal.send(f'O grupo tirou um dado de {dado} e falhou em emboscar a shadow, vocês atacarão de acordo com a sua agilidade.')
                         ordem = Ordenacao.ordenacao_disputa(self.party, self.horda)
@@ -181,7 +181,7 @@ class Combate(commands.Cog):
                         ordem = Ordenacao.ordenacao_disputa(self.party, self.horda)
                     else:
                         await canal.send(f'O grupo tirou um dado de {dado} e falhou em evitar ser emboscado, vocês atacarão por último.')
-                        ordem = Ordenacao.ordenacao_emboscado(self.party, self.horda)
+                        ordem = Ordenacao.ordenacao_emboscada(self.party, self.horda, "horda")
                 if ordem != []:
                     texto = ""
                     i = 1

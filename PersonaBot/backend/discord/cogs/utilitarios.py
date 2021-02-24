@@ -3,7 +3,7 @@ from cogs.database import Database
 class Ordenacao:
 
     @staticmethod
-    def ordenacao_emboscada(party, horda):
+    def ordenacao_emboscada(party, horda, emboscador):
         ordem1 = []
         ordem2 = []
         quant1 = []
@@ -31,7 +31,10 @@ class Ordenacao:
                 ordem2.append(personagem_id)
                 quant2.append(agilidade)
         Ordenacao.insertion_sort(quant2, ordem2)
-        return ordem1 + ordem2
+        if emboscador == "party":
+            return ordem1 + ordem2
+        else:
+            return ordem2 + ordem1
 
     @staticmethod
     def ordenacao_disputa(party, horda):
@@ -58,37 +61,6 @@ class Ordenacao:
                 quant.append(agilidade)
         Ordenacao.insertion_sort(quant, ordem)
         return ordem
-    
-    @staticmethod
-    def ordenacao_emboscado(party, horda):
-        ordem1 = []
-        ordem2 = []
-        quant1 = []
-        quant2 = []
-        for personagem in party:
-            personagem_id = Database.personagem_id(personagem)
-            persona_id = Database.persona_equipada(personagem_id)
-            atributos = Database.atributos(personagem_id, persona_id)
-            agilidade = atributos[5]
-            ordem1.append(personagem)
-            quant1.append(agilidade)
-        Ordenacao.insertion_sort(quant1, ordem1)
-        for tipo, char in horda:
-            if tipo == "s":
-                shadow_id = Database.shadow_id(char)
-                atributos = Database.atributos_iniciais(shadow_id)
-                agilidade = atributos[5]
-                ordem2.append(char)
-                quant2.append(agilidade)
-            else:
-                personagem_id = Database.personagem_id(char)
-                persona_id = Database.persona_equipada(personagem_id)
-                atributos = Database.atributos(personagem_id, persona_id)
-                agilidade = atributos[5]
-                ordem2.append(personagem_id)
-                quant2.append(agilidade)
-        Ordenacao.insertion_sort(quant2, ordem2)
-        return ordem2 + ordem1
 
     @staticmethod
     def insertion_sort(arr, ordem):
