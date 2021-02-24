@@ -42,8 +42,6 @@ module.exports = {
 
         const result = persona.persona_id;
 
-        console.log(result)
-
         return response.json({ result });
     }
 }
