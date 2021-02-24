@@ -109,7 +109,7 @@ class Dado(commands.Cog):
             soma = soma[:len(soma) - 2]
             dado.description = f'SUM: {soma} = **{total}**'
             await ctx.send(embed=dado)
-        else ValueError:
+        else:
             await ctx.send("Você falhou em rodar o(s) dado(s), tente novamente.")
 
 def setup(bot):
