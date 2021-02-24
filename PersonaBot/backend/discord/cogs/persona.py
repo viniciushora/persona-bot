@@ -29,7 +29,7 @@ class Persona(commands.Cog):
                 descricao_aumento = f'**{personagem}** alcançou o nível ({nivel})'
                 atributos = Database.atributos_iniciais(persona_id)
                 crescimento_atributo = crescimento_atributos(atributos)
-                Database.aumentar_status(personagem_persona_id, nivel, crescimento_atributo)
+                Database.aumentar_status(eh_fool, personagem_persona_id, nivel, crescimento_atributo)
                 campos_aumento = Gerador.gerador_campos_atributos(False, crescimento_atributo)
                 embed_aumento = EmbedComCampos(self.bot, canal, titulo_aumento, descricao_aumento, cor_aumento, False, campos_aumento, True)
                 await embed_aumento.enviar_embed()
@@ -140,7 +140,7 @@ class Persona(commands.Cog):
                 descricao_aumento = f'**{Database.nome_persona(persona_id)}** alcançou o nível ({nivel})'
                 cor_aumento = "verde"
                 crescimento_atributo = crescimento_atributos(atributos)
-                Database.aumentar_status_fool_persona(personagem_persona_id, nivel, crescimento_atributo)
+                Database.aumentar_status(eh_fool, personagem_persona_id, nivel, crescimento_atributo)
                 campos_aumento = Gerador.gerador_campos_atributos(True, crescimento_atributo)
                 embed_aumento = EmbedComCampos(self.bot, canal, titulo_aumento, descricao_aumento, cor_aumento, False, campos_aumento, True)
                 await embed_aumento.enviar_embed()
@@ -437,7 +437,7 @@ class Persona(commands.Cog):
                             await ctx.send("Tipo incorreto (digite p(porcentagem) ou n(normal)")
                     else:
                         await ctx.send("Valor incorreto.")
-                except:
+                except ValueError:
                     await ctx.send("Valor incorreto.")
         else:
             await ctx.send("Este personagem não existe.")

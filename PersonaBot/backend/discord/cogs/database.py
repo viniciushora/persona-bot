@@ -42,7 +42,7 @@ where persona.nome = %s
                 persona = cur.fetchone()
                 ficha = (persona, atributos, fraquezas)
                 return ficha
-        
+
         @staticmethod
         def ficha_shadow(nome):
                 select_fraquezas = """
@@ -365,17 +365,17 @@ where personagem.personagem_id = %s
                                 select = """
 select personagem.ranged from personagem
 where personagem.personagem_id = %s
-"""     
+"""
                         elif tipo_item_id == 9:
                                 select = """
 select personagem.armadura from personagem
 where personagem.personagem_id = %s
-"""     
+"""
                         else:
                                 select = """
 select personagem.acessorio from personagem
 where personagem.personagem_id = %s
-"""    
+"""
                         cur.execute(select,(personagem_id,))
                         equip_item_id = cur.fetchone()
                         equip_item_id = equip_item_id[0]
@@ -395,7 +395,7 @@ select personagem.fool from personagem where personagem.personagem_id = %s
                 eh_fool = cur.fetchone()
                 eh_fool = eh_fool[0]
                 return eh_fool
-        
+
         @staticmethod
         def persona_equipada(personagem_id):
                 select = """
@@ -405,7 +405,7 @@ select personagem.persona_equipada from personagem where personagem.personagem_i
                 persona_id = cur.fetchone()
                 persona_id = persona_id[0]
                 return persona_id
-        
+
         @staticmethod
         def skills(personagem_id, persona_id):
                 try:
@@ -431,7 +431,7 @@ where persona_habilidade.fk_personagem_persona_personagem_persona_id = %s
                         return lista_skills
                 except:
                         return False
-        
+
         @staticmethod
         def skills_id(personagem_id, persona_id):
                 try:
@@ -457,7 +457,7 @@ where persona_habilidade.fk_personagem_persona_personagem_persona_id = %s
                         return lista_skills
                 except:
                         return False
-        
+
         @staticmethod
         def ficha_personagem(personagem_id, persona_id):
                 select_level  = """
@@ -504,31 +504,19 @@ where persona.persona_id = %s
                 lista_atributos = []
                 for nome, quant in atributos:
                         lista_atributos.append([nome, quant])
+                for nome, quant in atributos:
+                        lista_atributos.append([nome, quant])
                 if level > 1:
                         cur.execute(select_atributos_crescimento,[persona_id, personagem_id,])
                         crescimento = cur.fetchall()
-                        for nivel, atributo_id, quant in crescimento:
-                                if atributo_id == 1:
-                                        lista_atributos[0][1] += quant
-                                elif atributo_id == 2:
-                                        lista_atributos[1][1] += quant
-                                elif atributo_id == 3:
-                                        lista_atributos[2][1] += quant
-                                elif atributo_id == 4:
-                                        lista_atributos[3][1] += quant
-                                elif atributo_id == 5:
-                                        lista_atributos[4][1] += quant
-                                elif atributo_id == 6:
-                                        lista_atributos[5][1] += quant
-                                else:
-                                        lista_atributos[6][1] += quant
+                        lista_atributos = atributos_lista(lista_atributos, crescimento)
                 cur.execute(select_fraquezas,[persona_id,])
                 fraquezas = cur.fetchall()
                 cur.execute(select_persona,[persona_id,])
                 persona = cur.fetchone()
                 ficha = (persona, lista_atributos, fraquezas)
                 return ficha
-        
+
         @staticmethod
         def itens_equipados(personagem_id):
                 select = """
@@ -537,7 +525,7 @@ select personagem.meelee, personagem.ranged, personagem.armadura, personagem.ace
                 cur.execute(select,(personagem_id,))
                 equips = cur.fetchone()
                 return equips
-        
+
         @staticmethod
         def nivel(personagem_id, persona_id):
                 select = """
@@ -549,7 +537,7 @@ personagem_persona.fk_persona_persona_id = %s
                 nivel = cur.fetchone()
                 nivel = nivel[0]
                 return nivel
-        
+
         @staticmethod
         def foto_personagem(personagem_id):
                 select = """
@@ -560,7 +548,7 @@ where personagem.personagem_id = %s
                 foto = cur.fetchone()
                 foto = foto[0]
                 return foto
-        
+
         @staticmethod
         def aumentar_nivel(personagem_id):
                 try:
@@ -572,7 +560,7 @@ update personagem_persona set nivel = nivel + 1 where fk_personagem_personagem_i
                         return True
                 except:
                         return False
-        
+
         @staticmethod
         def diminuir_nivel(personagem_id):
                 try:
@@ -584,16 +572,17 @@ update personagem_persona set nivel = nivel - 1 where fk_personagem_personagem_i
                         return True
                 except:
                         return False
-                
+      
         @staticmethod
-        def aumentar_status(personagem_persona_id, nivel, atributos):
+        def aumentar_status(fool, personagem_persona_id, nivel, atributos):
                 try:
                         aumento_status = """
 insert into crescimento_atributo(nivel, quantidade, fk_atributo_atributo_id, fk_personagem_persona_personagem_persona_id)
 values (%s, %s, %s, %s)
 """
-                        cur.execute(aumento_status,(nivel, atributos[0], 1 , personagem_persona_id,))
-                        cur.execute(aumento_status,(nivel, atributos[1], 2 , personagem_persona_id,))
+                        if not fool:
+                                cur.execute(aumento_status,(nivel, atributos[0], 1 , personagem_persona_id,))
+                                cur.execute(aumento_status,(nivel, atributos[1], 2 , personagem_persona_id,))
                         cur.execute(aumento_status,(nivel, atributos[2], 3 , personagem_persona_id,))
                         cur.execute(aumento_status,(nivel, atributos[3], 4 , personagem_persona_id,))
                         cur.execute(aumento_status,(nivel, atributos[4], 5 , personagem_persona_id,))
@@ -603,7 +592,7 @@ values (%s, %s, %s, %s)
                         return True
                 except:
                         return False
-        
+
         @staticmethod
         def atributos_iniciais(persona_id):
                 select_atributos = """
@@ -617,7 +606,7 @@ order by atributo.atributo_id;
                 cur.execute(select_atributos,[persona_id,])
                 atributos = cur.fetchall()
                 return atributos
-        
+
         @staticmethod
         def personagem_persona_id(personagem_id, persona_id):
                 try:
@@ -632,7 +621,7 @@ personagem_persona.fk_persona_persona_id = %s
                         return personagem_persona
                 except:
                         return False
-        
+
         @staticmethod
         def atributos(personagem_id, persona_id):
                 select_level  = """
@@ -666,23 +655,9 @@ order by crescimento_atributo.nivel, atributo.atributo_id;
                 if level > 1:
                         cur.execute(select_atributos_crescimento,[persona_id, personagem_id,])
                         crescimento = cur.fetchall()
-                        for nivel, atributo_id, quant in crescimento:
-                                if atributo_id == 1:
-                                        lista_atributos[0][1] += quant
-                                elif atributo_id == 2:
-                                        lista_atributos[1][1] += quant
-                                elif atributo_id == 3:
-                                        lista_atributos[2][1] += quant
-                                elif atributo_id == 4:
-                                        lista_atributos[3][1] += quant
-                                elif atributo_id == 5:
-                                        lista_atributos[4][1] += quant
-                                elif atributo_id == 6:
-                                        lista_atributos[5][1] += quant
-                                else:
-                                        lista_atributos[6][1] += quant
+                        lista_atributos = atributos_lista(lista_atributos, crescimento)
                 return lista_atributos
-        
+
         @staticmethod
         def apagar_crecimento(personagem_persona_id, nivel):
                 try:
@@ -695,7 +670,7 @@ where crescimento_atributo.fk_personagem_persona_personagem_persona_id = %s and 
                         return True
                 except:
                         return False
-        
+
         @staticmethod
         def nivel_persona(persona_id):
                 try:
@@ -708,7 +683,7 @@ select persona.nivel from persona where persona.persona_id = %s
                         return nivel
                 except:
                         return False
-        
+
         @staticmethod
         def persona_id(persona):
                 try:
@@ -739,7 +714,7 @@ where shadow.codinome = %s
                         return persona_id
                 except:
                         return False
-        
+
         @staticmethod
         def atributos_fool_personagem(personagem_id):
                 try:
@@ -771,7 +746,7 @@ where crescimento_fool.fk_personagem_personagem_id = %s
                         return lista_atributos
                 except:
                         return False
-        
+
         @staticmethod
         def nivel_fool(personagem_id):
                 try:
@@ -784,7 +759,7 @@ select personagem.nivel from personagem where personagem.personagem_id = %s
                         return level
                 except:
                         return False
-        
+
         @staticmethod
         def lista_personas(personagem_id):
                 try:
@@ -801,7 +776,7 @@ where personagem_persona.fk_personagem_personagem_id = %s and personagem_persona
                         return lista_personas
                 except:
                         return False
-        
+
         @staticmethod
         def aumentar_nivel_fool(personagem_id):
                 try:
@@ -813,7 +788,7 @@ update personagem set nivel = nivel + 1 where personagem.personagem_id = %s
                         return True
                 except:
                         return False
-        
+
         @staticmethod
         def diminuir_nivel_fool(personagem_id):
                 try:
@@ -825,7 +800,7 @@ update personagem set nivel = nivel - 1 where personagem.personagem_id = %s
                         return True
                 except:
                         return False
-                
+      
         @staticmethod
         def atributos_iniciais_fool(personagem_id):
                 try:
@@ -838,7 +813,7 @@ where personagem.personagem_id = %s
                         return atributos
                 except:
                         return False
-        
+
         @staticmethod
         def aumentar_status_fool(personagem_id, nivel, atributos):
                 try:
@@ -852,7 +827,7 @@ values (%s, %s, %s, %s)
                         return True
                 except:
                         return False
-        
+
         @staticmethod
         def apagar_crecimento_fool(personagem_id, nivel):
                 try:
@@ -865,24 +840,7 @@ where crescimento_fool.fk_personagem_personagem_id = %s and crescimento_fool.niv
                         return True
                 except:
                         return False
-        
-        @staticmethod
-        def aumentar_status_fool_persona(personagem_persona_id, nivel, atributos):
-                try:
-                        aumento_status = """
-insert into crescimento_atributo(nivel, quantidade, fk_atributo_atributo_id, fk_personagem_persona_personagem_persona_id)
-values (%s, %s, %s, %s)
-"""
-                        cur.execute(aumento_status,(nivel, atributos[2], 3 , personagem_persona_id,))
-                        cur.execute(aumento_status,(nivel, atributos[3], 4 , personagem_persona_id,))
-                        cur.execute(aumento_status,(nivel, atributos[4], 5 , personagem_persona_id,))
-                        cur.execute(aumento_status,(nivel, atributos[5], 6 , personagem_persona_id,))
-                        cur.execute(aumento_status,(nivel, atributos[6], 7 , personagem_persona_id,))
-                        conn.commit()
-                        return True
-                except:
-                        return False
-        
+
         @staticmethod
         def nome_persona(persona_id):
                 try:
@@ -895,7 +853,7 @@ where persona.persona_id = %s
                         return persona_nome[0]
                 except:
                         return False
-        
+
         @staticmethod
         def equipar_persona(personagem_id, persona_id):
                 try:
@@ -907,7 +865,7 @@ update personagem set persona_equipada = %s where personagem.personagem_id = %s
                         return True
                 except:
                         return False
-        
+
         @staticmethod
         def personagem_add_persona(personagem_id, persona_id):
                 nivel = Database.nivel_persona(persona_id)
@@ -934,7 +892,7 @@ values (%s, %s)
                         return True
                 except:
                         return False
-        
+
         @staticmethod
         def personagem_del_persona(personagem_id, persona_id):
                 personagem_persona_id = Database.personagem_persona_id(personagem_id, persona_id)
@@ -947,7 +905,7 @@ update personagem_persona set compendium = true where personagem_persona_id = %s
                         return True
                 except:
                         return False
-        
+
         @staticmethod
         def compendium(personagem_persona_id):
                 try:
@@ -959,7 +917,7 @@ select compendium from personagem_persona where personagem_persona_id = %s
                         return compendium[0]
                 except:
                         return 0
-        
+
         @staticmethod
         def personagem_reativar_persona(personagem_id, persona_id):
                 personagem_persona_id = Database.personagem_persona_id(personagem_id, persona_id)
@@ -972,7 +930,7 @@ update personagem_persona set compendium = false where personagem_persona_id = %
                         return True
                 except:
                         return False
-        
+
         @staticmethod
         def nivel_skills(nivel, persona_id):
                 select = """
@@ -985,7 +943,7 @@ where nivel = %s and fk_persona_persona_id = %s
                         return skills
                 else:
                         return False
-        
+
         @staticmethod
         def add_skill(skill_id, personagem_persona_id):
                 try:
@@ -998,7 +956,7 @@ values (%s, %s)
                         return True
                 except:
                         return False
-        
+
         @staticmethod
         def del_skill(skill_id, personagem_persona_id):
                 try:
@@ -1010,7 +968,7 @@ delete from persona_habilidade where fk_habilidade_habilidade_id = %s and fk_per
                         return True
                 except:
                         return False
-        
+
         @staticmethod
         def mod_skill(skill_antiga_id, skill_nova_id, personagem_persona_id):
                 try:
@@ -1023,7 +981,6 @@ where fk_habilidade_habilidade_id = %s and fk_personagem_persona_personagem_pers
                         return True
                 except:
                         return False
-        
 
         @staticmethod
         def nome_skill(skill_id):
@@ -1037,7 +994,7 @@ where habilidade_id = %s
                         return skill_nome[0]
                 except:
                         return False
-        
+
         @staticmethod
         def skills_conhecidas(nivel,persona_id):
                 try:
@@ -1050,7 +1007,7 @@ where nivel <= %s and fk_persona_persona_id = %s
                         return skills
                 except:
                         return False
-        
+
         @staticmethod
         def skill_id(skill):
                 try:
@@ -1063,7 +1020,7 @@ where habilidade.nome = %s
                         return skill[0]
                 except:
                         return False
-        
+
         @staticmethod
         def discord_user(personagem_id):
                 try:
@@ -1076,7 +1033,7 @@ where personagem_id = %s
                         return user[0]
                 except:
                         return False
-        
+
         @staticmethod
         def valor_item(item_id):
                 try:
@@ -1106,7 +1063,7 @@ order by elemento.elemento_id
                 for i in range(len(fraquezas)):
                         fraquezas[i] = fraquezas[i][0]
                 return fraquezas
-        
+
         @staticmethod
         def add_atributo(personagem_id, atributo_id, quant):
                 try:
@@ -1119,7 +1076,7 @@ where fk_personagem_personagem_id = %s and fk_atributo_atributo_id = %s and fk_t
                         return True
                 except:
                         return False
-        
+
         @staticmethod
         def del_atributo(personagem_id, atributo_id, quant):
                 try:
@@ -1132,7 +1089,7 @@ where fk_personagem_personagem_id = %s and fk_atributo_atributo_id = %s and fk_t
                         return True
                 except:
                         return False
-        
+
         @staticmethod
         def mod_atributo(personagem_id, atributo_id, quant):
                 try:
@@ -1158,7 +1115,7 @@ where nome = %s
                         return atributo_id[0]
                 except:
                         return False
-        
+
         @staticmethod
         def atributos_total(tipo_atributo, personagem_id):
                 try:
@@ -1182,7 +1139,7 @@ order by fk_atributo_atributo_id
                         return atributos
                 except:
                         return False
-        
+
         @staticmethod
         def intensidade(habilidade_id):
                 try:
@@ -1195,7 +1152,7 @@ where habilidade_id = %s
                         return intensidade[0]
                 except:
                         return False
-        
+
         @staticmethod
         def elemento(habilidade_id):
                 try:
@@ -1208,7 +1165,7 @@ where habilidade_id = %s
                         return elemento[0]
                 except:
                         return False
-        
+
         @staticmethod
         def nome_elemento(elemento_id):
                 try:
@@ -1236,7 +1193,7 @@ where fk_persona_persona_id = %s and nivel = %s
                         return skills
                 except:
                         return False
-        
+
         @staticmethod
         def skill_vezes(skill_id):
                 try:
@@ -1249,3 +1206,21 @@ where habilidade_id = %s
                         return skill[0]
                 except:
                         return False
+
+def atributos_lista(lista_atributos, crescimento):
+        for nivel, atributo_id, quant in crescimento:
+                if atributo_id == 1:
+                        lista_atributos[0][1] += quant
+                elif atributo_id == 2:
+                        lista_atributos[1][1] += quant
+                elif atributo_id == 3:
+                        lista_atributos[2][1] += quant
+                elif atributo_id == 4:
+                        lista_atributos[3][1] += quant
+                elif atributo_id == 5:
+                        lista_atributos[4][1] += quant
+                elif atributo_id == 6:
+                        lista_atributos[5][1] += quant
+                else:
+                        lista_atributos[6][1] += quant
+        return lista_atributos

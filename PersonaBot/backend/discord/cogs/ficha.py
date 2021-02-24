@@ -138,7 +138,7 @@ class Ficha(commands.Cog):
                 ]
                 embed = EmbedComCampos(self.bot, canal, titulo, False, cor, foto, campos, True)
                 await embed.enviar_embed()
-            except ValueError:
+            except TypeError:
                 await ctx.send("**Shadow não encontrada, digite novamente e corretamente.**")
         except ValueError:
             await ctx.send("Canal do suporte ainda não registrado.")
