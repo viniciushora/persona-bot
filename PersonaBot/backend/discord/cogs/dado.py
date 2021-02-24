@@ -90,7 +90,7 @@ class Dado(commands.Cog):
                     dado1.description = f'SUM: {soma} = **{total}**'
                     await canal.send(embed=dado1)
                     return total
-        else ValueError:
+        else:
             await canal.send("Parâmetros incorretos.")
 
     async def gerar_dado_solto(self, ctx, lados, quant_dados):
