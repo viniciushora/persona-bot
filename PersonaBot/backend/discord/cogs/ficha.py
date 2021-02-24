@@ -93,9 +93,9 @@ class Ficha(commands.Cog):
             embed2 = EmbedComCampos(self.bot, canal, titulo, False, cor, False, campos, True)
             await embed1.enviar_embed()
             await embed2.enviar_embed()
-        except:
+        except TypeError:
             await ctx.send("**Ficha não encontrada, digite novamente e corretamente.**")
-    
+
     @commands.command(name='info_shadow')
     async def info_shadow(self, ctx, *shadow):
         try:
@@ -183,7 +183,7 @@ class Ficha(commands.Cog):
             await ctx.send("**Shadow não existente**")
         if info != {}:
             escrever_arquivo(info)
-    
+
     @commands.command(name='esconder_afinidade')
     async def esconder_afinidade(self, ctx, *shadow):
         descricao = "Reaja com o elemento desejado (:arrow_up_small: para revelação completa)"
@@ -219,7 +219,7 @@ class Ficha(commands.Cog):
             await ctx.send("**Shadow não existente**")
         if info != {}:
             escrever_arquivo(info)
-    
+
     @commands.command(name='ficha')
     async def ficha(self, ctx, personagem):
         personagem_id = Database.personagem_id(personagem)
@@ -324,7 +324,7 @@ class Ficha(commands.Cog):
                 await embed_personas.enviar_embed()
         else:
             await ctx.send("Personagem não encontrado.")
-    
+
     async def atualizacao_info(self, ctx, nome, mensagem, cor):
         titulo = f'**Afinidades conhecidas de {nome} atualizadas**'
         descricao = mensagem
