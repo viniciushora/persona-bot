@@ -78,7 +78,7 @@ class Canal(commands.Cog):
             return canal_mestre
         except EOFError:
             print("Erro nos canais.")
-    
+
     @classmethod
     def carregar_canal_suporte(self):
         try:
@@ -105,7 +105,7 @@ class Canal(commands.Cog):
             atualizacao_canal(canais)
         else:
             await ctx.send("Este personagem não existe.")
-    
+
     @commands.command(name='canal_geral')
     async def mod_canal_geral(self, ctx, tipo_canal, canal : discord.TextChannel):
         try:
@@ -126,9 +126,9 @@ class Canal(commands.Cog):
             await ctx.send(f"""O canal do {tipo_canal} agora é o <#{canal.id}>""")
             canais = {"jogadores": canais_jogadores, "inimigos": canal_inimigos, "grupo": canal_grupo, "mestre": canal_mestre, "suporte": canal_suporte}
             atualizacao_canal(canais)
-        except:
+        except ValueError:
             await ctx.send("Canal incorreto.")
-        
+
     @commands.command(name='canais')
     async def canais(self, ctx):
         canais = self.carregar_canais()
