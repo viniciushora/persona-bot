@@ -111,7 +111,7 @@ select item.item_id from item where item.nome = %s
                         return item_id
                 except:
                         return False
-        
+
         @staticmethod
         def item_no_inventario(item):
                 try:
@@ -128,7 +128,7 @@ where item.nome = %s
                                 return elem
                 except:
                         return False
-        
+
         @staticmethod
         def item_no_inventario2(item_id):
                 try:
@@ -145,7 +145,7 @@ where item.item_id = %s
                                 return elem
                 except:
                         return False
-        
+
         @staticmethod
         def add_item_database(item_id, quant):
                 try:
@@ -157,7 +157,7 @@ insert into inventario(quant, fk_item_item_id, fk_grupo_grupo_id) values (%s, %s
                         return True
                 except:
                         return False
-        
+
         @staticmethod
         def soma_item_database(item_id, quant_inicial, quant):
                 nova_quant = quant_inicial + quant
@@ -170,7 +170,7 @@ update inventario set quant = %s where fk_item_item_id = %s;
                         return True
                 except:
                         return False
-        
+
         @staticmethod
         def subtrai_item_database(item_id, quant_inicial, quant):
                 nova_quant = quant_inicial - quant
@@ -195,7 +195,7 @@ delete from inventario where fk_item_item_id = %s;
                         return True
                 except:
                         return False
-        
+
         @staticmethod
         def inventario_grupo():
                 select_itens = """
@@ -209,7 +209,7 @@ item.fk_tipo_item_tipo_id = tipo_item.tipo_id;
                         return itens
                 else:
                         return False
-        
+
         @staticmethod
         def dinheiro_grupo():
                 select_dinheiro = """
@@ -219,7 +219,7 @@ select grupo.dinheiro from grupo where grupo.grupo_id = 1;
                 dinheiro = cur.fetchone()
                 dinheiro = dinheiro[0]
                 return dinheiro
-        
+
         @staticmethod
         def modificar_dinheiro(quant):
                 try:
@@ -231,7 +231,7 @@ update grupo set dinheiro = %s where grupo_id = 1;
                         return True
                 except:
                         return False
-        
+
         @staticmethod
         def itens_drop(shadow_id):
                 select_drops = """
@@ -245,7 +245,7 @@ where drop.fk_shadow_fk_persona_persona_id = %s
                         return drops
                 else:
                         return False
-        
+
         @staticmethod
         def dinheiro_exp(shadow_id):
                 select = """
@@ -259,7 +259,7 @@ where shadow.fk_persona_persona_id = %s
                         return coisas
                 else:
                         return False
-        
+
         @staticmethod
         def nome_item(item_id):
                 try:
@@ -285,7 +285,7 @@ select personagem.personagem_id from personagem where personagem.nome =%s
                         return personagem_id
                 except:
                         return False
-        
+
         @staticmethod
         def tipo_item_id(item_id):
                 select_tipo_item = """
@@ -300,7 +300,7 @@ where item.item_id = %s
                         return tipo_item_id
                 else:
                         return False
-        
+
         @staticmethod
         def equipar_item(personagem_id, item_id, tipo_item_id):
                 update_personagem = ""
@@ -326,7 +326,7 @@ update personagem set acessorio = %s where personagem.personagem_id = %s;
                 cur.execute(update_personagem,(item_id, personagem_id,))
                 conn.commit()
                 return True
-        
+
         @staticmethod
         def desequipar_item(personagem_id, tipo_item_id):
                 update_personagem = ""
@@ -351,7 +351,7 @@ update personagem set acessorio = null where personagem.personagem_id = %s;
                 cur.execute(update_personagem,(personagem_id,))
                 conn.commit()
                 return True
-        
+
         @staticmethod
         def item_equipado(personagem_id, item_id, tipo_item_id):
                 try:
@@ -538,7 +538,7 @@ update personagem_persona set nivel = nivel - 1 where fk_personagem_personagem_i
                         return True
                 except:
                         return False
-      
+
         @staticmethod
         def aumentar_status(fool, personagem_persona_id, nivel, atributos):
                 try:
@@ -766,7 +766,7 @@ update personagem set nivel = nivel - 1 where personagem.personagem_id = %s
                         return True
                 except:
                         return False
-      
+
         @staticmethod
         def atributos_iniciais_fool(personagem_id):
                 try:
