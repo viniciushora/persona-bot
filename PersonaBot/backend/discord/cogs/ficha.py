@@ -185,10 +185,7 @@ class Ficha(commands.Cog):
                 info[shadow_id][8] = 1
                 info[shadow_id][9] = 1
                 info[shadow_id][10] = 1
-            titulo = f'**Afinidades conhecidas de {nome} atualizadas**'
-            descricao = mensagem
-            embed = Embed(self.bot, ctx, titulo, descricao, cor, False)
-            await embed.enviar_embed()
+            await self.atualizacao_info(ctx, nome, mensagem, cor)
         else:
             await ctx.send("**Shadow não existente**")
         if info != {}:
@@ -227,10 +224,7 @@ class Ficha(commands.Cog):
                 info[shadow_id][8] = 0
                 info[shadow_id][9] = 0
                 info[shadow_id][10] = 0
-            titulo = f'**Afinidades conhecidas de {nome} atualizadas**'
-            descricao = mensagem
-            embed = Embed(self.bot, ctx, titulo, descricao, cor, False)
-            await embed.enviar_embed()
+            await self.atualizacao_info(ctx, nome, mensagem, cor)
         else:
             await ctx.send("**Shadow não existente**")
         if info != {}:
@@ -342,6 +336,12 @@ class Ficha(commands.Cog):
                 await embed_personas.enviar_embed()
         else:
             await ctx.send("Personagem não encontrado.")
+    
+    async def atualizacao_info(self, ctx, nome, mensagem, cor):
+        titulo = f'**Afinidades conhecidas de {nome} atualizadas**'
+        descricao = mensagem
+        embed = Embed(self.bot, ctx, titulo, descricao, cor, False)
+        await embed.enviar_embed()
 
 def setup(bot):
     bot.add_cog(Ficha(bot))
