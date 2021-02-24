@@ -71,19 +71,20 @@ class Ficha(commands.Cog):
             foto = ficha[0][1]
             arcana = ficha[0][2]
             persona_id = Database.persona_id(nome)
+            atributos = Database.atributos_iniciais(persona_id)
             nivel = Database.nivel_persona(persona_id)
             titulo = f'**{nome}**'
             cor = "vermelho"
             campos = [
                 ("**Nível base**", nivel),
                 ("**Arcana**", arcana),
-                (f'**{ficha[1][0][0]}**', ficha[1][0][1]),
-                (f'**{ficha[1][1][0]}**', ficha[1][1][1]),
-                (f'**{ficha[1][2][0]}**', ficha[1][2][1]),
-                (f'**{ficha[1][3][0]}**', ficha[1][3][1]),
-                (f'**{ficha[1][4][0]}**', ficha[1][4][1]),
-                (f'**{ficha[1][5][0]}**', ficha[1][5][1]),
-                (f'**{ficha[1][6][0]}**', ficha[1][6][1])
+                (f'**Vida (Hp)**', atributos[0][1]),
+                (f'**Energia Espiritual (Sp)**', atributos[1][1]),
+                (f'**Força (St)**', atributos[2][1]),
+                (f'**Magia (Ma)**', atributos[3][1]),
+                (f'**Resistência (En)**', atributos[4][1]),
+                (f'**Agilidade (Ag)**', atributos[5][1]),
+                (f'**Sorte (Lu)**', atributos[6][1])
             ]
             embed1 = EmbedComCampos(self.bot, canal, titulo, False, cor, foto, campos, False)
             titulo = "**Fraquezas**"
@@ -260,7 +261,8 @@ class Ficha(commands.Cog):
             campo_habilidade = [("**Habilidades**", texto)]
             titulo_fraquezas = "**Fraquezas**"
             campos_fraquezas = Gerador.gerador_campos_fraquezas(ficha)
-            atributos = [ficha[1][0][1], ficha[1][1][1], ficha[1][2][1], ficha[1][3][1], ficha[1][4][1], ficha[1][5][1], ficha[1][6][1]]
+            atributos_base = Database.atributos(personagem_id, persona_id)
+            atributos =  Reparador.valores_atributos(atributos_base)
             atributos_soma = Database.atributos_total("soma", personagem_id)
             atributos_porcent = Database.atributos_total("porcent", personagem_id)
             plus = []
@@ -274,13 +276,13 @@ class Ficha(commands.Cog):
             campos_atributos = [
                 ("**Arcana**", arcana_persona),
                 ("**Nível**", nivel_persona),
-                (f'**{ficha[1][0][0]}**', f'{atributos[0]} +{plus[0]}'),
-                (f'**{ficha[1][1][0]}**', f'{atributos[1]} +{plus[1]}'),
-                (f'**{ficha[1][2][0]}**', f'{atributos[2]} +{plus[2]}'),
-                (f'**{ficha[1][3][0]}**', f'{atributos[3]} +{plus[3]}'),
-                (f'**{ficha[1][4][0]}**', f'{atributos[4]} +{plus[4]}'),
-                (f'**{ficha[1][5][0]}**', f'{atributos[5]} +{plus[5]}'),
-                (f'**{ficha[1][6][0]}**', f'{atributos[6]} +{plus[6]}')
+                (f'**Vida (Hp)**', f'{atributos[0]} +{plus[0]}'),
+                (f'**Energia Espiritual (Sp)**', f'{atributos[1]} +{plus[1]}'),
+                (f'**Força (St)**', f'{atributos[2]} +{plus[2]}'),
+                (f'**Magia (Ma)**', f'{atributos[3]} +{plus[3]}'),
+                (f'**Resistência (En)**', f'{atributos[4]} +{plus[4]}'),
+                (f'**Agilidade (Ag)**', f'{atributos[5]} +{plus[5]}'),
+                (f'**Sorte (Lu)**', f'{atributos[6]} +{plus[6]}')
             ]
             campos_personagem = campos_equipamentos
             if eh_fool:

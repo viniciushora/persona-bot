@@ -457,7 +457,7 @@ class Persona(commands.Cog):
                             await canal.send(f'**{quant}** foi diminuido em **{atributo}** de **{personagem}**')
                     else:
                         await ctx.send("Valor incorreto.")
-                except:
+                except ValueError:
                     await ctx.send("Valor incorreto.")
         else:
             await ctx.send("Este personagem não existe.")

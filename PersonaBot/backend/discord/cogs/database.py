@@ -460,26 +460,6 @@ where persona_habilidade.fk_personagem_persona_personagem_persona_id = %s
 
         @staticmethod
         def ficha_personagem(personagem_id, persona_id):
-                select_level  = """
-select personagem_persona.nivel from personagem_persona
-where personagem_persona.fk_personagem_personagem_id = %s order by nivel desc limit 1
-"""
-                select_atributos_level1 = """
-select atributo.nome, persona_atributo.valor 
-from persona inner join persona_atributo on 
-persona.persona_id = persona_atributo.fk_persona_persona_id inner join atributo on 
-persona_atributo.fk_atributo_atributo_id = atributo.atributo_id 
-where persona.persona_id=%s
-order by atributo.atributo_id;
-"""
-                select_atributos_crescimento = """
-select crescimento_atributo.nivel, atributo.atributo_id, crescimento_atributo.quantidade 
-from personagem_persona inner join crescimento_atributo on 
-personagem_persona.personagem_persona_id = crescimento_atributo.fk_personagem_persona_personagem_persona_id inner join atributo on 
-crescimento_atributo.fk_atributo_atributo_id = atributo.atributo_id
-where personagem_persona.fk_persona_persona_id = %s and personagem_persona.fk_personagem_personagem_id = %s
-order by crescimento_atributo.nivel, atributo.atributo_id;
-"""
                 select_fraquezas = """
 select elemento.nome, interacao_elemento.nome_interacao
 from persona inner join reacao_elemental on
@@ -496,25 +476,11 @@ persona.persona_id = persona_arcana.fk_persona_persona_id inner join arcana on
 persona_arcana.fk_arcana_arcana_id = arcana.arcana_id
 where persona.persona_id = %s
 """
-                cur.execute(select_level,[personagem_id,])
-                level = cur.fetchone()
-                level = level[0]
-                cur.execute(select_atributos_level1,[persona_id,])
-                atributos = cur.fetchall()
-                lista_atributos = []
-                for nome, quant in atributos:
-                        lista_atributos.append([nome, quant])
-                for nome, quant in atributos:
-                        lista_atributos.append([nome, quant])
-                if level > 1:
-                        cur.execute(select_atributos_crescimento,[persona_id, personagem_id,])
-                        crescimento = cur.fetchall()
-                        lista_atributos = atributos_lista(lista_atributos, crescimento)
                 cur.execute(select_fraquezas,[persona_id,])
                 fraquezas = cur.fetchall()
                 cur.execute(select_persona,[persona_id,])
                 persona = cur.fetchone()
-                ficha = (persona, lista_atributos, fraquezas)
+                ficha = (persona, fraquezas)
                 return ficha
 
         @staticmethod
