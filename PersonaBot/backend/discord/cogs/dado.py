@@ -39,7 +39,7 @@ class Dado(commands.Cog):
             mensagem = msg.content
             try:
                 lados = int(mensagem)
-            except:
+            except ValueError:
                 await ctx.send("Parâmetro incorreto.")
         await self.gerar_dado_solto(ctx, lados, quant_dados)
 
