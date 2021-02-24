@@ -133,12 +133,12 @@ class Item(commands.Cog):
         try:
             personagem_id = Database.personagem_id(personagem)
             nome = Reparador.repara_nome(item)
-            if personagem_id != False:
+            if not personagem_id:
                 canal = self.bot.get_channel(Canal.carregar_canal_jogador(personagem))
                 item_id = Database.item_id(nome)
-                if item_id != False:
+                if not item_id:
                     contem_item = Database.item_no_inventario(nome)
-                    if contem_item != False:
+                    if not contem_item:
                         tipo_item_id = Database.tipo_item_id(item_id)
                         equip = Database.equipar_item(personagem_id, item_id, tipo_item_id)
                         texto_controlador = {
