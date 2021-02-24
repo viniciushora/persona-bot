@@ -32,7 +32,7 @@ class Ordenacao:
                 quant2.append(agilidade)
         Ordenacao.insertion_sort(quant2, ordem2)
         return ordem1 + ordem2
-    
+
     @staticmethod
     def ordenacao_disputa(party, horda):
         ordem = []
@@ -91,16 +91,16 @@ class Ordenacao:
         return ordem2 + ordem1
 
     @staticmethod
-    def insertion_sort(arr, ordem): 
-        for i in range(1, len(arr)): 
+    def insertion_sort(arr, ordem):
+        for i in range(1, len(arr)):
             key = arr[i]
             key2 = ordem[i]
             j = i-1
-            while j >=0 and key < arr[j] : 
+            while j >=0 and key < arr[j]:
                     arr[j+1] = arr[j]
                     ordem[j+1] = ordem[j]
                     j -= 1
-            arr[j+1] = key 
+            arr[j+1] = key
             ordem[j+1] = key2
 
 class Somatorio:
