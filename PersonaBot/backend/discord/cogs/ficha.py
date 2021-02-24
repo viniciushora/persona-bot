@@ -5,11 +5,40 @@ from discord.ext import commands
 from cogs.database import Database
 from cogs.canal import Canal
 from cogs.embed import Embed, EmbedComCampos, EmbedComReacao
+from cogs.utilitarios import Gerador
 
 class Ficha(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-    
+        self.reacoes_elementos = [
+            "<:phys:790320130810839101>",
+            "<:gun:790320131028287488>",
+            "<:fire:790320130483421245>",
+            "<:ice:790320130738356224>",
+            "<:elec:790320130151809047>",
+            "<:wind:790320130521169922>",
+            "<:psy:790320130772566046>",
+            "<:nuclear:790320130584084532>",
+            "<:bless:790320130746744892>",
+            "<:curse:790320130387214336>",
+            "<:almighty:790320130297954374>",
+            "🔼",
+            "❌"
+        ]
+        self.elementos = [
+            "Física",
+            "Arma de Fogo",
+            "Fogo",
+            "Gelo",
+            "Elétrica",
+            "Vento",
+            "Psy",
+            "Nuclear",
+            "Benção",
+            "Maldição",
+            "Onipotência"
+        ]
+
     @classmethod
     def iniciar_info(self):
         info = {}
@@ -43,7 +72,7 @@ class Ficha(commands.Cog):
         for palavra in persona:
             nome+=palavra + " "
         nome = nome[:-1]
-        try:   
+        try:
             ficha = Database.ficha_persona(nome)
             nome = ficha[0][0]
             foto = ficha[0][1]
@@ -65,19 +94,7 @@ class Ficha(commands.Cog):
             ]
             embed1 = EmbedComCampos(self.bot, canal, titulo, False, cor, foto, campos, False)
             titulo = "**Fraquezas**"
-            campos = [
-                ("<:phys:790320130810839101>", ficha[2][0][1]),
-                ("<:gun:790320131028287488>", ficha[2][1][1]),
-                ("<:fire:790320130483421245>", ficha[2][2][1]),
-                ("<:ice:790320130738356224>",ficha[2][3][1]),
-                ("<:elec:790320130151809047>", ficha[2][4][1]),
-                ("<:wind:790320130521169922>", ficha[2][5][1]),
-                ("<:psy:790320130772566046>", ficha[2][6][1]),
-                ("<:nuclear:790320130584084532>", ficha[2][7][1]),
-                ("<:bless:790320130746744892>", ficha[2][8][1]),
-                ("<:curse:790320130387214336>", ficha[2][9][1]),
-                ("<:almighty:790320130297954374>", ficha[2][10][1])
-            ]
+            campos = Gerador.gerador_campos_fraquezas(ficha)
             embed2 = EmbedComCampos(self.bot, canal, titulo, False, cor, False, campos, True)
             await embed1.enviar_embed()
             await embed2.enviar_embed()
@@ -151,39 +168,11 @@ class Ficha(commands.Cog):
             titulo = f'**Revelando afinidades elementais de {nome}**'
             descricao = "Reaja com o elemento desejado (:arrow_up_small: para revelação completa)"
             cor = "azul"
-            reacoes = [
-                "<:phys:790320130810839101>",
-                "<:gun:790320131028287488>",
-                "<:fire:790320130483421245>",
-                "<:ice:790320130738356224>",
-                "<:elec:790320130151809047>",
-                "<:wind:790320130521169922>",
-                "<:psy:790320130772566046>",
-                "<:nuclear:790320130584084532>",
-                "<:bless:790320130746744892>",
-                "<:curse:790320130387214336>",
-                "<:almighty:790320130297954374>",
-                "🔼",
-                "❌"
-            ]
-            elementos = [
-                "Física",
-                "Arma de Fogo",
-                "Fogo",
-                "Gelo",
-                "Elétrica",
-                "Vento",
-                "Psy",
-                "Nuclear",
-                "Benção",
-                "Maldição",
-                "Onipotência"
-            ]
-            embed = EmbedComReacao(self.bot, ctx, titulo, descricao, cor, False, False, False, reacoes)
+            embed = EmbedComReacao(self.bot, ctx, titulo, descricao, cor, False, False, False, self.reacoes_elementos)
             opcao = await embed.enviar_embed_reacoes()
             if opcao < 12:
                 info[shadow_id][opcao-1] = 1
-                mensagem = f'Afinidade **{elementos[opcao-1]}** de {nome} agora é conhecida pelo grupo'
+                mensagem = f'Afinidade **{self.elementos[opcao-1]}** de {nome} agora é conhecida pelo grupo'
             elif opcao == 12:
                 info[shadow_id][0] = 1
                 info[shadow_id][1] = 1
@@ -221,39 +210,11 @@ class Ficha(commands.Cog):
             titulo = f'**Escondendo afinidades elementais de {nome}**'
             descricao = "Reaja com o elemento desejado (:arrow_up_small: para revelação completa)"
             cor = "azul"
-            reacoes = [
-                "<:phys:790320130810839101>",
-                "<:gun:790320131028287488>",
-                "<:fire:790320130483421245>",
-                "<:ice:790320130738356224>",
-                "<:elec:790320130151809047>",
-                "<:wind:790320130521169922>",
-                "<:psy:790320130772566046>",
-                "<:nuclear:790320130584084532>",
-                "<:bless:790320130746744892>",
-                "<:curse:790320130387214336>",
-                "<:almighty:790320130297954374>",
-                "🔼",
-                "❌"
-            ]
-            elementos = [
-                "Física",
-                "Arma de Fogo",
-                "Fogo",
-                "Gelo",
-                "Elétrica",
-                "Vento",
-                "Psy",
-                "Nuclear",
-                "Benção",
-                "Maldição",
-                "Onipotência"
-            ]
-            embed = EmbedComReacao(self.bot, ctx, titulo, descricao, cor, False, False, False, reacoes)
+            embed = EmbedComReacao(self.bot, ctx, titulo, descricao, cor, False, False, False, self.reacoes_elementos)
             opcao = await embed.enviar_embed_reacoes()
             if opcao < 12:
                 info[shadow_id][opcao-1] = 0
-                mensagem = f'Afinidade **{elementos[opcao-1]}** de {nome} agora não é mais conhecida pelo grupo'
+                mensagem = f'Afinidade **{self.elementos[opcao-1]}** de {nome} agora não é mais conhecida pelo grupo'
             elif opcao == 12:
                 info[shadow_id][0] = 0
                 info[shadow_id][1] = 0
@@ -326,19 +287,7 @@ class Ficha(commands.Cog):
             texto = texto[:-1]
             campo_habilidade = [("**Habilidades**", texto)]
             titulo_fraquezas = "**Fraquezas**"
-            campos_fraquezas = [
-                ("<:phys:790320130810839101>", ficha[2][0][1]),
-                ("<:gun:790320131028287488>", ficha[2][1][1]),
-                ("<:fire:790320130483421245>", ficha[2][2][1]),
-                ("<:ice:790320130738356224>", ficha[2][3][1]),
-                ("<:elec:790320130151809047>", ficha[2][4][1]),
-                ("<:wind:790320130521169922>", ficha[2][5][1]),
-                ("<:psy:790320130772566046>", ficha[2][6][1]),
-                ("<:nuclear:790320130584084532>", ficha[2][7][1]),
-                ("<:bless:790320130746744892>", ficha[2][8][1]),
-                ("<:curse:790320130387214336>", ficha[2][9][1]),
-                ("<:almighty:790320130297954374>", ficha[2][10][1])
-            ]
+            campos_fraquezas = Gerador.gerador_campos_fraquezas(ficha)
             atributos = [ficha[1][0][1], ficha[1][1][1], ficha[1][2][1], ficha[1][3][1], ficha[1][4][1], ficha[1][5][1], ficha[1][6][1]]
             atributos_soma = Database.atributos_total("soma", personagem_id)
             atributos_porcent = Database.atributos_total("porcent", personagem_id)
