@@ -15,18 +15,18 @@ class Dado(commands.Cog):
             personagem_id = Database.personagem_id(personagem)
             if personagem_id != False:
                 canal = self.bot.get_channel(Canal.carregar_canal_jogador(personagem))
-                usuario = Database.discord_user()
+                usuario = Database.discord_user(personagem_id)
                 await Dado.rolagem_pronta(self.bot, canal, personagem, usuario, dados, lados)
             else:
                 await ctx.send("Este personagem não existe.")
-        except:
+        except ValueError:
             await ctx.send("Canal do jogador não registrado ou informações do dado erradas.")
 
     @commands.command(name='rolldice')
     async def rolldice(self, ctx):
         quant_dados = 0
         lados = 0
-        await ctx.send("How many dices?")
+        await ctx.send("Quantos dados?")
         msg = await self.bot.wait_for('message')
         mensagem = msg.content
         try:
@@ -34,30 +34,14 @@ class Dado(commands.Cog):
         except:
             await ctx.send("Incorrect parameter.")
         if quant_dados > 0 and quant_dados < 25:
-            await ctx.send("Enter the amount of sides:")
+            await ctx.send("Digite a quantidade de lados:")
             msg = await self.bot.wait_for('message')
             mensagem = msg.content
             try:
                 lados = int(mensagem)
             except:
-                await ctx.send("Incorrect parameter.")
-        if lados > 0:
-            dado = discord.Embed(
-                title=f'{quant_dados} D{lados} roll by {str(ctx.author)} :game_die: ',
-                colour=discord.Colour.greyple()
-            )
-            total = 0
-            soma = ""
-            for i in range(quant_dados):
-                num = random.randint(1, lados)
-                dado.add_field(name=f'Dice #{i + 1}', value=num, inline=True)
-                total += num
-                soma += str(num) + " + "
-            soma = soma[:len(soma) - 2]
-            dado.description = f'SUM: {soma} = **{total}**'
-            await ctx.send(embed=dado)
-        else:
-            await ctx.send("You failed to roll the dice. Try Again.")
+                await ctx.send("Parâmetro incorreto.")
+        await self.gerar_dado_solto(ctx, lados, quant_dados)
 
     @commands.command(name='roll', aliases=['r'])
     async def fast_rolldice(self, ctx, dado):
@@ -71,29 +55,15 @@ class Dado(commands.Cog):
                     if quant_dados > 0 and quant_dados < 25:
                         lados = int(dado[posicao_x + 1:len(dado)])
                     break
-            if lados > 0:
-                dado = discord.Embed(
-                    title=f'{quant_dados} D{lados} roll by {str(ctx.author)} :game_die: ',
-                    colour=discord.Colour.greyple()
-                )
-                total = 0
-                soma = ""
-                for i in range(quant_dados):
-                    num = random.randint(1, lados)
-                    dado.add_field(name=f'Dice #{i + 1}', value=num, inline=True)
-                    total += num
-                    soma += str(num) + " + "
-                soma = soma[:len(soma) - 2]
-                dado.description = f'SUM: {soma} = **{total}**'
-                await ctx.send(embed=dado)
+            await self.gerar_dado_solto(ctx, lados, quant_dados)
         except:
-            await ctx.send("Incorrect parameters. Dices amount must be enter 1 and 25 / Dice sides must be integer and greater than 0.")
+            await ctx.send("Parâmetros incorretos. Quantidade de dados deve ser entre 1 e 25 / Quantidade de lados deve ser um inteiro maior que 0.")
 
     @classmethod
     async def rolagem_pronta(self, bot, canal, personagem, usuario, dados, lados):
         if (dados > 0 and dados < 25) and (lados > 0):
             dado = discord.Embed(
-                title=f'{dados} D{lados} roll by {personagem} :game_die: ',
+                title=f'Rolagem de {dados} D{lados} por {personagem} :game_die: ',
                 description="Clique no dado abaixo para rodar o dado.",
                 colour=discord.Colour.greyple()
             )
@@ -108,7 +78,7 @@ class Dado(commands.Cog):
                     total = 0
                     soma = ""
                     dado1 = discord.Embed(
-                        title=f'{dados} D{lados} roll by {personagem} :game_die: ',
+                        title=f'Rolagem de {dados} D{lados} por {personagem} :game_die: ',
                         colour=discord.Colour.greyple()
                     )
                     for i in range(dados):
@@ -122,6 +92,25 @@ class Dado(commands.Cog):
                     return total
         else:
             await canal.send("Parâmetros incorretos.")
+
+    async def gerar_dado_solto(self, ctx, lados, quant_dados):
+        if lados > 0:
+            dado = discord.Embed(
+                title=f'Rolagem de {quant_dados} D{lados} por {str(ctx.author)} :game_die: ',
+                colour=discord.Colour.greyple()
+            )
+            total = 0
+            soma = ""
+            for i in range(quant_dados):
+                num = random.randint(1, lados)
+                dado.add_field(name=f'Dice #{i + 1}', value=num, inline=True)
+                total += num
+                soma += str(num) + " + "
+            soma = soma[:len(soma) - 2]
+            dado.description = f'SUM: {soma} = **{total}**'
+            await ctx.send(embed=dado)
+        else:
+            await ctx.send("Você falhou em rodar o(s) dado(s), tente novamente.")
 
 def setup(bot):
     bot.add_cog(Dado(bot))
