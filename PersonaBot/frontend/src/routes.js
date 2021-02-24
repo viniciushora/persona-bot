@@ -5,6 +5,7 @@ import Cadastro from './pages/Cadastro';
 import Item from './pages/Item';
 import Habilidade from './pages/Habilidade';
 import Persona from './pages/Persona';
+import Shadow from './pages/Shadow';
 
 export default function Routes() {
     return (
@@ -14,6 +15,7 @@ export default function Routes() {
                 <Route path="/item" component={Item}/>
                 <Route path="/habilidade" component={Habilidade}/>
                 <Route path="/persona" component={Persona}/>
+                <Route path="/shadow" component={Shadow}/>
             </Switch>
         </BrowserRouter>
     );

@@ -8,13 +8,21 @@ module.exports = {
     },
 
     async create(request, response) {
-        const { fk_shadow_fk_persona_persona_id, fk_item_item_id, chance } = request.body;
+        const { fk_shadow_fk_persona_persona_id, chances, dropItens } = request.body;
+        
+        var chance = 0;
+        var fk_item_item_id = 0;
 
-        await connection('drop').insert({
-            fk_shadow_fk_persona_persona_id,
-            fk_item_item_id,
-            chance
-        })
+        for (var i=0; i < chances.length; i ++) {
+            chance = chances[i];
+            fk_item_item_id = dropItens[i];
+
+            await connection('drop').insert({
+                fk_shadow_fk_persona_persona_id,
+                fk_item_item_id,
+                chance
+            })
+        }
 
         return response.json({ fk_shadow_fk_persona_persona_id });
     }

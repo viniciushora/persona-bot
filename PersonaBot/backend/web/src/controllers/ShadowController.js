@@ -17,6 +17,20 @@ module.exports = {
             dinheiro
         })
 
+        const shadow = await connection('shadow')
+        .select('shadow_id')
+        .where('codinome', codinome)
+        .whereNotNull("shadow_id")
+        .first();
+
+        const result = shadow.shadow_id;
+
+        if (result == null) {
+            return response.status(401).json({ error: 'Id não encontrado' });
+        } else {
+            return response.json({ result });
+        }
+
         return response.json({ codinome });
     }
 }

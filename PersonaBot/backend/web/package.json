@@ -1,22 +1,21 @@
 {
-  "name": "backend",
+  "name": "web",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
   "scripts": {
     "start": "nodemon src/index.js"
   },
-  "keywords": [],
   "author": "",
   "license": "ISC",
+  "devDependencies": {
+    "nodemon": "^2.0.7"
+  },
   "dependencies": {
     "cors": "^2.8.5",
     "dotenv": "^8.2.0",
     "express": "^4.17.1",
-    "knex": "^0.21.17",
+    "knex": "^0.21.18",
     "pg": "^8.5.1"
-  },
-  "devDependencies": {
-    "nodemon": "^2.0.7"
   }
 }
