@@ -160,14 +160,14 @@ class Ficha(commands.Cog):
         for palavra in shadow:
             nome+=palavra + " "
         nome = nome[:-1]
+        descricao = "Reaja com o elemento desejado (:arrow_up_small: para revelação completa)"
+        cor = "azul"
         shadow_id = Database.shadow_id(nome)
         info = {}
         if shadow_id != False:
             with open('info.pickle', 'rb') as handle:
                 info = pickle.load(handle)
             titulo = f'**Revelando afinidades elementais de {nome}**'
-            descricao = "Reaja com o elemento desejado (:arrow_up_small: para revelação completa)"
-            cor = "azul"
             embed = EmbedComReacao(self.bot, ctx, titulo, descricao, cor, False, False, False, self.reacoes_elementos)
             opcao = await embed.enviar_embed_reacoes()
             if opcao < 12:
@@ -202,14 +202,14 @@ class Ficha(commands.Cog):
         for palavra in shadow:
             nome+=palavra + " "
         nome = nome[:-1]
+        descricao = "Reaja com o elemento desejado (:arrow_up_small: para revelação completa)"
+        cor = "azul"
         shadow_id = Database.shadow_id(nome)
         info = {}
         if shadow_id != False:
             with open('info.pickle', 'rb') as handle:
                 info = pickle.load(handle)
             titulo = f'**Escondendo afinidades elementais de {nome}**'
-            descricao = "Reaja com o elemento desejado (:arrow_up_small: para revelação completa)"
-            cor = "azul"
             embed = EmbedComReacao(self.bot, ctx, titulo, descricao, cor, False, False, False, self.reacoes_elementos)
             opcao = await embed.enviar_embed_reacoes()
             if opcao < 12:
