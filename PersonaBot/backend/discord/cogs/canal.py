@@ -26,7 +26,7 @@ class Canal(commands.Cog):
             with open('canais.pickle', 'rb') as handle:
                 canais = pickle.load(handle)
             return canais
-        except:
+        except EOFError:
             print("Erro nos canais")
 
     @classmethod
@@ -36,7 +36,7 @@ class Canal(commands.Cog):
                 canais = pickle.load(handle)
             canais_jogadores = canais["jogadores"]
             return canais_jogadores
-        except:
+        except EOFError:
             print("Erro nos canais.")
 
     @classmethod
@@ -44,9 +44,9 @@ class Canal(commands.Cog):
         try:
             with open('canais.pickle', 'rb') as handle:
                 canais = pickle.load(handle)
-            canais_jogadores = canais["jogadores"]  
+            canais_jogadores = canais["jogadores"]
             return canais_jogadores[personagem]
-        except:
+        except EOFError:
             print("Erro nos canais.")
 
     @classmethod
@@ -56,7 +56,7 @@ class Canal(commands.Cog):
                 canais = pickle.load(handle)
             canais_inimigos = canais["inimigos"]
             return canais_inimigos
-        except:
+        except EOFError:
             print("Erro nos canais.")
 
     @classmethod
@@ -64,11 +64,11 @@ class Canal(commands.Cog):
         try:
             with open('canais.pickle', 'rb') as handle:
                 canais = pickle.load(handle)
-            canal_grupo = canais["grupo"]  
+            canal_grupo = canais["grupo"]
             return canal_grupo
-        except:
+        except EOFError:
             print("Erro nos canais.")
-    
+
     @classmethod
     def carregar_canal_mestre(self):
         try:
@@ -76,7 +76,7 @@ class Canal(commands.Cog):
                 canais = pickle.load(handle)
             canal_mestre = canais["mestre"]
             return canal_mestre
-        except:
+        except EOFError:
             print("Erro nos canais.")
     
     @classmethod
@@ -86,7 +86,7 @@ class Canal(commands.Cog):
                 canais = pickle.load(handle)
             canal_suporte = canais["suporte"]
             return canal_suporte
-        except:
+        except EOFError:
             print("Erro nos canais.")
 
     @commands.command(name='canal_jogador')
