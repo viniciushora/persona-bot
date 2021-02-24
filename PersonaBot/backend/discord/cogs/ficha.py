@@ -46,24 +46,19 @@ class Ficha(commands.Cog):
         if shadows:
             for shadow in shadows:
                 info[shadow] = [0,0,0,0,0,0,0,0,0,0,0]
-            with open('info.pickle', 'wb') as handle:
-                pickle.dump(info, handle, protocol=pickle.HIGHEST_PROTOCOL)
-            handle.close()
+            self.escrever_arquivo(info)
             print("Informações de Shadows iniciadas.")
 
     @commands.command(name='atualizar_info')
     async def atualizar_info(self, ctx):
-        with open('info.pickle', 'rb') as handle:
-            info = pickle.load(handle)
+        info = self.ler_arquivo()
         shadows = Database.lista_shadows_id()
         if shadows:
             for shadow in shadows:
                 if shadow not in info:
                     info[shadow] = [0,0,0,0,0,0,0,0,0,0,0]
                     await ctx.send("**Shadow nova adicionada**")
-            with open('info.pickle', 'wb') as handle:
-                pickle.dump(info, handle, protocol=pickle.HIGHEST_PROTOCOL)
-            handle.close()
+            self.escrever_arquivo(info)
             await ctx.send("**Informação atualizada**")
 
     @commands.command(name='mostrar_ficha')
@@ -109,8 +104,7 @@ class Ficha(commands.Cog):
             for palavra in shadow:
                 nome += palavra + " "
             nome = nome[:-1]
-            with open('info.pickle', 'rb') as handle:
-                info = pickle.load(handle)
+            info = self.ler_arquivo()
             try:
                 ficha = Database.ficha_shadow(nome)
                 persona_id = Database.persona_id_shadow(nome)
@@ -165,8 +159,7 @@ class Ficha(commands.Cog):
         shadow_id = Database.shadow_id(nome)
         info = {}
         if shadow_id != False:
-            with open('info.pickle', 'rb') as handle:
-                info = pickle.load(handle)
+            info = self.ler_arquivo()
             titulo = f'**Revelando afinidades elementais de {nome}**'
             embed = EmbedComReacao(self.bot, ctx, titulo, descricao, cor, False, False, False, self.reacoes_elementos)
             opcao = await embed.enviar_embed_reacoes()
@@ -189,23 +182,20 @@ class Ficha(commands.Cog):
         else:
             await ctx.send("**Shadow não existente**")
         if info != {}:
-            with open('info.pickle', 'wb') as handle:
-                pickle.dump(info, handle, protocol=pickle.HIGHEST_PROTOCOL)
-            handle.close()
+            self.escrever_arquivo(info)
     
     @commands.command(name='esconder_afinidade')
     async def esconder_afinidade(self, ctx, *shadow):
+        descricao = "Reaja com o elemento desejado (:arrow_up_small: para revelação completa)"
+        cor = "azul"
         nome = ""
         for palavra in shadow:
             nome+=palavra + " "
         nome = nome[:-1]
-        descricao = "Reaja com o elemento desejado (:arrow_up_small: para revelação completa)"
-        cor = "azul"
         shadow_id = Database.shadow_id(nome)
         info = {}
         if shadow_id != False:
-            with open('info.pickle', 'rb') as handle:
-                info = pickle.load(handle)
+            info = self.ler_arquivo()
             titulo = f'**Escondendo afinidades elementais de {nome}**'
             embed = EmbedComReacao(self.bot, ctx, titulo, descricao, cor, False, False, False, self.reacoes_elementos)
             opcao = await embed.enviar_embed_reacoes()
@@ -228,9 +218,7 @@ class Ficha(commands.Cog):
         else:
             await ctx.send("**Shadow não existente**")
         if info != {}:
-            with open('info.pickle', 'wb') as handle:
-                pickle.dump(info, handle, protocol=pickle.HIGHEST_PROTOCOL)
-            handle.close()
+            self.escrever_arquivo(info)
     
     @commands.command(name='ficha')
     async def ficha(self, ctx, personagem):
@@ -342,6 +330,16 @@ class Ficha(commands.Cog):
         descricao = mensagem
         embed = Embed(self.bot, ctx, titulo, descricao, cor, False)
         await embed.enviar_embed()
+
+    def ler_arquivo(self):
+        with open('info.pickle', 'rb') as handle:
+            info = pickle.load(handle)
+        return info
+    
+    def escrever_arquivo(self, info):
+        with open('info.pickle', 'wb') as handle:
+            pickle.dump(info, handle, protocol=pickle.HIGHEST_PROTOCOL)
+        handle.close()
 
 def setup(bot):
     bot.add_cog(Ficha(bot))
