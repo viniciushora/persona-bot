@@ -56,7 +56,7 @@ class Dado(commands.Cog):
                         lados = int(dado[posicao_x + 1:len(dado)])
                     break
             await self.gerar_dado_solto(ctx, lados, quant_dados)
-        except:
+        except ValueError:
             await ctx.send("Parâmetros incorretos. Quantidade de dados deve ser entre 1 e 25 / Quantidade de lados deve ser um inteiro maior que 0.")
 
     @classmethod
@@ -90,7 +90,7 @@ class Dado(commands.Cog):
                     dado1.description = f'SUM: {soma} = **{total}**'
                     await canal.send(embed=dado1)
                     return total
-        else:
+        else ValueError:
             await canal.send("Parâmetros incorretos.")
 
     async def gerar_dado_solto(self, ctx, lados, quant_dados):
@@ -109,7 +109,7 @@ class Dado(commands.Cog):
             soma = soma[:len(soma) - 2]
             dado.description = f'SUM: {soma} = **{total}**'
             await ctx.send(embed=dado)
-        else:
+        else ValueError:
             await ctx.send("Você falhou em rodar o(s) dado(s), tente novamente.")
 
 def setup(bot):
