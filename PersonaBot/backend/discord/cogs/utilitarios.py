@@ -148,7 +148,7 @@ class Mensageiro:
         informacoes["atributos"] = atributos_somados
         informacoes["skills"] = skills
         return informacoes
-    
+
     @staticmethod
     def informacoes_shadow(nome):
         informacoes = {}
@@ -169,14 +169,14 @@ class Mensageiro:
         if armadura != None:
             valor_armadura = Database.valor_item(armadura)
         return valor_armadura
-    
+
     @staticmethod
     def info_ranged(ranged):
         valor_arma = 0
         if ranged != None:
             valor_arma = Database.valor_item(ranged)
         return valor_arma
-    
+
     @staticmethod
     def info_meelee(meelee):
         valor_arma = 0
