@@ -102,7 +102,7 @@ class Canal(commands.Cog):
             canais_jogadores[personagem] = canal.id
             await ctx.send(f"""O canal de **{personagem}** agora é o <#{canal.id}>""")
             canais = {"jogadores": canais_jogadores, "inimigos": canal_inimigos, "grupo": canal_grupo, "mestre": canal_mestre, "suporte": canal_suporte}
-            self.atualizacao_canal(canais)
+            atualizacao_canal(canais)
         else:
             await ctx.send("Este personagem não existe.")
     
@@ -125,14 +125,9 @@ class Canal(commands.Cog):
                 canal_suporte = canal.id
             await ctx.send(f"""O canal do {tipo_canal} agora é o <#{canal.id}>""")
             canais = {"jogadores": canais_jogadores, "inimigos": canal_inimigos, "grupo": canal_grupo, "mestre": canal_mestre, "suporte": canal_suporte}
-            self.atualizacao_canal(canais)
+            atualizacao_canal(canais)
         except:
             await ctx.send("Canal incorreto.")
-
-    def atualizacao_canal(self, canais):
-        with open('canais.pickle', 'wb') as handle:
-            pickle.dump(canais, handle, protocol=pickle.HIGHEST_PROTOCOL)
-        handle.close()
         
     @commands.command(name='canais')
     async def canais(self, ctx):
@@ -168,6 +163,11 @@ class Canal(commands.Cog):
             embed.add_field(name="Suporte", value=f"""<#{canal_suporte}>""", inline=False)
         if i > 0:
             await ctx.send(embed=embed)
+
+def atualizacao_canal(canais):
+    with open('canais.pickle', 'wb') as handle:
+        pickle.dump(canais, handle, protocol=pickle.HIGHEST_PROTOCOL)
+    handle.close()
 
 def setup(bot):
     bot.add_cog(Canal(bot))
