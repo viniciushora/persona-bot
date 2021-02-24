@@ -114,7 +114,7 @@ class Gerador:
             campo = (chaves[i], valores[i])
             campos.append(campo)
         return campos
-    
+
     @staticmethod
     def gerador_texto(lista_item):
         texto = ""
