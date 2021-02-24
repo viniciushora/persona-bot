@@ -78,13 +78,13 @@ class Ficha(commands.Cog):
             campos = [
                 ("**Nível base**", nivel),
                 ("**Arcana**", arcana),
-                (f'**Vida (Hp)**', atributos[0][1]),
-                (f'**Energia Espiritual (Sp)**', atributos[1][1]),
-                (f'**Força (St)**', atributos[2][1]),
-                (f'**Magia (Ma)**', atributos[3][1]),
-                (f'**Resistência (En)**', atributos[4][1]),
-                (f'**Agilidade (Ag)**', atributos[5][1]),
-                (f'**Sorte (Lu)**', atributos[6][1])
+                ("**Vida (Hp)**", atributos[0][1]),
+                ("**Energia Espiritual (Sp)**", atributos[1][1]),
+                ("**Força (St)**", atributos[2][1]),
+                ("**Magia (Ma)**", atributos[3][1]),
+                ("**Resistência (En)**", atributos[4][1]),
+                ("**Agilidade (Ag)**", atributos[5][1]),
+                ("**Sorte (Lu)**", atributos[6][1])
             ]
             embed1 = EmbedComCampos(self.bot, canal, titulo, False, cor, foto, campos, False)
             titulo = "**Fraquezas**"
@@ -276,13 +276,13 @@ class Ficha(commands.Cog):
             campos_atributos = [
                 ("**Arcana**", arcana_persona),
                 ("**Nível**", nivel_persona),
-                (f'**Vida (Hp)**', f'{atributos[0]} +{plus[0]}'),
-                (f'**Energia Espiritual (Sp)**', f'{atributos[1]} +{plus[1]}'),
-                (f'**Força (St)**', f'{atributos[2]} +{plus[2]}'),
-                (f'**Magia (Ma)**', f'{atributos[3]} +{plus[3]}'),
-                (f'**Resistência (En)**', f'{atributos[4]} +{plus[4]}'),
-                (f'**Agilidade (Ag)**', f'{atributos[5]} +{plus[5]}'),
-                (f'**Sorte (Lu)**', f'{atributos[6]} +{plus[6]}')
+                ("**Vida (Hp)**", f'{atributos[0]} +{plus[0]}'),
+                ("**Energia Espiritual (Sp)**", f'{atributos[1]} +{plus[1]}'),
+                ("**Força (St)**", f'{atributos[2]} +{plus[2]}'),
+                ("**Magia (Ma)**", f'{atributos[3]} +{plus[3]}'),
+                ("**Resistência (En)**", f'{atributos[4]} +{plus[4]}'),
+                ("**Agilidade (Ag)**", f'{atributos[5]} +{plus[5]}'),
+                ("**Sorte (Lu)**", f'{atributos[6]} +{plus[6]}')
             ]
             campos_personagem = campos_equipamentos
             if eh_fool:
