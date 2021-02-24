@@ -145,7 +145,7 @@ class Ficha(commands.Cog):
                 await embed.enviar_embed()
             except:
                 await ctx.send("**Shadow não encontrada, digite novamente e corretamente.**")
-        except:
+        except ValueError:
             await ctx.send("Canal do suporte ainda não registrado.")
 
     @commands.command(name='revelar_afinidade')
