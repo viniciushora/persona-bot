@@ -7,16 +7,17 @@ module.exports = {
         return response.json(persona);
     },
 
-    async selectId (request, response) {
-        const { nome } = request.body;
+    async selectNivel (request, response) {
+        const { fk_persona_persona_id } = request.body;
+
+        console.log(fk_persona_persona_id)
 
         const persona = await connection('persona')
-        .select('persona_id')
-        .where('nome', nome)
-        .whereNotNull("persona_id")
+        .select('nivel')
+        .where('persona_id', fk_persona_persona_id)
         .first();
 
-        const result = persona.persona_id;
+        const result = persona.nivel;
 
         if (result == null) {
             return response.status(401).json({ error: 'Id não encontrado' });

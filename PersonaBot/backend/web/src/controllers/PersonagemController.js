@@ -18,6 +18,14 @@ module.exports = {
             foto
         })
 
-        return response.json({ nome });
+        const personagem = await connection('personagem')
+        .select('personagem_id')
+        .where('nome', nome)
+        .whereNotNull("personagem_id")
+        .first();
+
+        const result = personagem.personagem_id;
+
+        return response.json({ result });
     }
 }

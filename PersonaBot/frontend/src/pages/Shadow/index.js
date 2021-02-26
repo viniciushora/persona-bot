@@ -57,7 +57,7 @@ export default function Persona() {
 
             const response = await api.post('shadow', data);
 
-            const fk_shadow_fk_persona_persona_id = response.data['result'];
+            const fk_shadow_fk_persona_persona_id = response.data['fk_persona_persona_id'];
 
             const data2 = {
                 fk_shadow_fk_persona_persona_id,

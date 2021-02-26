@@ -11,12 +11,13 @@ const HabilidadeController = require('./controllers/HabilidadeController');
 const HabilidadePersonaController = require('./controllers/HabilidadePersonaController');
 const ReacaoElementalController = require('./controllers/ReacaoElementalController');
 const PersonaAtributoController = require('./controllers/PersonaAtributoController');
+const PersonaHabilidadeController = require('./controllers/PersonaHabilidadeController');
 
 const routes = express.Router();
 
 routes.get('/persona', PersonaController.index);
 
-routes.get('/persona-id', PersonaController.selectId);
+routes.post('/persona-nivel', PersonaController.selectNivel);
 
 routes.post('/persona', PersonaController.create);
 
@@ -48,7 +49,7 @@ routes.get('/habilidade', HabilidadeController.index);
 
 routes.post('/habilidade', HabilidadeController.create);
 
-routes.get('/habilidade_persona', HabilidadePersonaController.index);
+routes.post('/skills', HabilidadePersonaController.index);
 
 routes.post('/habilidade_persona', HabilidadePersonaController.create);
 
@@ -59,5 +60,9 @@ routes.post('/reacao_elemental', ReacaoElementalController.create);
 routes.get('/persona_atributo', PersonaAtributoController.index);
 
 routes.post('/persona_atributo', PersonaAtributoController.create);
+
+routes.get('/persona_habilidade', PersonaHabilidadeController.index);
+
+routes.post('/persona_habilidade', PersonaHabilidadeController.create);
 
 module.exports = routes;

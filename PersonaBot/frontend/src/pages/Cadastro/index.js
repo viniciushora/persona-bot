@@ -19,7 +19,9 @@ export default function Cadastro() {
                         </Link>
                     </div>
                     <div class="row">
-                        <button>Personagem</button>
+                        <Link to="/personagem" className="link">
+                            <button>Personagem</button>
+                        </Link>
                     </div>
                     <div class="row">
                         <Link to="/item" className="link">
