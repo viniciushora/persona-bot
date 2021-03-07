@@ -7,6 +7,19 @@ module.exports = {
         return response.json(personagem_persona);
     },
 
+    async ultimoId (request, response) {
+
+        const personagem_persona = await connection('personagem_persona')
+        .select('personagem_persona_id')
+        .whereNotNull("personagem_persona_id")
+        .orderBy('personagem_persona_id', 'desc')
+        .first();
+
+        const result = personagem_persona.personagem_persona_id;
+
+        return response.json(result);
+    },
+
     async create(request, response) {
         const { nivel, fk_personagem_personagem_id, fk_persona_persona_id, compendium } = request.body;
 
@@ -17,15 +30,6 @@ module.exports = {
             compendium
         })
 
-        const personagem_persona = await connection('personagem_persona')
-        .select('personagem_persona_id')
-        .where('fk_personagem_personagem_id', fk_personagem_personagem_id)
-        .where('fk_persona_persona_id', fk_persona_persona_id)
-        .whereNotNull("personagem_persona_id")
-        .first();
-
-        const result = personagem_persona.personagem_persona_id;
-
-        return response.json({ result });
+        return response.json(fk_personagem_personagem_id);
     }
 }

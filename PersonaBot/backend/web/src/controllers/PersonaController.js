@@ -22,8 +22,21 @@ module.exports = {
         if (result == null) {
             return response.status(401).json({ error: 'Id não encontrado' });
         } else {
-            return response.json({ result });
+            return response.json(result);
         }
+    },
+
+    async ultimoId (request, response) {
+
+        const persona = await connection('persona')
+        .select('persona_id')
+        .whereNotNull("persona_id")
+        .orderBy('persona_id', 'desc')
+        .first();
+
+        const result = persona.persona_id;
+
+        return response.json(result);
     },
 
     async create(request, response) {
@@ -35,14 +48,6 @@ module.exports = {
             nivel
         })
 
-        const persona = await connection('persona')
-        .select('persona_id')
-        .where('nome', nome)
-        .whereNotNull("persona_id")
-        .first();
-
-        const result = persona.persona_id;
-
-        return response.json({ result });
+        return response.json(nome);
     }
 }

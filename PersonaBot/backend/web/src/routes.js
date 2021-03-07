@@ -17,6 +17,8 @@ const routes = express.Router();
 
 routes.get('/persona', PersonaController.index);
 
+routes.get('/persona-ultimo-id', PersonaController.ultimoId);
+
 routes.post('/persona-nivel', PersonaController.selectNivel);
 
 routes.post('/persona', PersonaController.create);
@@ -31,9 +33,15 @@ routes.post('/item', ItemController.create);
 
 routes.get('/personagem', PersonagemController.index);
 
+routes.post('/personagem-id', PersonagemController.personagemId);
+
+routes.get('/personagem-ultimo-id', PersonagemController.ultimoId);
+
 routes.post('/personagem', PersonagemController.create);
 
 routes.get('/personagem_persona', PersonagemPersonaController.index);
+
+routes.get('/personagem_persona-ultimo-id', PersonagemPersonaController.ultimoId);
 
 routes.post('/personagem_persona', PersonagemPersonaController.create);
 
@@ -49,7 +57,7 @@ routes.get('/habilidade', HabilidadeController.index);
 
 routes.post('/habilidade', HabilidadeController.create);
 
-routes.post('/skills', HabilidadePersonaController.index);
+routes.get('/skills', HabilidadePersonaController.index);
 
 routes.post('/habilidade_persona', HabilidadePersonaController.create);
 
