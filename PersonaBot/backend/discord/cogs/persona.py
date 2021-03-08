@@ -61,19 +61,15 @@ class Persona(commands.Cog):
                             i += 1
                         if nivel_skills != []:
                             nova_skills = Database.skills(personagem_id, persona_id)
-                            info = info_skills(nova_skills)
-                            nomes_skills = info[1]
                             fool = False
                             for skill in nivel_skills:
-                                await self.aprendizado(ctx, canal, fool, skill, personagem, False, personagem_persona_id, nova_skills, nomes_skills)
+                                await self.aprendizado(ctx, canal, fool, skill, personagem, False, personagem_persona_id, nova_skills)
                                 nova_skills = Database.skills(personagem_id, persona_id)
                     else:
                         nova_skills = Database.skills(personagem_id, persona_id)
                         nomes_skills = []
-                        info = info_skills(nova_skills)
-                        nomes_skills = info[1]
                         for skill in nivel_skills:
-                            await self.aprendizado(ctx, canal, False, skill, personagem, False, personagem_persona_id, nova_skills, nomes_skills)
+                            await self.aprendizado(ctx, canal, False, skill, personagem, False, personagem_persona_id, nova_skills)
                             nova_skills = Database.skills(personagem_id, persona_id)
             else:
                 Database.aumentar_nivel_fool(personagem_id)
@@ -89,8 +85,8 @@ class Persona(commands.Cog):
                 ]
                 embed_aumento = EmbedComCampos(self.bot, canal, titulo_aumento, descricao_aumento, cor_aumento, False, campos_aumento, True)
                 await embed_aumento.enviar_embed()
-        except ValueError:
-            await ctx.send("Canal do jogador não registrado.")
+        except:
+            await ctx.send(f'*Não foi possível executar o comando. Alguns dos motivos podem ser:*\n\n**Canal do jogador não encontrado**.\n*Dica: Cadastre o canal com o comando:* `{self.bot.command_prefix}canal_jogador <nome do personagem> <#canal>`')
 
     @commands.command(name='desupar')
     async def diminuir_nivel(self, ctx, personagem):
@@ -121,8 +117,8 @@ class Persona(commands.Cog):
                 apagar = Database.apagar_crecimento_fool(personagem_id, nivel)
                 if apagar:
                     await canal.send(f'Atributos de **{personagem}** resetado para os do {nivel -1}')
-        except ValueError:
-            await ctx.send("Canal do jogador não registrado.")
+        except:
+            await ctx.send(f'*Não foi possível executar o comando. Alguns dos motivos podem ser:*\n\n**Canal do jogador não encontrado**.\n*Dica: Cadastre o canal com o comando:* `{self.bot.command_prefix}canal_jogador <nome do personagem> <#canal>`')
 
     @commands.command(name='upar_persona')
     async def subir_nivel_persona(self, ctx, personagem):
@@ -147,7 +143,7 @@ class Persona(commands.Cog):
                 nivel_skills = Database.nivel_skills(nivel, persona_id)
                 if nivel_skills != False:
                     skills = Database.skills(personagem_id, persona_id)
-                    if len(skills) + len(nivel_skills) < 8:
+                    if len(skills) + len(nivel_skills) <= 8:
                         for skill in nivel_skills:
                             if skill not in skills:
                                 aprendeu = Database.add_skill(skill, personagem_persona_id)
@@ -168,23 +164,20 @@ class Persona(commands.Cog):
                             i += 1
                         if nivel_skills != []:
                             nova_skills = Database.skills(personagem_id, persona_id)
-                            info = info_skills(nova_skills)
                             fool = True
-                            nomes_skills = info[1]
                             for skill in nivel_skills:
-                                await self.aprendizado(ctx, canal, fool, skill, personagem, persona_id, personagem_persona_id, nova_skills, nomes_skills)
+                                await self.aprendizado(ctx, canal, fool, skill, personagem, persona_id, personagem_persona_id, nova_skills)
                                 nova_skills = Database.skills(personagem_id, persona_id)
                     else:
                         nova_skills = Database.skills(personagem_id, persona_id)
                         info = info_skills(nova_skills)
-                        nomes_skills = info[1]
                         for skill in nivel_skills:
-                            await self.aprendizado(ctx, canal, True, skill, personagem, persona_id, personagem_persona_id, nova_skills, nomes_skills)
+                            await self.aprendizado(ctx, canal, True, skill, personagem, persona_id, personagem_persona_id, nova_skills)
                             nova_skills = Database.skills(personagem_id, persona_id)
             else:
                 await ctx.send("Este personagem não é da Arcana Fool")
-        except ValueError:
-            await ctx.send("Canal do jogador não registrado.")
+        except:
+            await ctx.send(f'*Não foi possível executar o comando. Alguns dos motivos podem ser:*\n\n**Canal do jogador não encontrado**.\n*Dica: Cadastre o canal com o comando:* `{self.bot.command_prefix}canal_jogador <nome do personagem> <#canal>`')
 
     @commands.command(name='desupar_persona')
     async def diminuir_nivel_persona(self, ctx, personagem):
@@ -210,8 +203,8 @@ class Persona(commands.Cog):
                         await canal.send(f'Habilidade: **{Database.nome_skill(skill)}** foi desaprendida.')
             else:
                 await ctx.send("Este personagem não é da Arcana Fool")
-        except ValueError:
-            await ctx.send("Canal do jogador não registrado.")
+        except:
+            await ctx.send(f'*Não foi possível executar o comando. Alguns dos motivos podem ser:*\n\n**Canal do jogador não encontrado**.\n*Dica: Cadastre o canal com o comando:* `{self.bot.command_prefix}canal_jogador <nome do personagem> <#canal>`')
 
     @commands.command(name='equipar_persona')
     async def equipar_persona(self, ctx, personagem):
@@ -255,8 +248,8 @@ class Persona(commands.Cog):
                     await ctx.send("Este personagem não possui Arcana Fool")
             else:
                 await ctx.send("Este personagem não existe.")
-        except ValueError:
-            await ctx.send("Canal do jogador não registrado.")
+        except:
+            await ctx.send(f'*Não foi possível executar o comando. Alguns dos motivos podem ser:*\n\n**Canal do jogador não encontrado**.\n*Dica: Cadastre o canal com o comando:* `{self.bot.command_prefix}canal_jogador <nome do personagem> <#canal>`')
 
     @commands.command(name='tomar_persona')
     async def tomar_persona(self, ctx , personagem, *persona):
@@ -290,8 +283,8 @@ class Persona(commands.Cog):
                     await ctx.send("Esta Persona não existe")
             else:
                 await ctx.send("Este personagem não existe.")
-        except ValueError:
-            await ctx.send("Canal do jogador não registrado.")
+        except:
+            await ctx.send(f'*Não foi possível executar o comando. Alguns dos motivos podem ser:*\n\n**Canal do jogador não encontrado**.\n*Dica: Cadastre o canal com o comando:* `{self.bot.command_prefix}canal_jogador <nome do personagem> <#canal>`')
 
     @commands.command(name='soltar_persona')
     async def soltar_persona(self, ctx, personagem, *persona):
@@ -321,8 +314,8 @@ class Persona(commands.Cog):
                     await ctx.send("Esta Persona não existe")
             else:
                 await ctx.send("Este personagem não existe.")
-        except ValueError:
-            await ctx.send("Canal do jogador não registrado.")
+        except:
+            await ctx.send(f'*Não foi possível executar o comando. Alguns dos motivos podem ser:*\n\n**Canal do jogador não encontrado**.\n*Dica: Cadastre o canal com o comando:* `{self.bot.command_prefix}canal_jogador <nome do personagem> <#canal>`')
 
     @commands.command(name='habilidades_conhecidas')
     async def skills_conhecidas(self, ctx, personagem):
@@ -346,8 +339,8 @@ class Persona(commands.Cog):
             cor = "azul"
             embed = Embed(self.bot, canal, titulo, descricao, cor, False)
             await embed.enviar_embed()
-        except ValueError:
-            await ctx.send("Canal do jogador não registrado.")
+        except:
+            await ctx.send(f'*Não foi possível executar o comando. Alguns dos motivos podem ser:*\n\n**Canal do jogador não encontrado**.\n*Dica: Cadastre o canal com o comando:* `{self.bot.command_prefix}canal_jogador <nome do personagem> <#canal>`')
 
     @commands.command(name='aprender_habilidade')
     async def aprender_skill(self, ctx, personagem, *skill):
@@ -375,8 +368,8 @@ class Persona(commands.Cog):
                     await ctx.send(f'**{personagem}** já conhece essa habildade.')
             else:
                 await ctx.send("Esta habilidade não existe.")
-        except ValueError:
-            await ctx.send("Canal do jogador não registrado.")
+        except:
+            await ctx.send(f'*Não foi possível executar o comando. Alguns dos motivos podem ser:*\n\n**Canal do jogador não encontrado**.\n*Dica: Cadastre o canal com o comando:* `{self.bot.command_prefix}canal_jogador <nome do personagem> <#canal>`')
 
     @commands.command(name='esquecer_habilidade')
     async def esquecer_skill(self, ctx, personagem):
@@ -412,8 +405,8 @@ class Persona(commands.Cog):
                     await ctx.send("Erro no esquecimento da habilidade")
             else:
                 await canal.send("**Esquecimento cancelado**")
-        except ValueError:
-            await ctx.send("Canal do jogador não registrado.")
+        except:
+            await ctx.send(f'*Não foi possível executar o comando. Alguns dos motivos podem ser:*\n\n**Canal do jogador não encontrado**.\n*Dica: Cadastre o canal com o comando:* `{self.bot.command_prefix}canal_jogador <nome do personagem> <#canal>`')
 
     @commands.command(name='add_atributo')
     async def add_atributo(self, ctx, personagem, tipo, quant, atributo):
@@ -462,26 +455,27 @@ class Persona(commands.Cog):
         else:
             await ctx.send("Este personagem não existe.")
 
-    async def aprendizado(self, ctx, canal, fool, skill, personagem, persona_id, personagem_persona_id, id_skills_personagem, nome_skills_personagem):
+    async def aprendizado(self, ctx, canal, fool, skill, personagem, persona_id, personagem_persona_id, skills_personagem):
         emojis_disc = [":one:", ":two:", ":three:", ":four:", ":five:", ":six:", ":seven:", ":eight:"]
         reacoes_padrao = ["1️⃣", "2️⃣", "3️⃣", "4️⃣", "5️⃣", "6️⃣", "7️⃣", "8️⃣"]
         nome_skill = Database.nome_skill(skill)
         titulo_aprendizado = f'**{personagem}** aprendeu uma nova habilidade!'
         descricao_aprendizado = f'Você já conhece habilidades demais, deseja trocar alguma por **{nome_skill}**?'
         cor_aprendizado = "vermelho"
-        campos_aprendizado = Gerador.gerador_campos(emojis_disc, id_skills_personagem)
-        reacoes = reacoes_padrao[:len(id_skills_personagem)]
+        campos_aprendizado = Gerador.gerador_campos(emojis_disc, skills_personagem)
+        reacoes = reacoes_padrao[:len(skills_personagem)]
         reacoes.append("❌")
         embed_aprendizado = EmbedComReacao(self.bot, canal, titulo_aprendizado, descricao_aprendizado, cor_aprendizado, False, campos_aprendizado, True, reacoes)
         ok = await embed_aprendizado.enviar_embed_reacoes()
         if ok < 9:
-            mudou = Database.mod_skill(id_skills_personagem[ok-1], skill, personagem_persona_id)
+            skill_antiga_id = Database.skill_id(skills_personagem[ok-1])
+            mudou = Database.mod_skill(skill_antiga_id, skill, personagem_persona_id)
             if mudou:
                 titulo = f'Nova habilidade aprendida: **{nome_skill}**'
                 if fool:
-                    descricao = f'**{Database.nome_persona(persona_id)}** esqueceu de **{Database.nome_skill(id_skills_personagem[ok-1])}**'
+                    descricao = f'**{Database.nome_persona(persona_id)}** esqueceu de **{skills_personagem[ok-1]}**'
                 else:
-                    descricao = f'**{personagem}** esqueceu de **{id_skills_personagem[ok-1]}**'
+                    descricao = f'**{personagem}** esqueceu de **{skills_personagem[ok-1]}**'
                 cor = "azul"
                 embed = Embed(self.bot, canal, titulo, descricao, cor, False)
                 await embed.enviar_embed()

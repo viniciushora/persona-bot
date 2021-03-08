@@ -132,19 +132,19 @@ class Gerador:
         return texto
 
     @staticmethod
-    def gerador_campos_fraquezas(ficha):
+    def gerador_campos_fraquezas(ficha, tipo):
         campos_fraquezas = [
-            ("<:phys:790320130810839101>", ficha[1][0][1]),
-            ("<:gun:790320131028287488>", ficha[1][1][1]),
-            ("<:fire:790320130483421245>", ficha[1][2][1]),
-            ("<:ice:790320130738356224>", ficha[1][3][1]),
-            ("<:elec:790320130151809047>", ficha[1][4][1]),
-            ("<:wind:790320130521169922>", ficha[1][5][1]),
-            ("<:psy:790320130772566046>", ficha[1][6][1]),
-            ("<:nuclear:790320130584084532>", ficha[1][7][1]),
-            ("<:bless:790320130746744892>", ficha[1][8][1]),
-            ("<:curse:790320130387214336>", ficha[1][9][1]),
-            ("<:almighty:790320130297954374>", ficha[1][10][1])
+            ("<:phys:790320130810839101>", ficha[tipo][0][1]),
+            ("<:gun:790320131028287488>", ficha[tipo][1][1]),
+            ("<:fire:790320130483421245>", ficha[tipo][2][1]),
+            ("<:ice:790320130738356224>", ficha[tipo][3][1]),
+            ("<:elec:790320130151809047>", ficha[tipo][4][1]),
+            ("<:wind:790320130521169922>", ficha[tipo][5][1]),
+            ("<:psy:790320130772566046>", ficha[tipo][6][1]),
+            ("<:nuclear:790320130584084532>", ficha[tipo][7][1]),
+            ("<:bless:790320130746744892>", ficha[tipo][8][1]),
+            ("<:curse:790320130387214336>", ficha[tipo][9][1]),
+            ("<:almighty:790320130297954374>", ficha[tipo][10][1])
         ]
         return campos_fraquezas
 

@@ -1,4 +1,5 @@
 import math
+import discord
 from discord.ext import commands
 
 from cogs.database import Database
@@ -24,6 +25,7 @@ class Combate(commands.Cog):
         self.party_elem_dano = []
         self.party_mult_crit = []
         self.horda_mult_crit = []
+        self.mestre = 0
     
     @commands.command(name='add_horda')
     async def adicionar_horda(self, ctx, tipo, *personagem):
@@ -108,6 +110,30 @@ class Combate(commands.Cog):
                 await ctx.send("Nome não encontrado.")
         else:
             await ctx.send("Nome não encontrado.")
+    
+    @commands.command(name='resetar_marcadores')
+    async def resetar_marcadores(self, ctx):
+        for i in range(len(self.party)):
+            self.party_mult_atk[i] = 0
+            self.party_mult_def[i] = 0
+            self.party_mult_acc[i] = 0
+            self.party_mult_evs[i] = 0
+            self.party_mult_crit[i] = 0
+        for i in range(len(self.horda)):
+            self.horda_mult_atk[i] = 0
+            self.horda_mult_def[i] = 0
+            self.horda_mult_acc[i] = 0
+            self.horda_mult_evs[i] = 0
+            self.horda_mult_crit[i] = 0
+        await ctx.send("Marcadores resetados!")
+    
+    @commands.command(name='resetar_interacoes')
+    async def resetar_interacoes(self, ctx):
+        for i in range(len(self.party)):
+            self.party_elem_dano[i] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+        for i in range(len(self.horda)):
+            self.horda_elem_dano[i] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+        await ctx.send("Interações resetadas!")
 
     @commands.command(name='party')
     async def mostrar_party(self, ctx):
@@ -252,7 +278,7 @@ class Combate(commands.Cog):
                     informacoes_horda = Mensageiro.informacoes_shadow(nome_horda)
                     fraquezas = informacoes_horda["fraquezas"]
                     atributos_atacante = informacoes_horda["atributos"]
-                    usuario = "Axuáti#9639"
+                    usuario = f'{self.mestre.name}#{self.mestre.discriminator}'
                 else:
                     informacoes_horda = Mensageiro.informacoes_personagem(nome_horda)
                     meelee_atacante = informacoes_horda["meelee"]
@@ -294,8 +320,8 @@ class Combate(commands.Cog):
                     await canal.send(f'**{nome1}** errou o ataque físico  em **{nome2}**')
             else:
                 await ctx.send("Ataque físico cancelado.")
-        except AttributeError:
-            await ctx.send("Ataque cancelado ou Algo está incorreto.")
+        except:
+            await ctx.send(f'*Não foi possível executar o comando. Alguns dos motivos podem ser:*\n\n**Canal do jogador ou dos inimigos não encontrados**.\n*Dica: Cadastre o canal com o comando:* `{self.bot.command_prefix}canal_jogador <nome do personagem> <#canal>` ou `{self.bot.command_prefix}canal_inimigos <#canal>`\n\n**O mestre não foi definido**.\n*Dica: Defina o mestre com o comando:* `{self.bot.command_prefix}mestre <@usuário do mestre>`')
 
     @commands.command(name='tiro')
     async def tiro(self, ctx):
@@ -344,8 +370,8 @@ class Combate(commands.Cog):
                     await canal.send(interacoes[fraquezas[0]])
             else:
                 await canal.send(f'**{nome_party}** errou o tiro em **{nome_horda}**')
-        except AttributeError:
-            await ctx.send("Algo está incorreto.")
+        except:
+            await ctx.send(f'*Não foi possível executar o comando. Alguns dos motivos podem ser:*\n\n**Canal do jogador ou dos inimigos não encontrados**.\n*Dica: Cadastre o canal com o comando:* `{self.bot.command_prefix}canal_jogador <nome do personagem> <#canal>` ou `{self.bot.command_prefix}canal_inimigos <#canal>`\n\n**O mestre não foi definido**.\n*Dica: Defina o mestre com o comando:* `{self.bot.command_prefix}mestre <@usuário do mestre>`')
 
     @commands.command(name='habilidade')
     async def habilidade(self, ctx, bonus=0.0, *habilidade):
@@ -397,7 +423,7 @@ class Combate(commands.Cog):
                                 if informacoes_horda["armadura"] != -1:
                                     armadura_defensor = informacoes_horda["armadura"]
                                 defesa = self.horda_mult_def[defensor-1]
-                                dano_mod = self.horda_elem_dano[defensor-1][elemento]
+                                dano_mod = self.horda_elem_dano[defensor-1][elemento-1]
                                 valor = self.horda_mult_evs[defensor-1]
                                 defensor_info = (defensor, atributos_defensor, armadura_defensor, valor, defesa, dano_mod, fraquezas, nome_horda)
                                 defensores_info.append(defensor_info)
@@ -412,7 +438,7 @@ class Combate(commands.Cog):
                         fraquezas = informacoes_horda["fraquezas"]
                         atributos_atacante = informacoes_horda["atributos"]
                         skills = informacoes_horda["skills"]
-                        usuario = "Axuáti#9639"
+                        usuario = f'{self.mestre.name}#{self.mestre.discriminator}'
                     else:
                         informacoes_horda = Mensageiro.informacoes_personagem(nome_horda)
                         skills = informacoes_horda["skills"]
@@ -429,7 +455,7 @@ class Combate(commands.Cog):
                                 fraquezas = informacoes_party["fraquezas"]
                                 atributos_defensor = informacoes_party["atributos"]
                                 defesa = self.party_mult_def[defensor-1]
-                                dano_mod = self.party_elem_dano[defensor-1][elemento]
+                                dano_mod = self.party_elem_dano[defensor-1][elemento-1]
                                 valor = self.party_mult_evs[defensor-1]
                                 defensor_info = (defensor, atributos_defensor, armadura_defensor, valor, defesa, dano_mod, fraquezas, nome_party)
                                 defensores_info.append(defensor_info)
@@ -444,7 +470,7 @@ class Combate(commands.Cog):
                         valores.append(valor_criterio)
                     texto = ""
                     for valor in valores:
-                        texto += str(valor_criterio) + ", "
+                        texto += str(valor) + ", "
                     texto = texto[:-2]
                     await canal.send(f'Você precisa tirar valor(es) menor(es) que **{texto}** no dado')
                     dados = []
@@ -485,8 +511,76 @@ class Combate(commands.Cog):
                                 await canal.send(f'**{nome1}** errou a habilidade **{nome_skill}** em **{nome2}**')
                 else:
                     await ctx.send("Habilidade cancelada.")
-        except ValueError:
-            await ctx.send("Algo está incorreto.")
+        except:
+            await ctx.send(f'*Não foi possível executar o comando. Alguns dos motivos podem ser:*\n\n**Canal do jogador ou dos inimigos não encontrados**.\n*Dica: Cadastre o canal com o comando:* `{self.bot.command_prefix}canal_jogador <nome do personagem> <#canal>` ou `{self.bot.command_prefix}canal_inimigos <#canal>`\n\n**O mestre não foi definido**.\n*Dica: Defina o mestre com o comando:* `{self.bot.command_prefix}mestre <@usuário do mestre>`')
+
+    @commands.command(name='doenca')
+    async def doenca(self, ctx, bonus=0, *nome_doenca):
+        try:
+            nome_doenca = Reparador.repara_nome(nome_doenca)
+            chance = await self.embed_selecionar_chance(ctx)
+            if chance < 4:
+                afetados_info = []
+                canal = 0
+                nome = ""
+                grupo = await self.embed_selecionar_grupo(ctx)
+                if grupo == 1:
+                    conjurador = await self.embed_selecionar_unico(ctx, "party", "cura") - 1
+                    nome = self.party[conjurador]
+                    canal = self.bot.get_channel(Canal.carregar_canal_jogador(nome))
+                    informacoes_party = Mensageiro.informacoes_personagem(nome)
+                    usuario = informacoes_party["usuario"]
+                    resultado = await self.embed_selecionar_multiplo(ctx, "horda")
+                    afetados = resultado[1]
+                    for afetado in afetados:
+                        nome_horda = self.horda[afetado-1][1]
+                        informacoes_horda = await self.info_horda_defensor(afetado, nome_horda)
+                        sorte_afetado = informacoes_horda["atributos"][6]
+                        valor = self.party_mult_evs[afetado-1]
+                        afetado_info = (afetado, nome_horda, sorte_afetado, valor)
+                        afetados_info.append(afetado_info)
+                elif grupo == 2:
+                    conjurador = await self.embed_selecionar_unico(ctx, "horda", "conjura") - 1
+                    nome = self.horda[conjurador][1]
+                    usuario = f'{self.mestre.name}#{self.mestre.discriminator}'
+                    canal = self.bot.get_channel(Canal.carregar_canal_inimigos())
+                    resultado = await self.embed_selecionar_multiplo(ctx, "party")
+                    afetados = resultado[1]
+                    for afetado in afetados:
+                        nome_party = self.party[afetado-1]
+                        informacoes_party = Mensageiro.informacoes_personagem(self.party[afetado-1])
+                        sorte_afetado = informacoes_party["atributos"][6]
+                        valor = self.party_mult_evs[afetado-1]
+                        afetado_info = (afetado, nome_party, sorte_afetado, valor)
+                        afetados_info.append(afetado_info)
+                if grupo < 3:
+                    valores = []
+                    for afetado_info in afetados_info:
+                        sorte = afetado_info[2]
+                        evasao = afetado_info[3]
+                        valor_criterio = (chance * 5) - ((sorte//10) * 1) - (evasao * 1)
+                        valores.append(valor_criterio)
+                    texto = ""
+                    for valor in valores:
+                        texto += str(valor) + ", "
+                    texto = texto[:-2]
+                    await canal.send(f'Você precisa tirar valor(es) menor(es) que **{texto}** no dado')
+                    dado = await Dado.rolagem_pronta(self.bot, canal, nome, usuario, 1, 100)
+                    i = 0
+                    for valor in valores:
+                        nome_afetado = afetados_info[i][1]
+                        if dado <= valor:
+                            await canal.send(f'**{nome_afetado}** foi contaminado com **{nome_doenca}**')
+                        else:
+                            await canal.send(f'**{nome_afetado}** evitou a contaminação por **{nome_doenca}**')
+                        i += 1
+                else:
+                    await ctx.send("Doença cancelada.")
+            else:
+                await ctx.send("Doença cancelada.")
+        except:
+            await ctx.send(f'*Não foi possível executar o comando. Alguns dos motivos podem ser:*\n\n**Canal do jogador ou dos inimigos não encontrados**.\n*Dica: Cadastre o canal com o comando:* `{self.bot.command_prefix}canal_jogador <nome do personagem> <#canal>` ou `{self.bot.command_prefix}canal_inimigos <#canal>`\n\n**O mestre não foi definido**.\n*Dica: Defina o mestre com o comando:* `{self.bot.command_prefix}mestre <@usuário do mestre>`')
+
 
     @commands.command(name='lider')
     async def lider(self, ctx, personagem):
@@ -498,20 +592,49 @@ class Combate(commands.Cog):
                     await canal.send(f'**{personagem}** foi denominado o líder do grupo.')
                     break
     
+    @commands.command(name='mestre')
+    async def mestre(self, ctx, mestre: discord.User):
+        self.mestre = mestre
+        await ctx.send(f'O mestre agora é {self.mestre.name}#{self.mestre.discriminator}')
+    
     @commands.command(name='marcador')
-    async def marcador(self, ctx, tipo_marcador, tipo_grupo, codigo=0, quant=0):
+    async def marcador(self, ctx, quant=0):
         try:
             canal = 0
+            marc = await self.embed_selecionar_marcador(ctx)
+            ok = await self.embed_selecionar_grupo(ctx)
+            grupos = {
+                1: "party",
+                2: "horda",
+                3: 0
+            }
+            marcadores = {
+                1: "atk",
+                2: "def",
+                3: "acc",
+                4: "evs",
+                5: "crit",
+                6: 0
+            }
+            tipo_grupo = grupos[ok]
+            marcador = marcadores[marc]
+            char = 0
             if tipo_grupo == "party":
-                canal = self.bot.get_channel(Canal.carregar_canal_jogador(self.party[codigo-1]))
+                char = await self.embed_selecionar_unico(ctx, "party", "marcador")
+                canal = self.bot.get_channel(Canal.carregar_canal_jogador(self.party[char-1]))
             elif tipo_grupo == "horda":
                 canal = self.bot.get_channel(Canal.carregar_canal_inimigos())
-            await self.modifica_marcador(ctx, canal, tipo_grupo, tipo_marcador, codigo, quant)
-        except ValueError:
-            await ctx.send("Erro")
+                char = await self.embed_selecionar_unico(ctx, "horda", "marcador")
+            codigo = char - 1
+            if (tipo_grupo != 0 and marcador != 0 and char > 0):
+                await self.modifica_marcador(ctx, canal, tipo_grupo, marcador, codigo, quant)
+            else:
+                await ctx.send("Modificação do marcador cancelada.")
+        except:
+            await ctx.send("*Não foi possível ser executado o comando, digite um número inteiro.")
 
     async def embed_selecionar_grupo(self, ctx):
-        titulo = "Quem vai atacar?"
+        titulo = "Qual grupo será o protagonista?"
         descricao = "Reaja com a opção desejada"
         cor = "azul"
         campos = [(":one:", "Party"), (":two:", "Horda")]
@@ -525,11 +648,16 @@ class Combate(commands.Cog):
             "party": {
                 "ataque": "Qual personagem da Party irá atacar?",
                 "defesa": "Qual personagem da Party será atacado?",
-                "cura": "Quem vai conjurar?"
+                "cura": "Quem vai conjurar?",
+                "interacao": "Quem terá a interação elemental modificada?",
+                "marcador": "Quem terá seu marcador modificado?"
             },
             "horda": {
                 "ataque": "Qual elemento da Horda irá atacar?",
-                "defesa": "Queal da horda será atacado?"
+                "defesa": "Queal da horda será atacado?",
+                "interacao": "Quem terá a interação elemental modificada?",
+                "marcador": "Quem terá seu marcador modificado?",
+                "conjura": "Quem vai conjurar?"
             }
         }
         opcao = -1
@@ -541,6 +669,67 @@ class Combate(commands.Cog):
         campos = info[0]
         reacoes = info[1]
         reacoes.append("❌")
+        embed = EmbedComReacao(self.bot, ctx, titulo, descricao, cor, False, campos, False, reacoes)
+        opcao = await embed.enviar_embed_reacoes()
+        return opcao
+    
+    async def embed_selecionar_elemento(self, ctx):
+        opcao = -1
+        titulo = "Selecione o elemento"
+        cor = "azul"
+        descricao = "Reaja com a opção desejada"
+        campos = []
+        reacoes = ["<:phys:790320130810839101>", "<:gun:790320131028287488>", "<:fire:790320130483421245>", "<:ice:790320130738356224>", "<:elec:790320130151809047>", "<:wind:790320130521169922>", "<:psy:790320130772566046>", "<:nuclear:790320130584084532>", "<:bless:790320130746744892>", "<:curse:790320130387214336>", "<:almighty:790320130297954374>", "❌"]
+        embed = EmbedComReacao(self.bot, ctx, titulo, descricao, cor, False, campos, False, reacoes)
+        opcao = await embed.enviar_embed_reacoes()
+        return opcao
+    
+    async def embed_selecionar_interacao(self, ctx):
+        opcao = -1
+        titulo = "Selecione a interação elemental"
+        cor = "azul"
+        descricao = "Reaja com a opção desejada"
+        reacoes = ["1️⃣", "2️⃣", "3️⃣", "4️⃣", "5️⃣", "6️⃣", "❌"]
+        campos = [
+            (":one:", "Fraco"),
+            (":two:", "Forte"),
+            (":three:", "Nulo"),
+            (":four:", "Drena"),
+            (":five:", "Reflete"),
+            (":six:", "Normal")
+        ]
+        embed = EmbedComReacao(self.bot, ctx, titulo, descricao, cor, False, campos, False, reacoes)
+        opcao = await embed.enviar_embed_reacoes()
+        return opcao
+    
+    async def embed_selecionar_chance(self, ctx):
+        opcao = -1
+        titulo = "Selecione a chance de afetamento"
+        cor = "azul"
+        descricao = "Reaja com a opção desejada"
+        reacoes = ["1️⃣", "2️⃣", "3️⃣","❌"]
+        campos = [
+            (":one:", "Chances baixas"),
+            (":two:", "Chances médias"),
+            (":three:", "Chances altas")
+        ]
+        embed = EmbedComReacao(self.bot, ctx, titulo, descricao, cor, False, campos, False, reacoes)
+        opcao = await embed.enviar_embed_reacoes()
+        return opcao
+    
+    async def embed_selecionar_marcador(self, ctx):
+        opcao = -1
+        titulo = "Selecione o marcador desejado"
+        cor = "azul"
+        descricao = "Reaja com a opção desejada"
+        reacoes = ["1️⃣", "2️⃣", "3️⃣", "4️⃣", "5️⃣", "❌"]
+        campos = [
+            (":one:", "Ataque"),
+            (":two:", "Defesa"),
+            (":three:", "Acurácia"),
+            (":four:", "Evasão"),
+            (":five:", "Crítico")
+        ]
         embed = EmbedComReacao(self.bot, ctx, titulo, descricao, cor, False, campos, False, reacoes)
         opcao = await embed.enviar_embed_reacoes()
         return opcao
@@ -578,7 +767,7 @@ class Combate(commands.Cog):
     async def modifica_marcador(self, ctx, canal, tipo_grupo, marcador, codigo, quant):
         try:
             operador = ""
-            if quant < 0:
+            if quant > 0:
                 operador = "aumentado(a)"
             else:
                 operador = "diminuído(a)"
@@ -670,16 +859,57 @@ class Combate(commands.Cog):
             await ctx.send("Cura cancelada.")
 
     @commands.command(name='interacao')
-    async def interacao(self, ctx, tipo_grupo, codigo=0, elemento=0, tipo_interacao=0):
+    async def interacao(self, ctx):
+        elementos = {
+            1: "Físico",
+            2: "Arma de Fogo",
+            3: "Fogo",
+            4: "Gelo",
+            5: "Elétrico",
+            6: "Vento",
+            7: "Psy",
+            8: "Nuclear",
+            9: "Benção",
+            10: "Maldição",
+            11: "Onipotência"
+        }
+        interacoes = {
+            1: "Fraco",
+            2: "Forte",
+            3: "Nulo",
+            4: "Drena",
+            5: "Reflete",
+            6: "Normal"
+        }
         try:
-            if tipo_grupo == "horda":
-                self.horda_elem_dano[codigo-1][elemento] == tipo_interacao
-            elif tipo_grupo == "party":
-                self.party_elem_dano[codigo-1][elemento] == tipo_interacao
+            ok = await self.embed_selecionar_grupo(ctx)
+            canal = 0
+            if ok == 1:
+                char = await self.embed_selecionar_unico(ctx, "party", "interacao")
+                canal = self.bot.get_channel(Canal.carregar_canal_jogador(self.party[char-1]))
+            elif ok == 2:
+                char = await self.embed_selecionar_unico(ctx, "horda", "interacao")
+                canal = self.bot.get_channel(Canal.carregar_canal_inimigos())
+            if ok < 3:
+                elemento = await self.embed_selecionar_elemento(ctx)
+                if elemento < 12:
+                    intera = await self.embed_selecionar_interacao(ctx)
+                    if intera < 7 and ok == 1:
+                        self.party_elem_dano[char-1][elemento-1] = intera
+                        await canal.send(f'A interação elemental de **{elementos[elemento]}** de **{self.party[char-1]}** foi alterada para **{interacoes[intera]}**')
+                    elif intera < 7 and ok == 2:
+                        self.horda_elem_dano[char-1][elemento-1] = intera
+                        await canal.send(f'A interação elemental de **{elementos[elemento]}** de **{self.horda[char-1][1]}** foi alterada para **{interacoes[intera]}**')
+                    else:
+                        await ctx.send("Mudança de interação cancelada.")
+                else:
+                    await ctx.send("Mudança de interação cancelada.")
             else:
-                await ctx.send("Tipo incorreto.")
+                await ctx.send("Mudança de interação cancelada.")
         except ValueError:
             await ctx.send("Erro")
+        except IndexError:
+            await ctx.send("Mudança de interação cancelada.")
     
     async def definir_valor_criterio(self, ctx, titulo):
         next = 0

@@ -22,6 +22,10 @@ async def on_ready():
     Canal.checar_canais()
     print("Tudo Ok")
 
+@bot.command()
+async def comandos(ctx):
+    await ctx.send("Lista de comandos: https://github.com/ViniciusHora1009/persona-bot/blob/main/comandos.md")
+
 bot.load_extension("cogs.dado")
 bot.load_extension("cogs.ficha")
 bot.load_extension("cogs.item")

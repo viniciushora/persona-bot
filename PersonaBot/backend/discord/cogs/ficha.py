@@ -88,11 +88,12 @@ class Ficha(commands.Cog):
             ]
             embed1 = EmbedComCampos(self.bot, canal, titulo, False, cor, foto, campos, False)
             titulo = "**Fraquezas**"
-            campos = Gerador.gerador_campos_fraquezas(ficha)
+            print(ficha)
+            campos = Gerador.gerador_campos_fraquezas(ficha, 2)
             embed2 = EmbedComCampos(self.bot, canal, titulo, False, cor, False, campos, True)
             await embed1.enviar_embed()
             await embed2.enviar_embed()
-        except TypeError:
+        except:
             await ctx.send("**Ficha não encontrada, digite novamente e corretamente.**")
 
     @commands.command(name='info_shadow')
@@ -141,8 +142,8 @@ class Ficha(commands.Cog):
                 await embed.enviar_embed()
             except TypeError:
                 await ctx.send("**Shadow não encontrada, digite novamente e corretamente.**")
-        except ValueError:
-            await ctx.send("Canal do suporte ainda não registrado.")
+        except:
+            await ctx.send(f'*Não foi possível executar o comando. Alguns dos motivos podem ser:*\n\n**Canal do suporte não encontrado**.\n*Dica: Cadastre o canal com o comando:* `{self.bot.command_prefix}canal_suporte <#canal>`')
 
     @commands.command(name='revelar_afinidade')
     async def revelar_afinidade(self, ctx, *shadow):
@@ -260,7 +261,7 @@ class Ficha(commands.Cog):
             texto = texto[:-1]
             campo_habilidade = [("**Habilidades**", texto)]
             titulo_fraquezas = "**Fraquezas**"
-            campos_fraquezas = Gerador.gerador_campos_fraquezas(ficha)
+            campos_fraquezas = Gerador.gerador_campos_fraquezas(ficha,1)
             atributos_base = Database.atributos(personagem_id, persona_id)
             atributos =  Reparador.valores_atributos(atributos_base)
             atributos_soma = Database.atributos_total("soma", personagem_id)

@@ -591,7 +591,7 @@ personagem_persona.fk_persona_persona_id = %s
         def atributos(personagem_id, persona_id):
                 select_level  = """
 select personagem_persona.nivel from personagem_persona
-where personagem_persona.fk_personagem_personagem_id = %s order by nivel desc limit 1
+where personagem_persona.fk_personagem_personagem_id = %s and personagem_persona.fk_persona_persona_id = %s order by nivel desc limit 1
 """
                 select_atributos_level1 = """
 select atributo.nome, persona_atributo.valor 
@@ -609,7 +609,7 @@ crescimento_atributo.fk_atributo_atributo_id = atributo.atributo_id
 where personagem_persona.fk_persona_persona_id = %s and personagem_persona.fk_personagem_personagem_id = %s
 order by crescimento_atributo.nivel, atributo.atributo_id;
 """
-                cur.execute(select_level,[personagem_id,])
+                cur.execute(select_level,[personagem_id, persona_id,])
                 level = cur.fetchone()
                 level = level[0]
                 cur.execute(select_atributos_level1,[persona_id,])
@@ -941,7 +941,7 @@ delete from persona_habilidade where fk_habilidade_habilidade_id = %s and fk_per
 update persona_habilidade set fk_habilidade_habilidade_id = %s
 where fk_habilidade_habilidade_id = %s and fk_personagem_persona_personagem_persona_id = %s
 """
-                        cur.execute(update,(skill_antiga_id, skill_nova_id, personagem_persona_id,))
+                        cur.execute(update,(skill_nova_id, skill_antiga_id, personagem_persona_id,))
                         conn.commit()
                         return True
                 except:

@@ -30,8 +30,8 @@ class Item(commands.Cog):
                         await ctx.send("**Erro interno**")
             else:
                 await ctx.send(f'**{nome} não existe.**"')
-        except ValueError:
-            await ctx.send("Canal do grupo não registrado.")
+        except:
+            await ctx.send(f'*Não foi possível executar o comando. Alguns dos motivos podem ser:*\n\n**Canal do grupo não encontrado**.\n*Dica: Cadastre o canal com o comando:* `{self.bot.command_prefix}canal_grupo <#canal>`')
 
     @commands.command(name='del_item')
     async def deletar_item(self, ctx, quant, *item):
@@ -53,8 +53,8 @@ class Item(commands.Cog):
                     await ctx.send(f'**{nome}** não encontrado no inventário do grupo.')
             else:
                 await ctx.send(f'**{nome} não existe.**')
-        except ValueError:
-            await ctx.send("Canal do grupo não registrado.")
+        except:
+            await ctx.send(f'*Não foi possível executar o comando. Alguns dos motivos podem ser:*\n\n**Canal do grupo não encontrado**.\n*Dica: Cadastre o canal com o comando:* `{self.bot.command_prefix}canal_grupo <#canal>`')
 
     @commands.command(name='modificar_dinheiro')
     async def modificar_dinheiro(self, ctx, quant):
@@ -71,8 +71,8 @@ class Item(commands.Cog):
                     await ctx.send("Erro interno")
             except:
                 await ctx.send("Valor incorreto")
-        except ValueError:
-            await ctx.send("Canal do grupo não registrado.")
+        except:
+            await ctx.send(f'*Não foi possível executar o comando. Alguns dos motivos podem ser:*\n\n**Canal do grupo não encontrado**.\n*Dica: Cadastre o canal com o comando:* `{self.bot.command_prefix}canal_grupo <#canal>`')
 
     @commands.command(name='setar_dinheiro')
     async def setar_dinheiro(self, ctx, quant):
@@ -87,8 +87,8 @@ class Item(commands.Cog):
                     await ctx.send("Erro interno")
             except:
                 await ctx.send("Valor incorreto")
-        except ValueError:
-            await ctx.send("Canal do grupo não registrado.")
+        except:
+            await ctx.send(f'*Não foi possível executar o comando. Alguns dos motivos podem ser:*\n\n**Canal do grupo não encontrado**.\n*Dica: Cadastre o canal com o comando:* `{self.bot.command_prefix}canal_grupo <#canal>`')
 
     @commands.command(name='drop')
     async def drop(self, ctx, *shadow):
@@ -124,7 +124,7 @@ class Item(commands.Cog):
             embed = EmbedComCampos(self.bot, canal, titulo, descricao, cor, False, campos, False)
             await embed.enviar_embed()
         except ValueError:
-            await ctx.send("Canal do grupo não registrado ou informações do dado erradas.")
+            await ctx.send(f'*Não foi possível executar o comando. Alguns dos motivos podem ser:*\n\n**Canal do grupo não encontrado**.\n*Dica: Cadastre o canal com o comando:* `{self.bot.command_prefix}canal_grupo <#canal>`')
         except TypeError:
             await ctx.send("Shadow não existente.")
 
@@ -158,7 +158,7 @@ class Item(commands.Cog):
             else:
                 await ctx.send("Este personagem não existe.")
         except ValueError:
-            await ctx.send("Canal do jogador não registrado.")
+            await ctx.send(f'*Não foi possível executar o comando. Alguns dos motivos podem ser:*\n\n**Canal do jogador não encontrado**.\n*Dica: Cadastre o canal com o comando:* `{self.bot.command_prefix}canal_jogador <nome do personagem> <#canal>`')
 
     @commands.command(name='desequipar')
     async def desequipar(self, ctx, personagem, *item):
@@ -193,8 +193,8 @@ class Item(commands.Cog):
                     await ctx.send("Este item não existe.")
             else:
                 await ctx.send("Este personagem não existe.")
-        except ValueError:
-            await ctx.send("Canal do jogador não registrado.")
+        except:
+            await ctx.send(f'*Não foi possível executar o comando. Alguns dos motivos podem ser:*\n\n**Canal do jogador não encontrado**.\n*Dica: Cadastre o canal com o comando:* `{self.bot.command_prefix}canal_jogador <nome do personagem> <#canal>`')
 
     @commands.command(name='inventario')
     async def inventario(self, ctx):
@@ -278,8 +278,8 @@ class Item(commands.Cog):
                 campos.append(campo)
             embed = EmbedComCampos(self.bot, canal, titulo, descricao, cor, False, campos, False)
             await embed.enviar_embed()
-        except ValueError:
-            await ctx.send("Canal do grupo não registrado.")
+        except:
+            await ctx.send(f'*Não foi possível executar o comando. Alguns dos motivos podem ser:*\n\n**Canal do grupo não encontrado**.\n*Dica: Cadastre o canal com o comando:* `{self.bot.command_prefix}canal_grupo <#canal>`')
 
 def add_item(quant, item_id):
     contem_item = Database.item_no_inventario2(item_id)

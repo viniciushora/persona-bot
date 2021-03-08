@@ -1,5 +1,7 @@
 # Lista de Comandos
 
+Colchetes "[]" não inclusos.
+
 ## Canais
 
 |                    Comando                    |                        Funcionalidade                        |
@@ -59,19 +61,22 @@
 
 ## Combate
 
-|                           Comando                            |                        Funcionalidade                        |     Canal enviado:     |
-| :----------------------------------------------------------: | :----------------------------------------------------------: | :--------------------: |
-|            p!add_horda [s ou p] [nome do inimigo]            | Adiciona à horda um determinado inimigo, seja Shadow ou personagem. |          ---           |
-|               p!add_party [nome do personagem]               |         Adiciona à party um determinado personagem.          |          ---           |
-|                p!del_horda [nome do inimigo]                 |           Retira da horda um determinado inimigo.            |          ---           |
-|               p!del_party [nome do personagem]               |          Retira da party um determinado personagem.          |          ---           |
-|                           p!party                            |                       Mostra a party.                        |          ---           |
-|                           p!horda                            |                       Mostrar a horda.                       |          ---           |
-|                 p!lider [nome do personagem]                 |          Denomina um personagem como líder da party          |         Grupo          |
-|                      p!calcular_turnos                       |      Cálcula a ordem dos turnos com a horda e a party.       |         Grupo          |
-|                       p!ataque_fisico                        | Escolhe um atacante e um defensor para um ataque físico. O dado é enviado ao atacante. | Inimigos ou Personagem |
-|                            p!tiro                            | Escolhe um atacante da party para executar um tiro no inimigo. O dado é enviado ao atacante. |       Personagem       |
-|          p!habilidade [bônus] [nome da habilidade]           | Escolhe um atacante e um defensor para uma habilidade de dano. O dado é enviado ao atacante. | Inimigos ou Personagem |
-| p!marcador [atk, def, acc, evs ou crit] [party ou horda] [codigo] [quantidade] | Aumenta o diminui o marcador de determinado status de alguém da party ou da horda. | Inimigos ou Personagem |
-|                        p!cura [bônus]                        | Escolhe um conjurador e a habilidade de cura e calcula a cura realizada. | Inimigos ou Personagem |
-| p!interacao [horda ou party] [codigo] [id do elemento] [id da interação] | Define determinada interação elemental para alguém da party ou da horda. |          ---           |
+|                  Comando                  |                        Funcionalidade                        |     Canal enviado:     |
+| :---------------------------------------: | :----------------------------------------------------------: | :--------------------: |
+|  p!add_horda [s ou p] [nome do inimigo]   | Adiciona à horda um determinado inimigo, seja Shadow ou personagem. |          ---           |
+|     p!add_party [nome do personagem]      |         Adiciona à party um determinado personagem.          |          ---           |
+|       p!del_horda [nome do inimigo]       |           Retira da horda um determinado inimigo.            |          ---           |
+|     p!del_party [nome do personagem]      |          Retira da party um determinado personagem.          |          ---           |
+|   p!mestre [@nome do usuário do mestre]   |               Define um usuário como o mestre                |          ---           |
+|   p!lider [nome do personagem do líder]   |            Define um jogador como líder da party.            |         Grupo          |
+|                  p!party                  |                       Mostra a party.                        |          ---           |
+|                  p!horda                  |                       Mostrar a horda.                       |          ---           |
+|       p!lider [nome do personagem]        |          Denomina um personagem como líder da party          |         Grupo          |
+|             p!calcular_turnos             |      Cálcula a ordem dos turnos com a horda e a party.       |         Grupo          |
+|              p!ataque_fisico              | Escolhe um atacante e um defensor para um ataque físico. O dado é enviado ao atacante. | Inimigos ou Personagem |
+|                  p!tiro                   | Escolhe um atacante da party para executar um tiro no inimigo. O dado é enviado ao atacante. |       Personagem       |
+| p!habilidade [bônus] [nome da habilidade] | Escolhe um atacante e um defensor para uma habilidade de dano. O dado é enviado ao atacante. | Inimigos ou Personagem |
+|          p!marcador [quantidade]          | Aumenta o diminui o marcador de determinado status de alguém da party ou da horda. | Inimigos ou Personagem |
+|              p!cura [bônus]               | Escolhe um conjurador e a habilidade de cura e calcula a cura realizada. | Inimigos ou Personagem |
+|     p!doenca [bônus] [nome da doença]     | Escolhe um conjurador de habilidade de doença para afetar um ou mais inimigos. | Inimigos ou Personagem |
+|                p!interacao                | Define determinada interação elemental para alguém da party ou da horda. |          ---           |
