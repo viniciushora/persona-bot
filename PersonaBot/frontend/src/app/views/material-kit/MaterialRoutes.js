@@ -36,9 +36,6 @@ const AppIcon = MatxLoadable({
 const AppButton = MatxLoadable({
     loader: () => import("./buttons/AppButton")
 });
-const AppForm = MatxLoadable({
-    loader: () => import("./forms/AppForm")
-});
 const AppTable = MatxLoadable({
     loader: () => import("./tables/AppTable")
 });
@@ -48,10 +45,6 @@ const materialRoutes = [
     {
         path: "/material/table",
         component: AppTable
-    },
-    {
-        path: "/material/form",
-        component: AppForm
     },
     {
         path: "/material/buttons",

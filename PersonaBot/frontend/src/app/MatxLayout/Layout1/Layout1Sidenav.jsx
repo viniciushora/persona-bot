@@ -4,8 +4,6 @@ import {
   Switch,
   Icon,
   withStyles,
-  MenuItem,
-  Tooltip,
   IconButton,
   MuiThemeProvider
 } from "@material-ui/core";
@@ -15,9 +13,7 @@ import {
   setLayoutSettings,
   setDefaultSettings
 } from "app/redux/actions/LayoutActions";
-import { logoutUser } from "app/redux/actions/UserActions";
 import { withRouter } from "react-router-dom";
-import { MatxMenu } from "matx";
 import Sidenav from "../SharedCompoents/Sidenav";
 import Brand from "../SharedCompoents/Brand";
 import SidenavTheme from "../MatxTheme/SidenavTheme";
@@ -99,63 +95,6 @@ class Layout1Sidenav extends Component {
     </Brand>
   );
 
-  renderUser = () => {
-    let { user } = this.props;
-    return (
-      <div className="sidenav__user">
-        <div className="username-photo">
-          <img src={user.photoURL} alt="user" />
-        </div>
-        <div className="ml-8">
-          <span className="username">
-            {/* <Icon>lock</Icon> */}
-            {user.displayName}
-          </span>
-          <div className="user__menu">
-            <MatxMenu
-              menuButton={
-                <Tooltip title="Settings">
-                  <IconButtonWhite
-                    aria-label="Delete"
-                    className=""
-                    size="small"
-                  >
-                    <IconSmall> settings </IconSmall>
-                  </IconButtonWhite>
-                </Tooltip>
-              }
-            >
-              <MenuItem className="flex flex-middle" style={{ minWidth: 185 }}>
-                <Icon> home </Icon>
-                <span className="pl-16"> Home </span>
-              </MenuItem>
-              <MenuItem className="flex flex-middle" style={{ minWidth: 185 }}>
-                <Icon> settings </Icon>
-                <span className="pl-16"> Account Setting </span>
-              </MenuItem>
-            </MatxMenu>
-
-            <Tooltip title="Profile">
-              <IconButtonWhite aria-label="Delete" className="" size="small">
-                <IconSmall>person</IconSmall>
-              </IconButtonWhite>
-            </Tooltip>
-            <Tooltip title="Sign out">
-              <IconButtonWhite
-                aria-label="Delete"
-                className=""
-                size="small"
-                onClick={this.handleSignOut}
-              >
-                <IconSmall>exit_to_app</IconSmall>
-              </IconButtonWhite>
-            </Tooltip>
-          </div>
-        </div>
-      </div>
-    );
-  };
-
   render() {
     let { theme, settings } = this.props;
     const sidenavTheme =
@@ -169,7 +108,7 @@ class Layout1Sidenav extends Component {
             {(
               <Fragment>
                 {this.renderLogoSwitch()}
-                <Sidenav>{this.renderUser()}</Sidenav>
+                <Sidenav/>
               </Fragment>
             )}
           </div>
@@ -199,8 +138,7 @@ export default withStyles(styles, { withTheme: true })(
   withRouter(
     connect(mapStateToProps, {
       setLayoutSettings,
-      setDefaultSettings,
-      logoutUser
+      setDefaultSettings
     })(Layout1Sidenav)
   )
 );

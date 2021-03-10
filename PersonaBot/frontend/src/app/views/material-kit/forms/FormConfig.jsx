@@ -14,6 +14,8 @@ import "date-fns";
 import api from "../../../services/api";
 import './styles.css';
 
+//var json = require('../../../../discord/config.json');
+
 class FormConfig extends Component {
   state = {
     nome: "",

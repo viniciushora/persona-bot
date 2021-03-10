@@ -1,9 +1,9 @@
 import Mock from "../mock";
+import shortId from "shortid";
 
 let NotificationDB = {
-  list: []
+  list:  []
 };
-
 
 Mock.onGet("/api/notification").reply(config => {
   const response = NotificationDB.list;
@@ -13,8 +13,6 @@ Mock.onGet("/api/notification").reply(config => {
 Mock.onPost("/api/notification/add").reply(config => {
   console.log(config);
   let notification = JSON.parse(config.data);
-
-  console.log(notification)
 
   NotificationDB.list.push(notification);
   const response = NotificationDB.list;

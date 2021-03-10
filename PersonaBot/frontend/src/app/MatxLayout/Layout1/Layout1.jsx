@@ -8,7 +8,6 @@ import { isMdScreen, classList } from "utils";
 import { renderRoutes } from "react-router-config";
 import Layout1Topbar from "./Layout1Topbar";
 import Layout1Sidenav from "./Layout1Sidenav";
-import Footer from "../SharedCompoents/Footer";
 import AppContext from "app/appContext";
 
 
@@ -70,7 +69,6 @@ class Layout1 extends Component {
                     !layout1Settings.topbar.fixed && <Layout1Topbar style={{height: '80px'}} />}
                   <div className="content">{renderRoutes(routes)}</div>
                   <div className="my-auto" />
-                  {settings.footer.show && !settings.footer.fixed && <Footer />}
                 </Scrollbar>
               )}
 
@@ -80,11 +78,9 @@ class Layout1 extends Component {
                     !layout1Settings.topbar.fixed && <Layout1Topbar />}
                   <div className="content">{renderRoutes(routes)}</div>
                   <div className="my-auto" />
-                  {settings.footer.show && !settings.footer.fixed && <Footer />}
                 </div>
               )}
 
-              {settings.footer.show && settings.footer.fixed && <Footer />}
             </div>
           </div>
         )}

@@ -25,11 +25,5 @@ export const MatxLayoutSettings = {
   secondarySidebar: { // Check out Matx pro for secondary sidebar
     show: true,
     theme: "slateDark1" // View all valid theme colors inside MatxTheme/themeColors.js
-  },
-  // Footer options
-  footer: {
-    show: false,
-    fixed: false,
-    theme: "slateDark1" // View all valid theme colors inside MatxTheme/themeColors.js
   }
 };

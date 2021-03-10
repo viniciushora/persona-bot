@@ -61,7 +61,7 @@ class Ficha(commands.Cog):
             escrever_arquivo(info)
             await ctx.send("**Informação atualizada**")
 
-    @commands.command(name='mostrar_ficha')
+    @commands.command(name='persona')
     async def mostrar_ficha(self, ctx,  canal : discord.TextChannel, *persona):
         nome = ""
         nome = Reparador.repara_nome(persona)
@@ -96,7 +96,7 @@ class Ficha(commands.Cog):
         except:
             await ctx.send("**Ficha não encontrada, digite novamente e corretamente.**")
 
-    @commands.command(name='info_shadow')
+    @commands.command(name='shadow')
     async def info_shadow(self, ctx, *shadow):
         try:
             canal = self.bot.get_channel(Canal.carregar_canal_suporte())

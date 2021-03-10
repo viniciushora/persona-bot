@@ -34,7 +34,12 @@ function NotificationBar(props) {
 
   const [panelOpen, setPanelOpen] = React.useState(false);
 
-  setInterval(getNotification, 5000);
+  var looper = setInterval(atualizaMarcador, 5000)
+
+  function atualizaMarcador(){
+    getNotification();
+    clearInterval(looper);
+  }
 
   function handleDrawerToggle() {
     if (!panelOpen) {

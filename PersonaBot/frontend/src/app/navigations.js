@@ -48,7 +48,7 @@ export const navigations = [
 
   {
     name: "Configurações",
-    path: "/naoexiste",
+    path: "/config",
     icon: "settings"
   },
   
