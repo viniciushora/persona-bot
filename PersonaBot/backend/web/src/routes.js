@@ -12,6 +12,7 @@ const HabilidadePersonaController = require('./controllers/HabilidadePersonaCont
 const ReacaoElementalController = require('./controllers/ReacaoElementalController');
 const PersonaAtributoController = require('./controllers/PersonaAtributoController');
 const PersonaHabilidadeController = require('./controllers/PersonaHabilidadeController');
+const ConfigController = require('./controllers/ConfigController');
 
 const routes = express.Router();
 
@@ -20,6 +21,8 @@ routes.get('/persona', PersonaController.index);
 routes.get('/persona-ultimo-id', PersonaController.ultimoId);
 
 routes.post('/persona-nivel', PersonaController.selectNivel);
+
+routes.post('/bot-config', ConfigController.write);
 
 routes.post('/persona', PersonaController.create);
 

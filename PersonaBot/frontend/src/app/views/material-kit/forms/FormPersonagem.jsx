@@ -61,12 +61,6 @@ class FormPersonagem extends Component {
             return false;
         }
     });
-      ValidatorForm.addValidationRule("isPasswordMatch", value => {
-        if (value !== this.state.password) {
-          return false;
-        }
-        return true;
-      });
     }
 
   Personas() {
@@ -103,11 +97,6 @@ class FormPersonagem extends Component {
       }
     }
     return habilidades;
-  }
-
-  componentWillUnmount() {
-    // remove rule when it is not needed
-    ValidatorForm.removeValidationRule("isPasswordMatch");
   }
 
   handleSubmit = async event => {
@@ -190,6 +179,9 @@ class FormPersonagem extends Component {
       }
 
       await api.post('persona_habilidade', data4);
+
+      this.setState({ personagemUltimoId: this.state.personagemUltimoId + 1 });
+      this.setState({ personagemPersonaUltimoId: this.state.personagemPersonaUltimoId + 1 });
 
       let notification = {
         id: shortId.generate(),

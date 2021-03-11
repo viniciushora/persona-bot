@@ -14,17 +14,15 @@ import "date-fns";
 import api from "../../../services/api";
 import './styles.css';
 
-//var json = require('../../../../discord/config.json');
+var json = require('../../../../bot/config.json');
 
 class FormConfig extends Component {
   state = {
-    nome: "",
-    fk_atributo_atributo_id: 0,
-    fk_intensidade_intensidade_id: 0,
-    fk_elemento_elemento_id: 0,
-    vezes: ""
+    token: json.token,
+    prefix: json.prefix,
+    novo_token: json.token,
+    novo_prefix: json.prefix
   };
-
 
   componentDidMount() {
     // custom rule will have name 'isPasswordMatch'
@@ -49,212 +47,152 @@ class FormConfig extends Component {
             return false;
         }
     });
-    ValidatorForm.addValidationRule("isPasswordMatch", value => {
-      if (value !== this.state.password) {
-        return false;
+  }
+    salvarJson(){
+      var obj = {
+        "token": this.state.token,
+        "prefix": this.state.prefix,
+        "dbname": json.dbname,
+        "user": json.user,
+        "host": json.host,
+        "password": json.password
       }
-      return true;
-    });
-  }
-
-
-  componentWillUnmount() {
-    // remove rule when it is not needed
-    ValidatorForm.removeValidationRule("isPasswordMatch");
-  }
-
-  handleSubmit = async event => {
-    console.log("submitted");
-
-    try{
-        const nome = this.state.nome;
-        const fk_atributo_atributo_id = this.state.fk_atributo_atributo_id;
-        const fk_intensidade_intensidade_id = this.state.fk_intensidade_intensidade_id;
-        const fk_elemento_elemento_id = this.state.fk_elemento_elemento_id;
-        const vezes = this.state.vezes;
-
-        const data = {
-            nome,
-            fk_atributo_atributo_id,
-            fk_intensidade_intensidade_id,
-            fk_elemento_elemento_id,
-            vezes
-        };
-
-        await api.post('habilidade', data);
-
-
-        let notification = {
-            id: shortId.generate(),
-            heading: "Cadastro",
-            icon: {
-            name: "description",
-            color: "primary"
-            },
-            timestamp: Date.now(),
-            title: "Habilidade cadastrada com sucesso.",
-            subtitle: "Nome = " + nome + "; Elemento: " + fk_elemento_elemento_id + "; Intensidade: " + fk_intensidade_intensidade_id,
-            path: "/"
-        }
-
-      axios.post("/api/notification/add", notification);
-
-    } catch (err) {
-        let notification = {
-            id: shortId.generate(),
-            heading: "Cadastro",
-            icon: {
-              name: "warning",
-              color: "primary"
-            },
-            timestamp: Date.now(),
-            title: "Erro no cadastro da Habilidade",
-            subtitle: "Tente novamente, alguma informação foi enviada com erros.",
-            path: "/"
-        }
-
-        axios.post("/api/notification/add", notification);
-
-        }
-    };
+      api.post("/api/bot-config", obj);
+    }
 
     handleChange = event => {
-        event.persist();
-        this.setState({ [event.target.name]: event.target.value });
+      event.persist();
+      this.setState({ [event.target.name]: event.target.value });
     };
 
-    handleChangeSelectElemento = (selectedOption) => {
-        this.setState({ fk_elemento_elemento_id : selectedOption.value });
+    handleChangeToken(token) {
+        this.setState({ token: token });
+        this.setState({ novoToken: token });
     };
 
-    handleChangeSelectIntensidade = (selectedOption) => {
-        this.setState({ fk_intensidade_intensidade_id : selectedOption.value });
+    handleChangePrefix(prefix) {
+      this.setState({ prefix: prefix });
+      this.setState({ novo_prefix: prefix });
     };
 
-    handleChangeSelectAtributo = (selectedOption) => {
-        this.setState({ fk_atributo_atributo_id : selectedOption.value });
-    };
+    edicaoToken = (token) => {
+      if (document.getElementById("campo1").disabled == true) {
+        document.getElementById("campo1").disabled = false;
+        document.getElementById("campo1").classList.add('aberto');
+        document.getElementById("cancelar1").style.display = "block";
+      } else {
+        document.getElementById("campo1").disabled = true;
+        document.getElementById("campo1").classList.remove('aberto');
+        document.getElementById("cancelar1").style.display = "none";
+        this.handleChangeToken(token);
+        this.salvarJson();
+        let notification = {
+          id: shortId.generate(),
+          heading: "Configurações",
+          icon: {
+          name: "settings",
+          color: "primary"
+          },
+          timestamp: Date.now(),
+          title: "Token do Bot atualizado",
+          subtitle: "Novo token = " + this.state.token,
+          path: "/"
+        }
+        axios.post("/api/notification/add", notification);
+      }
+    }
+
+    edicaoPrefix = (prefix) => {
+      if (document.getElementById("campo2").disabled == true) {
+        document.getElementById("campo2").disabled = false;
+        document.getElementById("campo2").classList.add('aberto');
+        document.getElementById("cancelar2").style.display = "block";
+      } else {
+        document.getElementById("campo2").disabled = true;
+        document.getElementById("campo2").classList.remove('aberto');
+        document.getElementById("cancelar2").style.display = "none";
+        this.handleChangePrefix(prefix);
+        this.salvarJson();
+        let notification = {
+          id: shortId.generate(),
+          heading: "Configurações",
+          icon: {
+          name: "settings",
+          color: "primary"
+          },
+          timestamp: Date.now(),
+          title: "Prefixo do Bot atualizado",
+          subtitle: "Novo prefixo = " + prefix,
+          path: "/"
+        }
+        axios.post("/api/notification/add", notification);
+      }
+    }
+
+    cancelarToken = event => {
+      event.persist();
+      document.getElementById("campo1").disabled = true;
+      document.getElementById("campo1").classList.remove('aberto');
+      document.getElementById("cancelar1").style.display = "none";
+      this.setState({ novo_token: this.state.token });
+    }
+
+    cancelarPrefix = event => {
+      event.persist();
+      document.getElementById("campo2").disabled = true;
+      document.getElementById("campo2").classList.remove('aberto');
+      document.getElementById("cancelar2").style.display = "none";
+      this.setState({ novo_prefix: this.state.prefix });
+    }
 
   render() {
     let {
-        nome,
-        fk_atributo_atributo_id,
-        fk_intensidade_intensidade_id,
-        fk_elemento_elemento_id,
-        vezes
+      novo_token,
+      novo_prefix
     } = this.state;
-
-    let options_atributo = [
-        {value: 3, label: "Força (St)"},
-        {value: 4, label: "Magia (Ma)"},
-        {value: 5, label: "Resistência (En)"},
-        {value: 6, label: "Agilidade (Ag)"},
-        {value: 7, label: "Sorte (Lu)"}
-    ]
-
-    let options_intensidade = [
-        {value: 1, label: "Minúsculo"},
-        {value: 2, label: "Leve"},
-        {value: 3, label: "Médio"},
-        {value: 4, label: "Pesado"},
-        {value: 5, label: "Severo"},
-        {value: 6, label: "Colossal"},
-        {value: 7, label: "Outro"}
-    ]
-
-    let options_elemento = [
-        {value: 1, label: "Físico"},
-        {value: 2, label: "Arma de Fogo"},
-        {value: 3, label: "Fogo"},
-        {value: 4, label: "Gelo"},
-        {value: 5, label: "Elétrico"},
-        {value: 6, label: "Vento"},
-        {value: 7, label: "Psicocinésia (Psy)"},
-        {value: 8, label: "Nuclear"},
-        {value: 9, label: "Benção"},
-        {value: 10, label: "Maldição"},
-        {value: 11, label: "Onipotência"},
-        {value: 12, label: "Doença"},
-        {value: 13, label: "Cura"},
-        {value: 14, label: "Suporte"},
-        {value: 15, label: "Passiva"},
-        {value: 16, label: "Navegação"}
-    ]
 
     return (
       <div>
         <ValidatorForm
           ref="form"
-          onSubmit={this.handleSubmit}
           onError={errors => null}
         >
           <Grid container spacing={6}>
             <Grid item lg={6} md={6} sm={12} xs={12}>
-                <h5>Informações Gerais</h5>
               <TextValidator
                 className="mb-16 w-100"
-                label="Nome da Habilidade"
+                label="Token do Bot"
+                id="campo1"
+                type="text"
+                onChange={this.handleChange}
+                name="novo_token"
+                value={novo_token}
+                disabled
+              />
+              <Button id="cancelar1" className="botoes-config fix4 invi" color="secondary" variant="contained" onClick={this.cancelarToken}>
+                <Icon>cancel</Icon>
+              </Button>
+              <Button className="botoes-config fix3" color="primary" variant="contained" onClick={() => this.edicaoToken(novo_token)}>
+                <Icon>edit</Icon>
+              </Button>
+              <TextValidator
+                className="mb-16 w-100"
+                label="Prefixo do Bot"
+                disabled
+                id ="campo2"
                 onChange={this.handleChange}
                 type="text"
-                name="nome"
-                value={nome}
-                validators={[
-                  "required",
-                  "minStringLength: 2",
-                  "maxStringLength: 50"
-                ]}
-                errorMessages={["Este campo é obrigatório"]}
+                name="novo_prefix"
+                value={novo_prefix}
               />
-              <InputLabel>Elemento da Habilidade</InputLabel>
-              <Select
-                className="mb-16 w-100"
-                label="Elemento da Habilidade"
-                onChange={this.handleChangeSelectElemento}
-                name="fk_elemento_elemento_id"
-                validators={["required"]}
-                options={options_elemento}
-                errorMessages={["Este campo é obrigatório"]}
-              />
-              <InputLabel>Intensidade da Habilidade</InputLabel>
-              <Select
-                className="mb-16 w-100"
-                label="Intensidade da Habilidade"
-                onChange={this.handleChangeSelectIntensidade}
-                name="fk_intensidade_intensidade_id"
-                validators={["required"]}
-                options={options_intensidade}
-                errorMessages={["Este campo é obrigatório"]}
-              />
-              <InputLabel>Atributo da Habilidade</InputLabel>
-              <Select
-                className="mb-16 w-100"
-                label="Atributo da Habilidade"
-                onChange={this.handleChangeSelectAtributo}
-                name="fk_atributo_atributo_id"
-                validators={["required"]}
-                options={options_atributo}
-                errorMessages={["Este campo é obrigatório"]}
-              />
-                <TextValidator
-                    className="mb-16 w-100"
-                    label="Vezes de ocorrência"
-                    onChange={this.handleChange}
-                    type="number"
-                    name="vezes"
-                    value={vezes}
-                    validators={["required", "isNumber", "isInteger", "isPositive"]}
-                    errorMessages={["Este campo é obrigatório", "Este campo deve ser um número", "O valor do número deve ser um inteiro", "O valor deve ser positivo"]}
-                />
+              <Button id="cancelar2" className="botoes-config fix4 invi" color="secondary" variant="contained" onClick={this.cancelarPrefix}>
+                <Icon>cancel</Icon>
+              </Button>
+              <Button className="botoes-config fix3" color="primary" variant="contained" onClick={() => this.edicaoPrefix(novo_prefix)}>
+                <Icon>edit</Icon>
+              </Button>
             </Grid>
           </Grid>
-          <Button color="primary" variant="contained" type="submit">
-            <Icon>send</Icon>
-            <span className="pl-8 capitalize">Cadastrar</span>
-          </Button>
-          <Button onClick={this.limparCampos} className="fix2" color="primary" variant="contained">
-            <Icon>delete_sweep</Icon>
-            <span className="pl-8 capitalize">Limpar campos</span>
-          </Button>
         </ValidatorForm>
       </div>
     );

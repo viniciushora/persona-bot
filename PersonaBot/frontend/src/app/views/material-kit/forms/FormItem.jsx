@@ -53,18 +53,6 @@ class FormItem extends Component {
             return false;
         }
     });
-    ValidatorForm.addValidationRule("isPasswordMatch", value => {
-      if (value !== this.state.password) {
-        return false;
-      }
-      return true;
-    });
-  }
-
-
-  componentWillUnmount() {
-    // remove rule when it is not needed
-    ValidatorForm.removeValidationRule("isPasswordMatch");
   }
 
   handleSubmit = async event => {

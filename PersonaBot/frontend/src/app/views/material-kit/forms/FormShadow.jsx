@@ -62,12 +62,6 @@ class FormShadow extends Component {
             return false;
         }
     });
-    ValidatorForm.addValidationRule("isPasswordMatch", value => {
-      if (value !== this.state.password) {
-        return false;
-      }
-      return true;
-    });
   }
 
   Personas() {
@@ -77,11 +71,6 @@ class FormShadow extends Component {
 
   Itens() {
     api.get('item').then(response => { this.setState( { itens: response.data } )});
-  }
-
-  componentWillUnmount() {
-    // remove rule when it is not needed
-    ValidatorForm.removeValidationRule("isPasswordMatch");
   }
 
   handleSubmit = async event => {
