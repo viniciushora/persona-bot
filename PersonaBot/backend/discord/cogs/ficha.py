@@ -151,7 +151,7 @@ class Ficha(commands.Cog):
         nome = Reparador.repara_nome(shadow)
         descricao = "Reaja com o elemento desejado (:arrow_up_small: para revelação completa)"
         cor = "azul"
-        shadow_id = Database.shadow_id(nome)
+        shadow_id = Database.shadow_persona_id(nome)
         info = {}
         if shadow_id != False:
             info = ler_arquivo()
@@ -184,7 +184,7 @@ class Ficha(commands.Cog):
         descricao = "Reaja com o elemento desejado (:arrow_up_small: para revelação completa)"
         cor = "azul"
         nome = Reparador.repara_nome(shadow)
-        shadow_id = Database.shadow_id(nome)
+        shadow_id = Database.shadow_persona_id(nome)
         info = {}
         if shadow_id != False:
             info = ler_arquivo()

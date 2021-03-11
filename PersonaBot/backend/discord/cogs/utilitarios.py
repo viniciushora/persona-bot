@@ -18,7 +18,7 @@ class Ordenacao:
         Ordenacao.insertion_sort(quant1, ordem1)
         for tipo, char in horda:
             if tipo == "s":
-                shadow_id = Database.shadow_id(char)
+                shadow_id = Database.shadow_persona_id(char)
                 atributos = Database.atributos_iniciais(shadow_id)
                 agilidade = atributos[5]
                 ordem2.append(char)
@@ -49,7 +49,7 @@ class Ordenacao:
             quant.append(agilidade)
         for tipo, char in horda:
             if tipo == "s":
-                shadow_id = Database.shadow_id(char)
+                shadow_id = Database.shadow_persona_id(char)
                 atributos = Database.atributos_iniciais(shadow_id)
                 agilidade = atributos[5]
             else:
@@ -200,7 +200,7 @@ class Mensageiro:
     @staticmethod
     def informacoes_shadow(nome):
         informacoes = {}
-        shadow_id = Database.shadow_id(nome)
+        shadow_id = Database.shadow_persona_id(nome)
         fraquezas = Database.fraquezas(shadow_id)
         atributos_base = Database.atributos_iniciais(shadow_id)
         atributos_somados = Reparador.valores_atributos(atributos_base)

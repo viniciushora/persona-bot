@@ -32,8 +32,8 @@ class Combate(commands.Cog):
         nome = ""
         nome = Reparador.repara_nome(personagem)
         id_controlador = {
-            "s": Database.shadow_id,
-            "shadow": Database.shadow_id,
+            "s": Database.shadow_persona_id,
+            "shadow": Database.shadow_persona_id,
             "p": Database.personagem_id,
             "personagem": Database.personagem_id
         }
@@ -825,7 +825,7 @@ class Combate(commands.Cog):
             if conjurador < 6:
                 nome = self.horda[conjurador-1][1]
                 if self.horda[conjurador-1][0] == "s":
-                    shadow_id = Database.shadow_id(self.horda[conjurador-1][1])
+                    shadow_id = Database.shadow_persona_id(self.horda[conjurador-1][1])
                     atributos_base = Database.atributos_iniciais(shadow_id)
                     atributos_conjurador = Reparador.valores_atributos(atributos_base)
                 else:

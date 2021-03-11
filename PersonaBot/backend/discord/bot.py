@@ -1,14 +1,10 @@
-import json
-
 from cogs.canal import Canal
 from cogs.ficha import Ficha
+from cogs.database import Database
 
 from discord.ext import commands
 
-f = open('config.json')
-data = json.load(f)
-
-bot = commands.Bot(command_prefix=data['prefix'])
+bot = commands.Bot(command_prefix=Database.prefix())
 bot.remove_command("help")
 
 @bot.event
@@ -32,4 +28,4 @@ bot.load_extension("cogs.item")
 bot.load_extension("cogs.persona")
 bot.load_extension("cogs.canal")
 bot.load_extension("cogs.combate")
-bot.run(data['token'])
+bot.run(Database.token())
