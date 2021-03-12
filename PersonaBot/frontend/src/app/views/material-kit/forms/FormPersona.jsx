@@ -74,10 +74,10 @@ class FormPersona extends Component {
     this.setState({ habilidadesPersona : [] });
   }
 
-  componentDidMount() {
+  async componentDidMount() {
     // custom rule will have name 'isPasswordMatch'
-    this.Habilidades();
-    this.PersonaId();
+    await this.Habilidades();
+    await this.PersonaId();
     ValidatorForm.addValidationRule("isPositive", value => {
         if (Number(value) > 0){
             return true;
@@ -94,13 +94,13 @@ class FormPersona extends Component {
     });
   }
 
-  Habilidades() {
-    api.get('habilidade').then(response => { this.setState( { habilidades: response.data} )});
+  async Habilidades() {
+    await api.get('habilidade').then(response => { this.setState( { habilidades: response.data} )});
   };
 
 
-  PersonaId() {
-    api.get('persona-ultimo-id').then(response => { this.setState( { personaUltimoId: response.data } )});
+  async PersonaId() {
+    await api.get('persona-ultimo-id').then(response => { this.setState( { personaUltimoId: response.data } )});
   }
 
   handleSubmit = async event => {

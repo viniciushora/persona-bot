@@ -27,7 +27,8 @@ class FormShadow extends Component {
     personas: [],
     itens: [],
     chances: [],
-    dropItens: []
+    dropItens: [],
+    shadowUltimoId: 0
   };
 
   limparCampos = event => {
@@ -36,11 +37,12 @@ class FormShadow extends Component {
     this.setState({ chances : [] });
     this.setState({ dropItens : [] });
   }
-
-  componentDidMount() {
+ 
+  async componentDidMount() {
     // custom rule will have name 'isPasswordMatch'
-    this.Personas();
-    this.Itens();
+    await this.Personas();
+    await this.Itens();
+    await this.shadowUltimoId();
     ValidatorForm.addValidationRule("isPositive", value => {
         if (Number(value) >= 0){
             return true;
@@ -64,13 +66,17 @@ class FormShadow extends Component {
     });
   }
 
-  Personas() {
-    api.get('persona').then(response => { this.setState( { personas: response.data} )});
+  async Personas() {
+    await api.get('persona').then(response => { this.setState( { personas: response.data} )});
   };
 
 
-  Itens() {
-    api.get('item').then(response => { this.setState( { itens: response.data } )});
+  async Itens() {
+    await api.get('item').then(response => { this.setState( { itens: response.data } )});
+  }
+
+  async ShadowId(){
+    await api.get('shadow-ultimo-id').then(response => { this.setState( { shadowUltimoId: response.data } )});
   }
 
   handleSubmit = async event => {
@@ -95,15 +101,17 @@ class FormShadow extends Component {
 
         await api.post('shadow', data);
 
-        const fk_shadow_fk_persona_persona_id = fk_persona_persona_id;
+        const fk_shadow_shadow_id = this.state.shadowUltimoId + 1;
 
         const data2 = {
-            fk_shadow_fk_persona_persona_id,
+            fk_shadow_shadow_id,
             chances,
             dropItens
         }
 
         await api.post('drop', data2);
+
+        this.setState({ shadowUltimoId: this.state.shadowUltimoId + 1 });
 
         let notification = {
             id: shortId.generate(),

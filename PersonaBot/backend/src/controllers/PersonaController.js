@@ -27,6 +27,7 @@ module.exports = {
     },
 
     async ultimoId (request, response) {
+        try {
 
         const persona = await connection('persona')
         .select('persona_id')
@@ -37,6 +38,11 @@ module.exports = {
         const result = persona.persona_id;
 
         return response.json(result);
+        } catch {
+            const result = 0;
+            
+            return response.json(result);
+        }
     },
 
     async create(request, response) {

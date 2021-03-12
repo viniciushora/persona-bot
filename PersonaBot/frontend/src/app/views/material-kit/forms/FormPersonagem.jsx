@@ -41,12 +41,12 @@ class FormPersonagem extends Component {
     this.setState({ energia : "" });
   }
 
-  componentDidMount() {
+  async componentDidMount() {
     // custom rule will have name 'isPasswordMatch'
-    this.Personas();
-    this.PersonagemId();
-    this.PersonagemPersonaId();
-    this.HabilidadesPersona();
+    await this.Personas();
+    await this.PersonagemId();
+    await this.PersonagemPersonaId();
+    await this.HabilidadesPersona();
     ValidatorForm.addValidationRule("isPositive", value => {
       if (Number(value) > 0){
           return true;
@@ -63,20 +63,20 @@ class FormPersonagem extends Component {
     });
     }
 
-  Personas() {
-    api.get('persona').then(response => { this.setState( { personas: response.data} )});
+  async Personas() {
+    await api.get('persona').then(response => { this.setState( { personas: response.data} )});
   };
 
-  PersonagemId() {
-    api.get('personagem-ultimo-id').then(response => { this.setState( { personagemUltimoId: response.data } )});
+  async PersonagemId() {
+    await api.get('personagem-ultimo-id').then(response => { this.setState( { personagemUltimoId: response.data } )});
   }
 
-  PersonagemPersonaId() {
-    api.get('personagem_persona-ultimo-id').then(response => { this.setState( { personagemPersonaUltimoId: response.data } )});
+  async PersonagemPersonaId() {
+    await api.get('personagem_persona-ultimo-id').then(response => { this.setState( { personagemPersonaUltimoId: response.data } )});
   }
 
-  HabilidadesPersona() {
-    api.get('skills').then(response => { this.setState( { habilidadesPersona: response.data } )});
+  async HabilidadesPersona() {
+    await api.get('skills').then(response => { this.setState( { habilidadesPersona: response.data } )});
   }
 
   nivelPersona(persona_id) {
@@ -150,6 +150,12 @@ class FormPersonagem extends Component {
       await api.post('personagem', data);
 
       const fk_personagem_personagem_id = this.state.personagemUltimoId + 1;
+
+      const datinha = {
+        fk_personagem_personagem_id
+      }
+
+      await api.post('crescimento_atributo', datinha);
 
       nivel = this.nivelPersona(fk_persona_persona_id)
 

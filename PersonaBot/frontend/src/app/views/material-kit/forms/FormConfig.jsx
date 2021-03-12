@@ -14,18 +14,22 @@ import "date-fns";
 import api from "../../../services/api";
 import './styles.css';
 
-var json = require('../../../../bot/config.json');
-
 class FormConfig extends Component {
   state = {
-    token: json.token,
-    prefix: json.prefix,
-    novo_token: json.token,
-    novo_prefix: json.prefix
+    config: [],
+    token: "",
+    prefix: "",
+    novo_token: "",
+    novo_prefix: ""
   };
 
-  componentDidMount() {
-    // custom rule will have name 'isPasswordMatch'
+  async componentDidMount() {
+    await this.Config();
+    let config = this.state.config;
+    this.setState({token: config[0].token});
+    this.setState({prefix: config[0].prefix});
+    this.setState({novo_token: config[0].token});
+    this.setState({novo_prefix: config[0].prefix});
     ValidatorForm.addValidationRule("isPositive", value => {
         if (Number(value) >= 0){
             return true;
@@ -48,16 +52,8 @@ class FormConfig extends Component {
         }
     });
   }
-    salvarJson(){
-      var obj = {
-        "token": this.state.token,
-        "prefix": this.state.prefix,
-        "dbname": json.dbname,
-        "user": json.user,
-        "host": json.host,
-        "password": json.password
-      }
-      api.post("/api/bot-config", obj);
+    async Config(){
+      await api.get('config').then(response => { this.setState( { config: response.data} )});
     }
 
     handleChange = event => {
@@ -65,17 +61,27 @@ class FormConfig extends Component {
       this.setState({ [event.target.name]: event.target.value });
     };
 
-    handleChangeToken(token) {
-        this.setState({ token: token });
-        this.setState({ novoToken: token });
+    handleChangeToken(parToken) {
+        this.setState({ token: parToken });
+        this.setState({ novoToken: parToken });
+        let token = parToken;
+        let data1 = {
+          token
+        }
+        api.post('config/token', data1).then(data => data);
     };
 
-    handleChangePrefix(prefix) {
-      this.setState({ prefix: prefix });
-      this.setState({ novo_prefix: prefix });
-    };
+    handleChangePrefix(parPrefix) {
+      this.setState({ prefix: parPrefix });
+      this.setState({ novo_prefix: parPrefix });
+      let prefix = parPrefix;
+      let data2 = {
+        prefix
+      }
+      api.post('config/prefix', data2).then(data => data);
+    }
 
-    edicaoToken = (token) => {
+    edicaoToken = (parToken) => {
       if (document.getElementById("campo1").disabled == true) {
         document.getElementById("campo1").disabled = false;
         document.getElementById("campo1").classList.add('aberto');
@@ -84,8 +90,7 @@ class FormConfig extends Component {
         document.getElementById("campo1").disabled = true;
         document.getElementById("campo1").classList.remove('aberto');
         document.getElementById("cancelar1").style.display = "none";
-        this.handleChangeToken(token);
-        this.salvarJson();
+        this.handleChangeToken(parToken);
         let notification = {
           id: shortId.generate(),
           heading: "Configurações",
@@ -95,14 +100,14 @@ class FormConfig extends Component {
           },
           timestamp: Date.now(),
           title: "Token do Bot atualizado",
-          subtitle: "Novo token = " + this.state.token,
+          subtitle: "Novo token = " + parToken,
           path: "/"
         }
         axios.post("/api/notification/add", notification);
       }
-    }
+    };
 
-    edicaoPrefix = (prefix) => {
+    edicaoPrefix = (parPrefix) => {
       if (document.getElementById("campo2").disabled == true) {
         document.getElementById("campo2").disabled = false;
         document.getElementById("campo2").classList.add('aberto');
@@ -111,8 +116,7 @@ class FormConfig extends Component {
         document.getElementById("campo2").disabled = true;
         document.getElementById("campo2").classList.remove('aberto');
         document.getElementById("cancelar2").style.display = "none";
-        this.handleChangePrefix(prefix);
-        this.salvarJson();
+        this.handleChangePrefix(parPrefix);
         let notification = {
           id: shortId.generate(),
           heading: "Configurações",
@@ -122,7 +126,7 @@ class FormConfig extends Component {
           },
           timestamp: Date.now(),
           title: "Prefixo do Bot atualizado",
-          subtitle: "Novo prefixo = " + prefix,
+          subtitle: "Novo prefixo = " + parPrefix,
           path: "/"
         }
         axios.post("/api/notification/add", notification);
@@ -150,6 +154,8 @@ class FormConfig extends Component {
       novo_token,
       novo_prefix
     } = this.state;
+
+    console.log(novo_prefix)
 
     return (
       <div>

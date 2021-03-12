@@ -8,6 +8,7 @@ module.exports = {
     },
 
     async ultimoId (request, response) {
+        try {
 
         const personagem_persona = await connection('personagem_persona')
         .select('personagem_persona_id')
@@ -18,6 +19,11 @@ module.exports = {
         const result = personagem_persona.personagem_persona_id;
 
         return response.json(result);
+        } catch {
+            const result = 0;
+            
+            return response.json(result);
+        }
     },
 
     async create(request, response) {

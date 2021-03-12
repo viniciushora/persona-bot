@@ -22,13 +22,19 @@ routes.get('/persona-ultimo-id', PersonaController.ultimoId);
 
 routes.post('/persona-nivel', PersonaController.selectNivel);
 
-routes.post('/bot-config', ConfigController.write);
+routes.get('/config', ConfigController.index);
+
+routes.post('/config/prefix', ConfigController.editPrefix);
+
+routes.post('/config/token', ConfigController.editToken);
 
 routes.post('/persona', PersonaController.create);
 
 routes.get('/shadow', ShadowController.index);
 
 routes.post('/shadow', ShadowController.create);
+
+routes.get('/shadow-ultimo-id', ShadowController.ultimoId);
 
 routes.get('/item', ItemController.index);
 

@@ -8,7 +8,7 @@ module.exports = {
     },
 
     async create(request, response) {
-        const { fk_shadow_fk_persona_persona_id, chances, dropItens } = request.body;
+        const { fk_shadow_shadow_id, chances, dropItens } = request.body;
         
         var chance = 0;
         var fk_item_item_id = 0;
@@ -18,12 +18,12 @@ module.exports = {
             fk_item_item_id = dropItens[i];
 
             await connection('drop').insert({
-                fk_shadow_fk_persona_persona_id,
+                fk_shadow_shadow_id,
                 fk_item_item_id,
                 chance
             })
         }
 
-        return response.json({ fk_shadow_fk_persona_persona_id });
+        return response.json({ fk_shadow_shadow_id });
     }
 }
