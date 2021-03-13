@@ -1,0 +1,26 @@
+{
+  "name": "personabot",
+  "productName": "PersonaBot",
+  "version": "1.0.0",
+  "description": "",
+  "main": "electron-starter.js",
+  "homepage": "./",
+  "dependencies": {
+    "concurrently": "^6.0.0",
+    "electron-squirrel-startup": "^1.0.0"
+  },
+  "devDependencies": {
+    "electron": "^12.0.1",
+    "electron-packager": "^15.2.0",
+    "foreman": "^3.0.1"
+  },
+  "scripts": {
+    "start": "electron .",
+    "package-mac": "electron-packager . --overwrite --platform=darwin --arch=x64 --icon=assets/icons/mac/icon.icns --prune=true --out=release-builds",
+    "package-win": "electron-packager . personabot --overwrite --asar=true --platform=win32 --arch=ia32 --icon=../imagens/persona-bot-circle.ico --prune=true --out=release-builds --version-string.CompanyName=CE --version-string.FileDescription=CE --version-string.ProductName=\"PersonaBot\"",    
+    "package-linux": "electron-packager . personabot --overwrite --asar=true --platform=linux --arch=x64 --icon=../imagens/persona-bot-circle.ico --prune=true --out=release-builds"
+  },
+  "author": "",
+  "license": "ISC",
+  "config": {}
+}

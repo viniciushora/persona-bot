@@ -4,4 +4,5 @@ node_modules
 ambiente
 __pycache__
 .idea
-
+out
+release-builds

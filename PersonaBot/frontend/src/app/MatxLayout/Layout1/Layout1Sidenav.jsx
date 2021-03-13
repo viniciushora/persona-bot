@@ -38,7 +38,6 @@ const IconSmall = withStyles(() => ({
 class Layout1Sidenav extends Component {
   state = {
     sidenavToggleChecked: false,
-    // hidden: true
   };
 
   componentWillMount() {

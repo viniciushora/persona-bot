@@ -1,12 +1,26 @@
-import psycopg2
-import json
-
-f = open('./config.json')
-data = json.load(f)
-conn = psycopg2.connect(f"""dbname='{data['dbname']}' user='{data['user']}' host='{data['host']}' password='{data['password']}'""")
+import sqlite3
+conn = sqlite3.connect('../../backend/web/src/database/db.sqlite')
 cur = conn.cursor()
 
 class Database:
+        @staticmethod
+        def token():
+                select = """
+select token from config
+"""
+                cur.execute(select)
+                token = cur.fetchone()
+                return token[0]
+
+        @staticmethod
+        def prefix():
+                select = """
+select prefix from config
+"""
+                cur.execute(select)
+                prefix = cur.fetchone()
+                return prefix[0]
+
         @staticmethod
         def ficha_persona(nome):
                 select_atributos = """
@@ -83,9 +97,22 @@ select persona.persona_id from persona inner join shadow on persona.persona_id =
                         return shadows
                 except:
                         return False
+        
+        @staticmethod
+        def shadow__id(shadow):
+                try:
+                        select_shadow = """
+select shadow_id from shadow where codinome = %s
+"""
+                        cur.execute(select_shadow,[shadow,])
+                        elem = cur.fetchone()
+                        shadow_id = elem[0]
+                        return shadow_id
+                except:
+                        return False
 
         @staticmethod
-        def shadow_id(shadow):
+        def shadow_persona_id(shadow):
                 try:
                         select_shadow = """
 select persona.persona_id from persona inner join shadow on persona.persona_id = shadow.fk_persona_persona_id
@@ -149,7 +176,7 @@ where item.item_id = %s
         def add_item_database(item_id, quant):
                 try:
                         insert_item = """
-insert into inventario(quant, fk_item_item_id, fk_grupo_grupo_id) values (%s, %s, 1);
+insert into inventario(quant, fk_item_item_id) values (%s, %s, 1);
 """
                         cur.execute(insert_item,(quant, item_id))
                         conn.commit()
@@ -212,7 +239,7 @@ item.fk_tipo_item_tipo_id = tipo_item.tipo_id;
         @staticmethod
         def dinheiro_grupo():
                 select_dinheiro = """
-select grupo.dinheiro from grupo where grupo.grupo_id = 1;
+select grupo.dinheiro from grupo;
 """
                 cur.execute(select_dinheiro)
                 dinheiro = cur.fetchone()
@@ -234,9 +261,9 @@ update grupo set dinheiro = %s where grupo_id = 1;
         @staticmethod
         def itens_drop(shadow_id):
                 select_drops = """
-select item.item_id, drop.chance from item inner join drop on
-item.item_id = drop.fk_item_item_id
-where drop.fk_shadow_fk_persona_persona_id = %s
+select item.item_id, drops.chance from item inner join drop on
+item.item_id = drops.fk_item_item_id
+where drops.fk_shadow_shadow_id = %s
 """
                 cur.execute(select_drops,(shadow_id,))
                 drops = cur.fetchall()
@@ -249,7 +276,7 @@ where drop.fk_shadow_fk_persona_persona_id = %s
         def dinheiro_exp(shadow_id):
                 select = """
 select shadow.dinheiro, shadow.exp from shadow
-where shadow.fk_persona_persona_id = %s
+where shadow.shadow_id = %s
 """
                 cur.execute(select,(shadow_id,))
                 coisas = cur.fetchall()
@@ -1145,13 +1172,13 @@ where elemento_id = %s
                         return False
 
         @staticmethod
-        def skills_shadow(shadow_id, nivel):
+        def skills_shadow(persona_id, nivel):
                 try:
                         select = """
 select fk_habilidade_habilidade_id from habilidade_persona
 where fk_persona_persona_id = %s and nivel = %s
 """
-                        cur.execute(select,(shadow_id, nivel,))
+                        cur.execute(select,(persona_id, nivel,))
                         skills = cur.fetchall()
                         for i in range(len(skills)):
                                 skills[i] = skills[i][0]

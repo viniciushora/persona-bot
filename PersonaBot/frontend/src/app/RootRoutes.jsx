@@ -6,7 +6,6 @@ import utilitiesRoutes from "./views/utilities/UtilitiesRoutes";
 import sessionRoutes from './views/sessions/SessionRoutes';
 
 import materialRoutes from "./views/material-kit/MaterialRoutes";
-import dragAndDropRoute from "./views/Drag&Drop/DragAndDropRoute";
 
 import formsRoutes from "./views/cadastro/FormsRoutes";
 import configRoutes from "./views/config/ConfigRoutes";

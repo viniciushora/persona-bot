@@ -29,10 +29,6 @@ export { default as RectangleAvatar } from "./components/RectangleAvatar";
 export { default as MatxListItem1 } from "./components/MatxListItem1";
 export { default as MatxSnackbar } from "./components/MatxSnackbar";
 
-export { EchartTheme } from "./theme/EchartTheme";
-export { default as EchartCreator } from "./components/charts/EchartCreator";
-export { default as RechartCreator } from "./components/charts/RechartCreator";
-
 export { default as RichTextEditor } from "./components/RichTextEditor";
 export { default as ConfirmationDialog } from "./components/ConfirmationDialog";
 export { default as MatxProgressBar } from "./components/MatxProgressBar";

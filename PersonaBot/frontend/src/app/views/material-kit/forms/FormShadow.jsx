@@ -39,10 +39,9 @@ class FormShadow extends Component {
   }
  
   async componentDidMount() {
-    // custom rule will have name 'isPasswordMatch'
     await this.Personas();
     await this.Itens();
-    await this.shadowUltimoId();
+    await this.ShadowId();
     ValidatorForm.addValidationRule("isPositive", value => {
         if (Number(value) >= 0){
             return true;
