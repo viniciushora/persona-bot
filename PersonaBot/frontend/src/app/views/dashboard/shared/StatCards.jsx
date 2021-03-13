@@ -12,8 +12,9 @@ const { ipcRenderer } = require('electron');
 
 const { exec } = require('child_process');
 
-function executarBot() {
-  ipcRenderer.exec('cd .. & cd .. && cd .. & cd .. & bot.exe'); 
+async function executarBot() {
+  const res = await ipcRenderer.sendSync('exec');
+  return res;
 }
 
 const StatCards = ({theme}) => {

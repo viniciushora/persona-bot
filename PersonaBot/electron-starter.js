@@ -7,6 +7,7 @@ const BrowserWindow = electron.BrowserWindow;
 
 const path = require('path');
 const url = require('url');
+const exec = require('child_process').exec;
 
 let mainWindow;
 
@@ -15,7 +16,6 @@ function createWindow() {
     mainWindow = new BrowserWindow({width: 800, height: 600});
     mainWindow.setMenu(null);
 
-    const exec = require('child_process').exec;
     const backend = exec('cd backend && npm start');
     const frontend = exec('cd frontend && npm start');
 
@@ -51,6 +51,10 @@ app.on('activate', function () {
     if (mainWindow === null) {
         createWindow()
     }
+});
+
+app.on('exec', async (event) => {
+    exec('cd backend && npm start');
 });
 
 // In this file you can include the rest of your app's specific main process
