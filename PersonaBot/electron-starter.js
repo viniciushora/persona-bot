@@ -1,4 +1,5 @@
 const electron = require('electron');
+const kill = require('kill-port')
 
 // Module to control application life.
 const app = electron.app;
@@ -9,6 +10,9 @@ const path = require('path');
 const url = require('url');
 const exec = require('child_process').exec;
 
+const frontend = exec('npm start');
+const backend = exec('cd backend && npm start');
+
 let mainWindow;
 
 function createWindow() {
@@ -16,17 +20,23 @@ function createWindow() {
     mainWindow = new BrowserWindow({width: 800, height: 600});
     mainWindow.setMenu(null);
 
-    const backend = exec('cd backend && npm start');
-    const frontend = exec('cd frontend && npm start');
+    mainWindow.webContents.openDevTools();
 
     // and load the index.html of the app.
-    mainWindow.loadURL('http://localhost:3000');
+    function carregar() {
+        mainWindow.loadURL('http://localhost:3000')
+    }
+
+    mainWindow.loadFile('index.html');
+    setTimeout(carregar, 15000);
 
     // Emitted when the window is closed.
     mainWindow.on('closed', function () {
         // Dereference the window object, usually you would store windows
         // in an array if your app supports multi windows, this is the time
         // when you should delete the corresponding element.
+        kill(3000, 'tcp').then(console.log).catch(console.log);
+        kill(3333, 'tcp').then(console.log).catch(console.log);
         mainWindow = null
     })
 }
@@ -34,6 +44,7 @@ function createWindow() {
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
+
 app.on('ready', createWindow);
 
 // Quit when all windows are closed.
@@ -53,8 +64,8 @@ app.on('activate', function () {
     }
 });
 
-app.on('exec', async (event) => {
-    exec('cd backend && npm start');
+app.on('ligarBot', async (event) => {
+    exec('cd ..');
 });
 
 // In this file you can include the rest of your app's specific main process

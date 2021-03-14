@@ -7,17 +7,10 @@ import {
   Tooltip,
 } from "@material-ui/core";
 import GitHubIcon from '@material-ui/icons/GitHub';
-
-const { ipcRenderer } = require('electron');
-
-const { exec } = require('child_process');
-
-async function executarBot() {
-  const res = await ipcRenderer.sendSync('exec');
-  return res;
-}
+import electronCommands from '../../../../electronCommands';
 
 const StatCards = ({theme}) => {
+
   return (
     <Grid container spacing={3} className="mb-24">
       <Grid item xs={12} md={6}>
@@ -113,7 +106,7 @@ const StatCards = ({theme}) => {
             </div>
           </div>
           <Tooltip title="Ligar o Bot" placement="top">
-            <IconButton onClick={executarBot}>
+            <IconButton >
               <Icon color="secondary">play_circle_filled</Icon>
             </IconButton>
           </Tooltip>

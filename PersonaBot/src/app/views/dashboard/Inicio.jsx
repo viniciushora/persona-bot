@@ -7,6 +7,8 @@ import {
 import StatCards from "./shared/StatCards";
 import { withStyles } from "@material-ui/styles";
 
+import './styles.css';
+
 class Dashboard1 extends Component {
   state = {};
 
@@ -16,7 +18,7 @@ class Dashboard1 extends Component {
     return (
       <Fragment>
         <div className="pb-86 pt-30 px-30 bg-primary">
-          <img width="20%" height="20%" src="https://raw.githubusercontent.com/ViniciusHora1009/persona-bot/main/imagens/persona-bot-circle.png"/>
+          <img className="centered-image" src="https://raw.githubusercontent.com/ViniciusHora1009/persona-bot/main/imagens/persona-bot-circle.png"/>
         </div>
 
         <div className="analytics m-sm-30 mt--72">
