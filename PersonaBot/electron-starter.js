@@ -11,7 +11,7 @@ const url = require('url');
 const exec = require('child_process').exec;
 
 const frontend = exec('npm start');
-const backend = exec('cd backend && npm start');
+const backend = exec("npx nodemon src/backend/index.js");
 
 let mainWindow;
 
@@ -65,7 +65,7 @@ app.on('activate', function () {
 });
 
 app.on('ligarBot', async (event) => {
-    exec('cd ..');
+    exec('cd src && cd bot && bot.exe');
 });
 
 // In this file you can include the rest of your app's specific main process

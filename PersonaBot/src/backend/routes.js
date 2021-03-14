@@ -13,10 +13,13 @@ const ReacaoElementalController = require('./controllers/ReacaoElementalControll
 const PersonaAtributoController = require('./controllers/PersonaAtributoController');
 const PersonaHabilidadeController = require('./controllers/PersonaHabilidadeController');
 const ConfigController = require('./controllers/ConfigController');
+const BotController = require('./controllers/BotController');
 
 const routes = express.Router();
 
 routes.get('/persona', PersonaController.index);
+
+routes.get('/bot', BotController.ligar);
 
 routes.get('/persona-ultimo-id', PersonaController.ultimoId);
 

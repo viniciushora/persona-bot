@@ -7,9 +7,14 @@ import {
   Tooltip,
 } from "@material-ui/core";
 import GitHubIcon from '@material-ui/icons/GitHub';
-import electronCommands from '../../../../electronCommands';
+
+import api from "../../../services/api";
 
 const StatCards = ({theme}) => {
+
+  async function ligarBot() {
+    await api.get('bot');
+  }
 
   return (
     <Grid container spacing={3} className="mb-24">
@@ -106,7 +111,7 @@ const StatCards = ({theme}) => {
             </div>
           </div>
           <Tooltip title="Ligar o Bot" placement="top">
-            <IconButton >
+            <IconButton onClick={ligarBot}>
               <Icon color="secondary">play_circle_filled</Icon>
             </IconButton>
           </Tooltip>
