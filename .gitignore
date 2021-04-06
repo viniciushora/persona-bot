@@ -1,5 +1,4 @@
 config.json
-knexfile.js
 node_modules
 ambiente
 __pycache__

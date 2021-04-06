@@ -1,5 +1,5 @@
 import Mock from "./mock";
 
-import "./db/notification";
+import "./connections/notification";
 
 Mock.onAny().passThrough();

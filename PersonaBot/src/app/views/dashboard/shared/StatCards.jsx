@@ -8,12 +8,11 @@ import {
 } from "@material-ui/core";
 import GitHubIcon from '@material-ui/icons/GitHub';
 
-import api from "../../../services/api";
+import api from '../../../services/api'
 
 const StatCards = ({theme}) => {
-
   async function ligarBot() {
-    await api.get('bot');
+    await api.get('bot')
   }
 
   return (
@@ -111,8 +110,8 @@ const StatCards = ({theme}) => {
             </div>
           </div>
           <Tooltip title="Ligar o Bot" placement="top">
-            <IconButton onClick={ligarBot}>
-              <Icon color="secondary">play_circle_filled</Icon>
+            <IconButton >
+              <Icon onClick={ligarBot} color="secondary">play_circle_filled</Icon>
             </IconButton>
           </Tooltip>
         </Card>

@@ -1,4 +1,4 @@
-import "../fake-db";
+import "../storage";
 import "../styles/_app.scss";
 import React from "react";
 import { Provider } from "react-redux";

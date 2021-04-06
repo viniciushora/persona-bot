@@ -1,5 +1,5 @@
 const electron = require('electron');
-const kill = require('kill-port')
+const express = require('express');
 
 // Module to control application life.
 const app = electron.app;
@@ -8,33 +8,35 @@ const BrowserWindow = electron.BrowserWindow;
 
 const path = require('path');
 const url = require('url');
-const exec = require('child_process').exec;
-
-const frontend = exec('npm start');
-const backend = exec("npx nodemon src/backend/index.js");
 
 let mainWindow;
 
+const server = require('./backend/server')
+
 function createWindow() {
     // Create the browser window.
-    mainWindow = new BrowserWindow({width: 800, height: 600});
+    mainWindow = new BrowserWindow({
+        height: 563,
+        useContentSize: true,
+        width: 1000,
+        webPreferences: {
+            nodeIntegration: true,
+            contextIsolation: false,
+            enableRemoteModule: true,
+            webSecurity: false
+        },
+    });
     mainWindow.setMenu(null);
 
     // and load the index.html of the app.
-    function carregar() {
-        mainWindow.loadURL('http://localhost:3000')
-    }
 
-    mainWindow.loadFile('index.html');
-    setTimeout(carregar, 15000);
+    mainWindow.loadURL(`file://${__dirname}/build/index.html`)
 
     // Emitted when the window is closed.
     mainWindow.on('closed', function () {
         // Dereference the window object, usually you would store windows
         // in an array if your app supports multi windows, this is the time
         // when you should delete the corresponding element.
-        kill(3000, 'tcp').then(console.log).catch(console.log);
-        kill(3333, 'tcp').then(console.log).catch(console.log);
         mainWindow = null
     })
 }
@@ -63,7 +65,7 @@ app.on('activate', function () {
 });
 
 app.on('ligarBot', async (event) => {
-    exec('cd src && cd bot && bot.exe');
+    spawn('cd bot && bot.exe');
 });
 
 // In this file you can include the rest of your app's specific main process

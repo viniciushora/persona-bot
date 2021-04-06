@@ -1,14 +1,12 @@
-import React, { Component, useState, useEffect } from "react";
+import React, { Component } from "react";
 import shortId from "shortid";
 import { ValidatorForm, TextValidator } from "react-material-ui-form-validator";
 import axios from "axios";
 import {
   Button,
   Icon,
-  Grid,
-  InputLabel
+  Grid
 } from "@material-ui/core";
-import Select from 'react-select'
 import "date-fns";
 
 import api from "../../../services/api";

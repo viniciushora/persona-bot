@@ -1,4 +1,4 @@
-import React, { Component, useState, useEffect } from "react";
+import React, { Component } from "react";
 import shortId from "shortid";
 import { ValidatorForm, TextValidator } from "react-material-ui-form-validator";
 import axios from "axios";
@@ -6,8 +6,7 @@ import {
   Button,
   Icon,
   Grid,
-  InputLabel,
-  MenuItem
+  InputLabel
 } from "@material-ui/core";
 import Select from 'react-select'
 import "date-fns";
@@ -269,8 +268,6 @@ class FormPersonagem extends Component {
       nome,
       usuario,
       foto,
-      fool,
-      fk_persona_persona_id,
       personas,
       vida,
       energia
