@@ -47,6 +47,7 @@ Clique no botão "Add Bot".
 <p align="center">
   <img src="https://github.com/ViniciusHora1009/persona-bot/blob/main/imagens/guia6.PNG">
 </p>
+
 ### 4. Convide o bot ao seu servidor
 
 Para gerar um convite e chamá-lo ao seu servidor vá na sessão OAuth2.
