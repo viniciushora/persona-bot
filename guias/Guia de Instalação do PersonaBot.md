@@ -47,6 +47,7 @@ Clique no botão "Add Bot".
 <p align="center">
   <img src="https://github.com/ViniciusHora1009/persona-bot/blob/main/imagens/guia6.PNG">
 </p>
+### 4. Convide o bot ao seu servidor
 
 Para gerar um convite e chamá-lo ao seu servidor vá na sessão OAuth2.
 
@@ -54,11 +55,20 @@ Para gerar um convite e chamá-lo ao seu servidor vá na sessão OAuth2.
   <img src="https://github.com/ViniciusHora1009/persona-bot/blob/main/imagens/guia7.PNG">
 </p>
 
-Selecione a opção bot e cole o link no navegador. Você será redirecionado para uma página do Discord onde precisará selecionar  o servidor que deseja convidar o bot.
+Selecione a opção bot
 
 <p align="center">
   <img src="https://github.com/ViniciusHora1009/persona-bot/blob/main/imagens/guia8.PNG">
 </p>
+Abaixo selecione a permissão de administrador para o seu bot.
+
+<p align="center">
+  <img src="https://github.com/ViniciusHora1009/persona-bot/blob/main/imagens/guia13.PNG">
+</p>
+
+Cole o link no navegador. Você será redirecionado para uma página do Discord onde precisará selecionar o servidor que deseja convidar o bot.
+
+### 5. Configure o seu bot no painel de controle
 
 Depois do bot já ser um membro do seu servidor, vá na sessão bot da página do desenvolvedor e copie o token.
 
