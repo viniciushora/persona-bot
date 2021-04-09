@@ -21,7 +21,7 @@ O Persona Bot é um bot de Discord criado para auxiliar a execução do meu sist
 | Execução de mecânicas de combate                | Finalizado   |
 | Sistema de canal inteligente dos jogadores      | Finalizado   |
 
-[Convidar o Persona Bot ao meu servidor](https://discord.com/api/oauth2/authorize?client_id=788843258306101279&permissions=8&scope=bot)<br>
+[Baixe o PersonaBot](https://github.com/ViniciusHora1009/persona-bot/releases/tag/v1.0.0-beta)
 
 ## Sobre o Sistema de combate
 O sistema de combate está sendo criado do zero por mim e se encontra hospedado no meu Google Drive.<br>
