@@ -62,6 +62,10 @@ Selecione a opção bot e cole o link no navegador. Você será redirecionado pa
 
 Depois do bot já ser um membro do seu servidor, vá na sessão bot da página do desenvolvedor e copie o token.
 
+<p align="center">
+  <img src="https://github.com/ViniciusHora1009/persona-bot/blob/main/imagens/guia9.PNG">
+</p>
+
 Agora basta voltar ao painel de controle e acessar a aba de configurações.
 
 Adicione o token ao campo token e confirme.
