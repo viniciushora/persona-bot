@@ -56,18 +56,18 @@ Para gerar um convite e chamá-lo ao seu servidor vá na sessão OAuth2.
 
 Selecione a opção bot e cole o link no navegador. Você será redirecionado para uma página do Discord onde precisará selecionar  o servidor que deseja convidar o bot.
 
-Depois do bot já ser um membro do seu servidor, vá na sessão bot da página do desenvolvedor e copie o token.
-
 <p align="center">
   <img src="https://github.com/ViniciusHora1009/persona-bot/blob/main/imagens/guia8.PNG">
 </p>
+
+Depois do bot já ser um membro do seu servidor, vá na sessão bot da página do desenvolvedor e copie o token.
 
 Agora basta voltar ao painel de controle e acessar a aba de configurações.
 
 Adicione o token ao campo token e confirme.
 
 <p align="center">
-  <img src="https://github.com/ViniciusHora1009/persona-bot/blob/main/imagens/guia9.PNG">
+  <img src="https://github.com/ViniciusHora1009/persona-bot/blob/main/imagens/guia12.PNG">
 </p>
 
 Para ligar o bot basta acessar a página inicial do painel e clicar no símbolo de ligar na caixa de "Ligar o Bot".
@@ -81,3 +81,4 @@ Seu Bot estará online e pronto para te auxiliar a ministrar suas sessões de RP
 <p align="center">
   <img src="https://github.com/ViniciusHora1009/persona-bot/blob/main/imagens/guia11.PNG">
 </p>
+
