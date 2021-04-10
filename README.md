@@ -9,7 +9,7 @@
 </span>
 
 <span class="badge-download-latest">
-<a href="https://github.com/ViniciusHora1009/persona-bot/releases/tag/v1.0.0-beta" title="Download PersonaBot latest version"><img src="https://badgen.net/badge/download/v1.0.0-beta/:blue?icon=github" alt="Download button" /></a>
+<a href="https://github.com/ViniciusHora1009/persona-bot/releases/download/v1.0.0-beta/personabot-v1.0.0-beta.zip" title="Download PersonaBot latest version"><img src="https://badgen.net/badge/download/v1.0.0-beta/:blue?icon=github" alt="Download button" /></a>
 </span>
 
 <p align="center">
@@ -29,7 +29,7 @@ O Persona Bot é um bot de Discord criado para auxiliar a execução do meu sist
 | Execução de mecânicas de combate                | Finalizado   |
 | Sistema de canal inteligente dos jogadores      | Finalizado   |
 
-[Baixe o PersonaBot](https://github.com/ViniciusHora1009/persona-bot/releases/tag/v1.0.0-beta)
+[Baixe o PersonaBot](https://github.com/ViniciusHora1009/persona-bot/releases/download/v1.0.0-beta/personabot-v1.0.0-beta.zip)
 
 ## Sobre o Sistema de combate
 O sistema de combate está sendo criado do zero por mim e se encontra hospedado no meu Google Drive.<br>
