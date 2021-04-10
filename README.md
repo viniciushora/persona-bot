@@ -8,6 +8,8 @@
 <a href="https://www.buymeacoffee.com/viniciusdahora" title="Donate to this project using Buy Me A Coffee"><img src="https://img.shields.io/badge/buy%20me%20a%20coffee-donate-yellow.svg" alt="Buy Me A Coffee donate button" /></a>
 </span>
 
+![Twitter Follow](https://img.shields.io/twitter/follow/ViniciusHoraDev?style=social)
+
 <p align="center">
   <img img width="400" height="288" src="https://github.com/ViniciusHora1009/persona-bot/blob/main/imagens/persona-bot-circle.png">
 </p>
