@@ -4,6 +4,10 @@
 ![GitHub release (latest by date including pre-releases)](https://img.shields.io/github/v/release/ViniciusHora1009/persona-bot?include_prereleases)
 ![GitHub top language](https://img.shields.io/github/languages/top/ViniciusHora1009/persona-bot)
 
+<span class="badge-buymeacoffee">
+<a href="https://www.buymeacoffee.com/viniciusdahora" title="Donate to this project using Buy Me A Coffee"><img src="https://img.shields.io/badge/buy%20me%20a%20coffee-donate-yellow.svg" alt="Buy Me A Coffee donate button" /></a>
+</span>
+
 <p align="center">
   <img img width="400" height="288" src="https://github.com/ViniciusHora1009/persona-bot/blob/main/imagens/persona-bot-circle.png">
 </p>
