@@ -8,6 +8,10 @@
 <a href="https://www.buymeacoffee.com/viniciusdahora" title="Donate to this project using Buy Me A Coffee"><img src="https://img.shields.io/badge/buy%20me%20a%20coffee-donate-yellow.svg" alt="Buy Me A Coffee donate button" /></a>
 </span>
 
+<span class="badge-download-latest">
+<a href="https://github.com/ViniciusHora1009/persona-bot/releases/tag/v1.0.0-beta" title="Download PersonaBot latest version"><img src="https://badgen.net/badge/download/v1.0.0-beta/:blue?icon=github" alt="Download button" /></a>
+</span>
+
 <p align="center">
   <img img width="400" height="288" src="https://github.com/ViniciusHora1009/persona-bot/blob/main/imagens/persona-bot-circle.png">
 </p>
