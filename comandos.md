@@ -15,8 +15,8 @@ Colchetes "[]" não inclusos.
 |                   Comando                   |                        Funcionalidade                        |      Canal enviado:      |
 | :-----------------------------------------: | :----------------------------------------------------------: | :----------------------: |
 |              p!atualizar_info               | Atualiza as informações conhecidas pelo grupo (Adiciona as novas Shadows cadastradas) |           ---            |
-| p!mostrar_ficha <#canal> [nome] da persona> |                Mostra a ficha de uma Persona                 | Canal passado no comando |
-|       p!info_shadow [nome da shadow]        |  Mostra as informações conhecidas pelo grupo de uma Shadow   |         Suporte          |
+| p!persona <#canal> [nome] da persona> |                Mostra a ficha de uma Persona                 | Canal passado no comando |
+|       p!shadow [nome da shadow]        |  Mostra as informações conhecidas pelo grupo de uma Shadow   |         Suporte          |
 |             p!revelar_afinidade             | Desbloqueia ao grupo a informação sobre determinada interação com a Shadow |           ---            |
 |            p!esconder_afinidade             | Bloqueia para o grupo a informação sobre determinada interação com a Shadow |           ---            |
 |        p!ficha [nome do personagem]         |               Mostra a ficha de um personagem                |        Personagem        |
