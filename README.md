@@ -17,7 +17,7 @@
 </p>
 
 ## Sobre o Persona Bot
-O Persona Bot é um bot de Discord criado para auxiliar a execução do meu sistema de combate de RPG baseado na série de jogos "Persona". O Bot conta com:<br>
+O Persona Bot é um bot de Discord criado para auxiliar a execução de sessões de RPG de mesa online com sistema baseada na série de jogos "Persona":<br>
 
 | Função                                          | Status       |
 |:-----------------------------------------------:|:------------:|
@@ -30,10 +30,6 @@ O Persona Bot é um bot de Discord criado para auxiliar a execução do meu sist
 | Sistema de canal inteligente dos jogadores      | Finalizado   |
 
 [Baixe o PersonaBot](https://github.com/ViniciusHora1009/persona-bot/releases/download/v1.0.0-beta/personabot-v1.0.0-beta.zip)
-
-## Sobre o Sistema de combate
-O sistema de combate está sendo criado do zero por mim e se encontra hospedado no meu Google Drive.<br>
-[Pasta do Sistema](https://drive.google.com/drive/folders/16OB41w_IHq1p9vzMyiCOC2TrLpnopyDq?usp=sharing)
 
 ## Funcionalidades
 
