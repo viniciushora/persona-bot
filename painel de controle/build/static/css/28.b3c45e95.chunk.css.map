@@ -1,0 +1,1 @@
+{"version":3,"sources":["styles.css"],"names":[],"mappings":"AAAA,gBACI,iCAA8B,CAA9B,yBAA8B,CAC9B,SAAU,CACV,UACJ","file":"28.b3c45e95.chunk.css","sourcesContent":[".centered-image{\n    transform: translate(180%, 0%);\n    width: 20%;\n    height: 20%\n}"]}
