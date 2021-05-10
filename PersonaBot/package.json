@@ -1,9 +1,9 @@
 {
-  "name": "PersonaBot",
+  "name": "personabot",
   "productName": "PersonaBot",
   "version": "1.0.0",
   "description": "A Discord RPG Bot for Persona System",
-  "main": "electron.js",
+  "main": "main.js",
   "homepage": "./",
   "dependencies": {
     "@date-io/date-fns": "^1.3.6",
@@ -14,6 +14,7 @@
     "asyncawait": "^3.0.0",
     "autosuggest-highlight": "^3.1.1",
     "axios": "^0.21.1",
+    "axios-mock-adapter": "^1.17.0",
     "babel-polyfill": "^6.26.0",
     "clsx": "^1.0.4",
     "cors": "^2.8.5",
@@ -21,7 +22,9 @@
     "dart-sass": "^1.25.0",
     "date-fns": "^2.0.0-alpha.34",
     "downshift": "^3.2.10",
+    "electron-squirrel-startup": "^1.0.0",
     "express": "^4.17.1",
+    "gh-pages": "^2.1.1",
     "history": "^4.10.0",
     "knex": "^0.95.4",
     "lodash": "^4.17.15",
@@ -54,24 +57,21 @@
     "recharts": "^1.6.2",
     "redux": "^4.0.1",
     "redux-thunk": "^2.3.0",
+    "sass": "^1.32.8",
     "shortid": "^2.2.14",
     "sqlite3": "^5.0.2",
     "swiper": "^4.5.0",
     "victory": "^32.3.3"
   },
   "devDependencies": {
+    "@babel/runtime": "^7.5.5",
+    "electron": "^12.0.1",
     "electron-builder": "^22.10.5",
     "electron-packager": "^15.2.0",
     "electron-rebuild": "^2.3.5",
-    "electron-squirrel-startup": "^1.0.0",
-    "@babel/runtime": "^7.5.5",
-    "axios-mock-adapter": "^1.17.0",
-    "cross-env": "^5.2.0",
-    "electron": "^12.0.1",
-    "gh-pages": "^2.1.1",
-    "sass": "^1.32.8",
     "sass-loader": "^7.1.0",
-    "webpack": "^4.29.6"
+    "electron-squirrel-startup": "^1.0.0",
+    "webpack": "4.29.6"
   },
   "eslintConfig": {
     "extends": "react-app"
@@ -84,6 +84,7 @@
   ],
   "scripts": {
     "postinstall": "electron-builder install-app-deps",
+    "electron-pack": "build --em.main=build/electron.js",
     "start-electron": "electron .",
     "start": "react-scripts start",
     "build": "react-scripts build",
@@ -91,10 +92,33 @@
     "eject": "react-scripts eject",
     "ghp": "react-scripts build && gh-pages -d build",
     "package-mac": "electron-packager . --overwrite --platform=darwin --arch=x64 --icon=assets/icons/mac/icon.icns --prune=true --out=release-builds",
-    "package-win": "electron-packager . PersonaBot --overwrite --asar=false --ignore=^/src --platform=win32 --arch=ia32 --icon=public/assets/images/persona-bot-circle.ico --prune=true --out=release-builds --version-string.CompanyName=CE --version-string.FileDescription=CE --version-string.ProductName=\"PersonaBot\"",
+    "package-win": "electron-packager . PersonaBot --overwrite --ignore=^/src --ignore=^/.gitignore --platform=win32 --arch=ia32 --icon=public/assets/images/persona-bot-circle.ico --prune=true --out=release-builds --version-string.CompanyName=CE --version-string.FileDescription=CE --version-string.ProductName=\"PersonaBot\"",
     "package-linux": "electron-packager . electron-tutorial-app --overwrite --ignore=^/src --asar=true --platform=linux --arch=x64 --icon=assets/icons/png/1024x1024.png --prune=true --out=release-builds"
   },
   "author": "",
   "license": "ISC",
-  "config": {}
+  "config": {},
+  "build": {
+    "appId": "com.app.personabot",
+    "asar": false,
+    "directories": {
+      "output": "release-builds",
+      "buildResources": "assets"
+    },
+    "files": [
+      "build/**/*",
+      "node_modules/**/*",
+      "package.json"
+    ],
+    "extraFiles": [
+      "bot/**/*"
+    ],
+    "publish": null,
+    "win": {
+      "icon": "public/assets/images/persona-bot-circle-icon.ico",
+      "target": [
+        "portable"
+      ]
+    }
+  }
 }

@@ -1,5 +1,6 @@
 import sqlite3
-conn = sqlite3.connect('../../backend/web/src/database/db.sqlite')
+
+conn = sqlite3.connect('../backend/database/db.sqlite')
 cur = conn.cursor()
 
 class Database:

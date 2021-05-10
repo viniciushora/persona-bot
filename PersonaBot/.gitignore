@@ -4,6 +4,7 @@
 /node_modules
 /docs/node_modules
 /.pnp
+/release-builds
 .pnp.js
 
 # testing

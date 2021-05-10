@@ -30,7 +30,7 @@ const StatCards = ({theme}) => {
             </GitHubIcon>
             <div className="ml-12">
               <small className="text-primary">GitHub</small>
-              <h6 className="m-0 mt-4 text-primary font-weight-500">https://github.com/ViniciusHora1009/persona-bot</h6>
+              <h6 className="m-0 mt-4 text-primary font-weight-500">Repositório do PersonaBot</h6>
             </div>
           </div>
           <Tooltip target="_blank" href='https://github.com/ViniciusHora1009/persona-bot' title="Visitar o repositório" placement="top">
@@ -83,7 +83,7 @@ const StatCards = ({theme}) => {
               </h6>
             </div>
           </div>
-          <Tooltip title="Acessar o guia" placement="top">
+          <Tooltip target="_blank" href="https://github.com/ViniciusHora1009/persona-bot/blob/main/guias/Guia%20de%20Instala%C3%A7%C3%A3o%20do%20PersonaBot.md"title="Acessar o guia" placement="top">
             <IconButton>
               <Icon color="secondary">arrow_right_alt</Icon>
             </IconButton>
