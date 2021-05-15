@@ -36,21 +36,39 @@ export const navigations = [
     ]
   },
   {
-    name: "Listagem (WIP)",
-    icon: "format_list_bulleted",
-    path: "/naoexiste"
-  },
-  {
-    name: "Edição (WIP)",
+    name: "Edição",
     icon: "edit",
-    path: "/naoexiste"
+    children: [
+      {
+        name: "Personagens",
+        path: "/edicao/personagens",
+        iconText: "P1"
+      },
+      {
+        name: "Personas",
+        path: "/edicao/personas",
+        iconText: "P2"
+      },
+      {
+        name: "Shadows",
+        path: "/edicao/shadows",
+        iconText: "S"
+      },
+      {
+        name: "Itens",
+        path: "/edicao/itens",
+        iconText: "I"
+      },
+      {
+        name: "Habilidades",
+        path: "/edicao/habilidades",
+        iconText: "H"
+      }
+    ]
   },
-
   {
     name: "Configurações",
     path: "/config",
     icon: "settings"
   },
-  
-  
 ];

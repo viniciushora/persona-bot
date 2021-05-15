@@ -76,8 +76,6 @@ class FormItem extends Component {
 
         await api.post('item', data);
 
-
-
         let notification = {
             id: shortId.generate(),
             heading: "Cadastro",
@@ -190,7 +188,7 @@ class FormItem extends Component {
                     type="number"
                     name="valor"
                     value={valor}
-                    validators={["required", "isNumber", "isInteger", "isPositive"]}
+                    validators={["isNumber", "isInteger", "isPositive"]}
                     errorMessages={["Este campo é obrigatório", "Este campo deve ser um número", "O valor do número deve ser um inteiro", "O valor deve ser positivo"]}
                 />
             </div>

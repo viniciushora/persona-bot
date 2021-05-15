@@ -9,6 +9,7 @@ import materialRoutes from "./views/material-kit/MaterialRoutes";
 
 import formsRoutes from "./views/cadastro/FormsRoutes";
 import configRoutes from "./views/config/ConfigRoutes";
+import editRoutes from "./views/edicao/EditRoutes";
 import mapRoutes from "./views/map/MapRoutes";
 
 const redirectRoute = [
@@ -32,6 +33,7 @@ const routes = [
   ...utilitiesRoutes,
   ...configRoutes,
   ...formsRoutes,
+  ...editRoutes,
   ...mapRoutes,
   ...redirectRoute,
   ...errorRoute

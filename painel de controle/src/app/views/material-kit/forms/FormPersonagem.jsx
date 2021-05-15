@@ -47,7 +47,7 @@ class FormPersonagem extends Component {
     await this.PersonagemPersonaId();
     await this.HabilidadesPersona();
     ValidatorForm.addValidationRule("isPositive", value => {
-      if (Number(value) > 0){
+      if (Number(value) > 0 || value == ""){
           return true;
       } else {
           return false;
@@ -107,14 +107,12 @@ class FormPersonagem extends Component {
       const foto = this.state.foto;
       const personas = this.state.personas;
       let fool = this.state.fool;
-      const fk_persona_persona_id = this.state.fk_persona_persona_id;
+      let fk_persona_persona_id = this.state.fk_persona_persona_id;
       const vida = this.state.vida;
       const energia = this.state.energia;
       var nivel = this.state.nivel;
       var hp = this.state.hp;
       var sp = this.state.sp;
-
-      const fk_grupo_grupo_id = 1
 
       if (fool == 1)  {
         fool = false;
@@ -122,13 +120,17 @@ class FormPersonagem extends Component {
         fool = true;
       }
 
-      if (fk_persona_persona_id != 0 && hp != null && sp != null){
+      if (fk_persona_persona_id === 0){
+        fk_persona_persona_id = null;
+      }
+
+      if ((fool == true && fk_persona_persona_id != null) && (vida != "" && energia != "")){
         hp = vida;
         sp = energia;
 
         nivel = this.nivelPersona(fk_persona_persona_id)
 
-      } else if (fool == 1 && fk_persona_persona_id != 0 || hp != null || sp != null){
+      } else if ((fool == true && fk_persona_persona_id != null) && (vida == "" || sp == "")){
           throw "missingFoolException"
       }
 
@@ -136,7 +138,6 @@ class FormPersonagem extends Component {
 
       const data = {
           nome,
-          fk_grupo_grupo_id,
           usuario,
           fool,
           persona_equipada,
@@ -356,7 +357,6 @@ class FormPersonagem extends Component {
                 className="mb-16 w-100"
                 label="HP inicial"
                 onChange={this.handleChange}
-                id="hpPersonagem"
                 type="number"
                 name="vida"
                 value={vida}
@@ -367,7 +367,6 @@ class FormPersonagem extends Component {
                 className="mb-16 w-100"
                 label="SP inicial"
                 onChange={this.handleChange}
-                id="spPersonagem"
                 type="number"
                 name="energia"
                 value={energia}

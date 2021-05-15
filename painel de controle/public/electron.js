@@ -30,11 +30,9 @@ function createWindow() {
     });
     mainWindow.setMenu(null);
 
-    mainWindow.webContents.openDevTools()
-
     // and load the index.html of the app.
 
-    mainWindow.loadURL(`file://${__dirname}/build/index.html`)
+    mainWindow.loadURL(`file://${__dirname}/index.html`)
 
     // Emitted when the window is closed.
     mainWindow.on('closed', function () {

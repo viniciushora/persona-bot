@@ -136,20 +136,14 @@ class FormPersona extends Component {
         const data = {
             nome,
             link_foto,
-            nivel
+            nivel,
+            fk_arcana_arcana_id
         };
 
         await api.post('persona', data);
 
         const atributos = [vida, sp, forca, magia, resist, agilidade, sorte]
         const fraquezas = [fisico, arma, fogo, gelo, eletrico, vento, psy, nuclear, bencao, maldicao, onipotencia]
-
-        const data1 = {
-            fk_arcana_arcana_id,
-            fk_persona_persona_id
-        }
-
-        await api.post('persona_arcana', data1);
 
         const data2 = {
             fk_persona_persona_id,
