@@ -9,7 +9,7 @@
 </span>
 
 <span class="badge-download-latest">
-<a href="https://github.com/ViniciusHora1009/persona-bot/releases/download/v.1.0.1-beta/PersonaBot-v1.0.1-beta.zip" title="Download PersonaBot latest version"><img src="https://badgen.net/badge/download/v1.0.1-beta/:blue?icon=github" alt="Download button" /></a>
+<a href="https://github.com/ViniciusHora1009/persona-bot/releases/download/v.1.1.0-beta/PersonaBot-v1.1.0-beta.zip" title="Download PersonaBot latest version"><img src="https://badgen.net/badge/download/v1.1.0-beta/:blue?icon=github" alt="Download button" /></a>
 </span>
 
 <p align="center">
