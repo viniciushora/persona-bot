@@ -29,7 +29,7 @@ O Persona Bot é um bot de Discord criado para auxiliar a execução de sessões
 | Execução de mecânicas de combate                | Finalizado   |
 | Sistema de canal inteligente dos jogadores      | Finalizado   |
 
-[Baixe o PersonaBot](https://github.com/ViniciusHora1009/persona-bot/releases/download/v1.0.0-beta/personabot-v1.0.0-beta.zip)
+[Baixe o PersonaBot](https://github.com/ViniciusHora1009/persona-bot/releases/download/v.1.1.0-beta/PersonaBot-v1.1.0-beta.zip)
 
 ## Funcionalidades
 
