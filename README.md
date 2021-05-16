@@ -31,6 +31,12 @@ O Persona Bot é um bot de Discord criado para auxiliar a execução de sessões
 
 [Baixe o PersonaBot](https://github.com/ViniciusHora1009/persona-bot/releases/download/v1.1.0-beta/PersonaBot-v1.1.0-beta.zip)
 
+## Painel de Controle dedicado
+Utilize um painel de controle intuitivo e totalmente visual para cadastrar as informações dos personagens, inimigos, itens e habilidades. Além da inicialização do bot e facilidade para a configuração do mesmo.
+<p align="center">
+  <img width="80%" src="https://github.com/ViniciusHora1009/persona-bot/blob/main/imagens/painel1.PNG">
+</p>
+
 ## Funcionalidades
 
 Confira a [Lista de Comandos](https://github.com/ViniciusHora1009/persona-bot/blob/main/comandos.md)
